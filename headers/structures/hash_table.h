@@ -14,6 +14,8 @@ unsigned hash(char *s);
 
 HashTable *create_table();
 
+int table_contains(HashTable *table, char *name);
+
 Value table_get(HashTable *table, char *name);
 
 int table_get_int(HashTable *table, char *name);

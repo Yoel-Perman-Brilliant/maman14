@@ -1,4 +1,4 @@
-#include "../headers/hash_table.h"
+#include "../../headers/structures/hash_table.h"
 #include "stdlib.h"
 #include "stdio.h"
 
@@ -23,6 +23,11 @@ HashTable *create_table() {
     return table;
 }
 
+int table_contains(HashTable *table, char *name) {
+    return list_contains(table->lists[hash(name)], name);
+}
+
+/* ONLY USE AFTER TABLE_CONTAINS */
 Value table_get(HashTable *table, char *name) {
     return list_get(table->lists[hash(name)], name);
 }
@@ -48,7 +53,8 @@ void table_add_string(HashTable *table, char *name, char *value) {
 }
 
 void free_table(HashTable *table) {
-    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+    int i;
+    for (i = 0; i < HASH_TABLE_SIZE; i++) {
         free_list(table->lists[i]);
     }
     free(table);

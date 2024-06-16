@@ -1,14 +1,13 @@
 #include "stdio.h"
-#include "../headers/string_ops.h"
-#include "../headers/linked_list.h"
+#include "../headers/util/read_ops.h"
+#include "../headers/util/string_ops.h"
+#include "../headers/structures/linked_list.h"
+#include "../headers/structures/hash_table.h"
 #include "stdlib.h"
+#include "../headers/pre_assembler.h"
+
 int main() {
-    LinkedList *list = create_list();
-    list_add_int(list, "two", 2);
-    list_add_int(list, "three", 3);
-    list_add_int(list, "negative one", -1);
-    print_int_list(list);
-    printf("%d\n", list_contains(list, "three"));
-    printf("%d\n", list_get_int(list, "two"));
+    HashTable *table = create_table();
+    pre_assemble("thing", table);
     return 0;
 }

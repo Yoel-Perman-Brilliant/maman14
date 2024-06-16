@@ -1,6 +1,9 @@
 #include "../headers/field_names.h"
-#include "../headers/string_ops.h"
+#include "../headers/util/string_ops.h"
 #include "ctype.h"
+#include "string.h"
+
+#define MAX_MACRO_AND_LABEL_LENGTH 31
 
 int is_instruction(char *name) {
     char *instructions[] = {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc",
@@ -30,9 +33,17 @@ int is_register(char *name) {
     return 0;
 }
 
+int is_other_keyword(char *name) {
+    return equal(name, MACRO_DEFINITION) || equal(name, MACRO_END);
+}
+
 int legal_macro_and_label_name(char *name) {
     int i;
-    if (is_instruction(name) || is_directive(name) || is_register(name)) return 0;
+    if (is_instruction(name) || is_directive(name) || is_register(name) || is_other_keyword(name)) {
+        
+        return 0;
+    }
+    if (strlen(name) > 31) return 0;
     if (!isalpha(name[0])) return 0;
     for (i = 0; name[i] != '\0'; i++) {
         if (!isalnum(name[i])) return 0;
