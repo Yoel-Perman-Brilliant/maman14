@@ -1,14 +1,21 @@
 MAIN:   add r3, LIST
 LOOP:   prn #48
-        macr m1macr
+        macr m_macr 2
         cmp r3, #-6
         bne END
-        endmacr
+        endmacr 2
         lea STR, r6
         inc r6
         move    *r6,K
         sub r1, r4
-        m1macr
+        m_macr
+       macr macr2
+        whatupnewyork
+        whatupmodiin
+        whichisbetter
+        endmacr
+        m_macr
+        macr2
         dec K
         jmp LOOP
 END     stop

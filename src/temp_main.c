@@ -8,6 +8,6 @@
 
 int main() {
     HashTable *table = create_table();
-    pre_assemble("thing", table);
+    pre_assemble("bodingo", table);
     return 0;
 }

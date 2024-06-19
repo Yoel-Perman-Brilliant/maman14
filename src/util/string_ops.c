@@ -69,4 +69,3 @@ char *trim(char string[]) {
     output[i + 1] = '\0';
     return output;
 }
-
