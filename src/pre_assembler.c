@@ -1,7 +1,6 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "stdlib.h"
 #include "../headers/pre_assembler.h"
 #include "../headers/util/read_ops.h"
 #include "../headers/util/string_ops.h"
@@ -88,7 +87,7 @@ int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char
     if (table_contains(macro_table, first_field)) {
         handle_macro_usage(first_field, macro_table, parsed_file);
         return 1;
-    } else if (is_label_definition(first_field) && table_contains(macro_table, second_field)) {
+    } else if (is_label(first_field) && table_contains(macro_table, second_field)) {
         printf("Input Error: Label used before macro usage in line %d of file %s\n", line_count, input_file_name);
         *error_found = 1;
         return 1;
@@ -117,14 +116,14 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
         }
         table_add_string(macro_table, macro_name, macro_content);
         return 1;
-    } else if (is_label_definition(first_field) && equal(second_field, MACRO_END)) {
+    } else if (is_label(first_field) && equal(second_field, MACRO_END)) {
         printf("Input error: Line %d in file %s includes a label before macro end declaration\n",
                line_count, input_file_name);
         *error_found = 1;
         free_all(3, first_field, second_field, third_field);
         return 1;
     }
-    free_all(3, first_field, second_field, third_field);
+    free_all(2, first_field, third_field);
     return 0;
 }
 
@@ -132,20 +131,26 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
                              FILE *input_file, int *line_count, int *error_found) {
     char *macro_content = malloc(0);
     char line[MAX_LINE_LENGTH + 1];
+    if (table_contains(macro_table, macro_name)) {
+        printf("Input error: Macro defined in line %d in file %s has already been defined\n", *line_count,
+               input_file_name);
+        *error_found = 1;
+    }
     if (is_line_blank(macro_name)) {
         printf("Input error: Macro defined in line %d in file %s has no name\n", *line_count, input_file_name);
         *error_found = 1;
     }
-    if (!is_line_blank(post_macro_name)) {
-        printf("Input error: Line %d in file %s includes extra characters after macro name\n",
-               *line_count, input_file_name);
-        *error_found = 1;
-    }
-    if (!legal_macro_name(macro_name)) {
+    else if (!legal_macro_name(macro_name)) {
         printf("Input error: Macro defined in line %d in file %s has an illegal name\n",
                *line_count, input_file_name);
         *error_found = 1;
     }
+    else if (!is_line_blank(post_macro_name)) {
+        printf("Input error: Line %d in file %s includes extra characters after macro name\n",
+               *line_count, input_file_name);
+        *error_found = 1;
+    }
+    
 
     (*line_count)++;
     if (read_line(input_file, input_file_name, *line_count, line)) *error_found = 1;
@@ -177,7 +182,7 @@ int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *
         free_all(3, first_field, second_field, third_field);
         return 0;
     }
-    if (is_label_definition(first_field) && equal(second_field, MACRO_DEFINITION)) {
+    if (is_label(first_field) && equal(second_field, MACRO_DEFINITION)) {
         printf("Input Error: Label used before macro definition in line %d of file %s\n", *line_count,
                input_file_name);
         free_all(3, first_field, second_field, third_field);
@@ -186,7 +191,7 @@ int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *
     if (equal(first_field, MACRO_DEFINITION)) {
         handle_macro_definition(macro_table, second_field, third_field, input_file_name, 
                                 input_file, line_count,error_found);
-        free_all(3, first_field, second_field, third_field);
+        free_all(1, first_field);
         return 1;
     }
     free_all(3, first_field, second_field, third_field);

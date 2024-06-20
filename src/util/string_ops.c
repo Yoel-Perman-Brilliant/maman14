@@ -17,10 +17,18 @@ int exists(char *string, char chars) {
 char *find_token(char *string, char *separators, char **rest) {
     char *output;
     int output_length = 0;
-    if (*string == '\0') return string;
+    if (*string == '\0') {
+        output = malloc(1);
+        output[0] = '\0';
+        return output;
+    } 
     while (exists(separators, *string)) {
         string++;
-        if (*string == '\0') return string;
+        if (*string == '\0') {
+            output = malloc(1);
+            output[0] = '\0';
+            return output;
+        }
     }
     while (!exists(separators, *string) && *string != '\0') {
         string++;
