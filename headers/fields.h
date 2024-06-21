@@ -1,8 +1,13 @@
+/**
+ * Includes macros and prototypes for functions that have to do with identifying and verifying various fields in the input.
+ */
+
 #ifndef MAMAN14_LEGAL_NAMES_H
 #define MAMAN14_LEGAL_NAMES_H
 
 #define MACRO_DEFINITION "macr"
 #define MACRO_END "endmacr"
+#define COMMENT_START ';'
 
 #include "structures/hash_table.h"
 
@@ -15,8 +20,6 @@ int legal_label_name(char *name);
 
 /**
  * Determines if a macro name is legal.
- * Does so by making sure that it isn't a keyword, that it is within the length limit, that the first character is a
- * latin letter and that the following characters are printable (not whitespaces).
  * @param name the macro name to be checked
  * @return 1 if the given name is legal, 0 otherwise
  */

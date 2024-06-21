@@ -1,3 +1,7 @@
+/**
+ * Includes functions that have to do with identifying and verifying various fields in the input.
+ */
+
 #include "../headers/fields.h"
 #include "../headers/util/string_ops.h"
 #include "ctype.h"
@@ -5,7 +9,6 @@
 
 #define MAX_MACRO_AND_LABEL_LENGTH 31
 #define LABEL_END ':'
-#define COMMENT_START ';'
 
 /**
  * Determines if a field name is the name of an instruction.
