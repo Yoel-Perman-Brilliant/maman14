@@ -1,6 +1,6 @@
 /**
  * Includes a hash-table data structure, which consists of linked-lists, whose nodes can hold either a string or
- * an integer value.
+ * an integer value, each associated with a certain name.
  * In addition, includes prototype for functions that allow for interacting with hash-tables.
  */
 #ifndef MAMAN14_HASH_TABLE_H
@@ -25,10 +25,10 @@ typedef struct {
 HashTable *create_table();
 
 /**
- * Checks if a table contains a value represented by a given name.
- * @param table a pointer to the table to be checked
+ * Checks if a hash-table contains a value represented by a given name.
+ * @param table a pointer to the hash-table to be checked
  * @param name the name to be checked
- * @return 1 if the table contains a value with the given name, 0 otherwise
+ * @return 1 if the hash-table contains a value with the given name, 0 otherwise
  */
 int table_contains(HashTable *table, char *name);
 
