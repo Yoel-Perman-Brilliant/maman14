@@ -53,6 +53,7 @@ int list_contains(LinkedList *list, char *name) {
  */
 Value list_get(LinkedList *list, char *name) {
     Node *node = list->head;
+    Value value;
     while (node != NULL) {
         if (equal(node->name, name)) {
             return node->value;
@@ -61,7 +62,6 @@ Value list_get(LinkedList *list, char *name) {
     }
     /* this part of the code should not be reached, if it is then a bug exists in the code */
     fprintf(stderr, "Code Error: Name not found in data structure!");
-    Value value;
     value.ival = 0;
     value.sval = "\0";
     return value;

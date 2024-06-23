@@ -6,5 +6,6 @@
 #include "../headers/pre_assembler.h"
 
 int main() {
+    pre_assemble("bodingo");
     return 0;
 }

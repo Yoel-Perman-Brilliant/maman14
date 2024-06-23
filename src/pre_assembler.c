@@ -1,3 +1,21 @@
+/**
+ * This file is responsible for the pre-assembly process. The pre-assembler takes an input file (a .as file) and parses
+ * all of its macros using a hash-tables that includes each macro's name and content. The table is updated as the file
+ * is being read.
+ * The main function in the file is pre-assemble, which takes in a file name without the .as extension and parses it
+ * into a new .am file with the same name. If a .am file with this name already exists, deletes it and 
+ * creates a new file. If any errors are found, the .am file is not created, but the program keeps analyzing the 
+ * input file in order to find more errors.
+ * The function does so by reading the input file line by line. For each line, if a macro usage is detected (the first field
+ * appears in the macro table) writes its content into the parsed file. Else, if a macro definition keyword is found as
+ * the first field of the line, sees the second field of the line as the macro's name, and updates the macro's content
+ * line by line until a macro end keyword is found, at which point the macro table is updated with the new macro.
+ * If neither of these criteria is met, copies the file from the input file to the parsed file.
+ * Assumes that the definition of every macro comes before its usage, that there are no nested macro definitions, that
+ * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
+ * ending cannot have labels.
+ */
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -149,8 +167,9 @@ void handle_macro_usage(char *macro, HashTable *macro_table, FILE *parsed_file) 
  */
 int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char *second_field,
                                  FILE *parsed_file, int line_count, char *input_file_name, int *error_found) {
-    /* if the first field is a known macro name, writes its content into the parsed file */
-    if (table_contains(macro_table, first_field)) {
+    /* if the first field is a known macro name, writes its content into the parsed file. only does so if no error
+     * was found */
+    if (table_contains(macro_table, first_field) && !(*error_found)) {
         handle_macro_usage(first_field, macro_table, parsed_file);
         return 1;
     }
@@ -275,7 +294,7 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
             /* reallocates the macro content to a new string that has enough spaces for the next line */
             macro_content = realloc(macro_content, strlen(macro_content) + strlen(line) + 1);
             if (macro_content == NULL) {
-                fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content");
+                fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
             }
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);
@@ -345,55 +364,89 @@ int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *
  * the first field of the line, sees the second field of the line as the macro's name, and updates the macro's content
  * line by line until a macro end keyword is found, at which point the macro table is updated with the new macro.
  * If neither of these criteria is met, copies the file from the input file to the parsed file.
+ * Assumes that the definition of every macro comes before its usage, that there are no nested macro definitions, that
+ * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
+ * ending cannot have labels.
  * @param file_name the name of the input file without the .as extension
  * @param macro_table a pointer to the macro table.
- * @return 
+ * @return 1 if an error was found, 0 if the file was parsed successfully
  */
 int pre_assemble(char file_name[]) {
+    /* a hash-table where macro names are mapped to their contents */
     HashTable *macro_table = create_table();
+    /* a pointer to the input .as file */
     FILE *input_file;
+    /* a pointer to the parsed .am file */
     FILE *parsed_file;
+    /* the name of the input file (including the extension) */
     char *input_file_name;
+    /* the name of the parsed file (including the extension) */
     char *parsed_file_name;
+    /* the number of the line being read */
     int line_count;
+    /* the line being read */
     char line[MAX_LINE_LENGTH + 1];
+    /* the first, second and third fields of the line */
     char *first_field;
     char *second_field;
     char *third_field;
+    /* the portion of the line after the first field */
     char *rest;
+    /* whether an error has occurred */
     int error_found = 0;
 
+    /* gets the name of the input file and a pointer to the file, if any of them is null then the file can't be read
+     * and the pre-assembly process is stopped for the file */
     input_file_name = get_input_file_name(file_name);
+    if (!input_file_name) return 1;
     input_file = get_input_file(file_name);
+    /* if the input file is null */
     if (!input_file) {
         free(input_file_name);
         return 1;
     }
-
+    
+    /* gets the name of the parsed file and a pointer to the file, if any of them is null then an error is reported and
+     * the error_found flag is set to 1 */
     parsed_file_name = get_parsed_file_name(file_name);
-    parsed_file = get_parsed_file(file_name);
-    if (!parsed_file) error_found = 1;
+    if (parsed_file_name) {
+        parsed_file = get_parsed_file(file_name);
+        if (!parsed_file) error_found = 1;
+    }
+    else error_found = 1;
+    
+    /* reads the input file line by line, and checks for macro usage and definition */
     line_count = 0;
     while (!feof(input_file)) {
         line_count++;
+        /* if an error has occurred while reading the line, the error_found flag is set to 1 */
         if (read_line(input_file, input_file_name, line_count, line)) error_found = 1;
+        /* puts the first, second and thirds fields of the line into the variables, as well as the portion after the
+         * third field */
         if (get_fields(line, &first_field, &second_field, &third_field, &rest, &error_found)) {
             printf("Error: File %s could not be parsed due to a memory error", input_file_name);
             free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
             return 1;
         }
+        /* if a macro usage is detected, its content are written to the parsed file, and the loop moves to the
+         * next line */
         if (check_and_handle_macro_usage(macro_table, first_field, second_field, parsed_file,
                                          line_count, input_file_name, &error_found)) {
             continue;
         }
+        /* if a macro definition is detected, it is inserted to the macro table, and the loop moves to the
+         * line after the macro's end */
         if (check_and_handle_macro_definition(macro_table, line, file_name,
                                               input_file, &line_count, &error_found)) {
             continue;
         }
-        fprintf(parsed_file, "%s\n", line);
+        /* if no special case is detected and no error has occurred so far, copies the line to the parsed file */
+        if (!error_found) fprintf(parsed_file, "%s\n", line);
     }
+    /* closes the file */
     fclose(input_file);
     fclose(parsed_file);
+    /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
     free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
     return error_found;
