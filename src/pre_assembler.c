@@ -443,7 +443,7 @@ int pre_assemble(char file_name[]) {
         /* if no special case is detected and no error has occurred so far, copies the line to the parsed file */
         if (!error_found) fprintf(parsed_file, "%s\n", line);
     }
-    /* closes the file */
+    /* closes the files */
     fclose(input_file);
     fclose(parsed_file);
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
