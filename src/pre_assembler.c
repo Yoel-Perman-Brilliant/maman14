@@ -350,7 +350,7 @@ int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *
  * @return 
  */
 int pre_assemble(char file_name[]) {
-    HashTable *hashTable;
+    HashTable *macro_table = create_table();
     FILE *input_file;
     FILE *parsed_file;
     char *input_file_name;
