@@ -6,7 +6,5 @@
 #include "../headers/pre_assembler.h"
 
 int main() {
-    HashTable *table = create_table();
-    pre_assemble("bodingo", table);
     return 0;
 }

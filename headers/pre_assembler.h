@@ -3,6 +3,6 @@
 
 #include "structures/hash_table.h"
 
-int pre_assemble(char file_name[], HashTable *macro_table);
+int pre_assemble(char file_name[]);
 
 #endif

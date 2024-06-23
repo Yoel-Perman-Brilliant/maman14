@@ -61,7 +61,10 @@ Value list_get(LinkedList *list, char *name) {
     }
     /* this part of the code should not be reached, if it is then a bug exists in the code */
     fprintf(stderr, "Code Error: Name not found in data structure!");
-    exit(NAME_NOT_FOUND);
+    Value value;
+    value.ival = 0;
+    value.sval = "\0";
+    return value;
 }
 
 /**
