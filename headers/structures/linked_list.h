@@ -6,21 +6,20 @@
 #ifndef MAMAN14_LINKED_LIST_H
 #define MAMAN14_LINKED_LIST_H
 
-/**
- * Represents a possible value of a node in a linked list. Can be either an integer or a string.
- */
-typedef union Value {
-    int ival;
-    char *sval;
-} Value;
+#include "../fields.h"
+
+typedef union {
+    MacroContent macro;
+    SymbolContent symbol;
+} Content;
 
 /**
- * Represents an item in a linked-list. Includes a value, a name associated with the value and a pointer to the next
- * item on the list.
+ * Represents an item in a linked-list. Includes its content, a name associated with the content and a pointer to 
+ * the next item on the list.
  */
 typedef struct Node {
     char *name;
-    Value value;
+    Content content;
     struct Node *next;
 } Node;
 
@@ -38,74 +37,68 @@ typedef struct LinkedList {
 LinkedList *create_list();
 
 /**
- * Checks if a linked-list contains a value represented by a given name.
+ * Checks if a linked-list contains an item represented by a given name.
  * @param list a pointer to the linked-list to be checked
  * @param name the name to be checked
- * @return 1 if the list contains a value with the given name, 0 otherwise
+ * @return 1 if the list contains an item with the given name, 0 otherwise
  */
 int list_contains(LinkedList *list, char *name);
 
 /**
- * Looks for a name in a linked-list and retrieves the value associated with that name.
+ * Looks for a name in a linked-list and retrieves the content associated with that name.
  * Should only be used after verifying that the name exists in the list using list_contains.
- * @param list a pointer to the linked-list that the value should be retrieved from
+ * @param list a pointer to the linked-list that the content should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the content associated with the given name
  */
-Value list_get(LinkedList *list, char *name);
+Content list_get(LinkedList *list, char *name);
 
 /**
- * Looks for a name in a linked-list and retrieves the integer value associated with that name.
+ * Looks for a name in a linked-list and retrieves the macro content associated with that name.
  * Should only be used after verifying that the name exists in the list using list_contains.
- * @param list a pointer to the linked-list that the value should be retrieved from
+ * @param list a pointer to the linked-list that the macro should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the macro content associated with the given name
  */
-int list_get_int(LinkedList *list, char *name);
+MacroContent list_get_macro(LinkedList *list, char *name);
 
 /**
- * Looks for a name in a linked-list and retrieves the string value associated with that name.
+ * Looks for a name in a linked-list and retrieves the symbol content associated with that name.
  * Should only be used after verifying that the name exists in the list using list_contains.
- * @param list a pointer to the linked-list that the value should be retrieved from
+ * @param list a pointer to the linked-list that the symbol should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the symbol content associated with the given name
  */
-char *list_get_string(LinkedList *list, char *name);
+SymbolContent list_get_symbol(LinkedList *list, char *name);
 
 /**
- * Adds a value with a given name to a linked-list.
- * @param list a pointer to the list that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * Adds a content with a given name to a linked-list.
+ * @param list a pointer to the list that the content should be added to
+ * @param name the name associated with the content
+ * @param content the content to be added
  */
-void list_add(LinkedList *list, char *name, Value value);
+void list_add(LinkedList *list, char *name, Content content);
 
 /**
- * Adds an integer value with a given name to a linked-list.
- * @param list a pointer to the list that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * Adds a macro with a given name to a linked-list.
+ * @param list a pointer to the list that the macro should be added to
+ * @param name the name of the macro
+ * @param macro_content the content of the macro to be added
  */
-void list_add_int(LinkedList *list, char *name, int value);
+void list_add_macro(LinkedList *list, char *name, MacroContent macro_content);
 
 /**
- * Adds an string value with a given name to a linked-list.
- * @param list a pointer to the list that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * Adds a symbol with a given name to a linked-list.
+ * @param list a pointer to the list that the symbol should be added to
+ * @param name the name of the symbol
+ * @param symbol_content the content of the symbol to be added
  */
-void list_add_string(LinkedList *list, char *name, char *value);
+void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content);
 
 /**
  * Frees a linked-list and all of its contents from the memory.
  * @param list a pointer to the list that should be freed
  */
 void free_list(LinkedList *list);
-
-/**
- * Prints a linked-list's items, assuming their values are all integers.
- * @param list a pointer to the list that should be printed
- */
-void print_int_list(LinkedList *list);
 
 #endif

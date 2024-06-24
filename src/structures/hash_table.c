@@ -43,83 +43,85 @@ HashTable *create_table() {
 }
 
 /**
- * Checks if a table contains a value represented by a given name.
- * Does so by checking if the list at the index of the name's hash-value contains a value the has the given name.
+ * Checks if a table contains an item represented by a given name.
+ * Does so by checking if the list at the index of the name's hash-value contains an item that has the given name.
  * @param table a pointer to the table to be checked
  * @param name the name to be checked
- * @return 1 if the table contains a value with the given name, 0 otherwise
+ * @return 1 if the table contains an item with the given name, 0 otherwise
  */
 int table_contains(HashTable *table, char *name) {
     return list_contains(table->lists[hash(name)], name);
 }
 
 /**
- * Looks for a name in a hash-table and retrieves the value associated with that name.
- * Does so by looking for the name in the list at the index of the name's hash-value and retrieving its value.
+ * Looks for a name in a hash-table and retrieves the content associated with that name.
+ * Does so by looking for the name in the list at the index of the name's hash-value and retrieving its content.
  * Should only be used after verifying that the name exists in the table using table_contains.
- * @param table a pointer to the hash-table that the value should be retrieved from
+ * @param table a pointer to the hash-table that the content should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the content associated with the given name
  */
-Value table_get(HashTable *table, char *name) {
+Content table_get(HashTable *table, char *name) {
     return list_get(table->lists[hash(name)], name);
 }
 
 /**
- * Looks for a name in a hash-table and retrieves the integer value associated with that name.
- * Does so by looking for the name in the list at the index of the name's hash-value and retrieving its integer value.
+ * Looks for a name in a hash-table and retrieves the macro content associated with that name.
+ * Does so by looking for the name in the list at the index of the name's hash-value and retrieving its macro content.
  * Should only be used after verifying that the name exists in the table using table_contains.
- * @param table a pointer to the hash-table that the value should be retrieved from
+ * @param table a pointer to the hash-table that the macro should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the macro content associated with the given name
  */
-int table_get_int(HashTable *table, char *name) {
-    return table_get(table, name).ival;
+MacroContent table_get_macro(HashTable *table, char *name) {
+    return table_get(table, name).macro;
 }
 
 /**
- * Looks for a name in a hash-table and retrieves the string value associated with that name.
- * Does so by looking for the name in the list at the index of the name's hash-value and retrieving its string value.
+ * Looks for a name in a hash-table and retrieves the symbol content associated with that name.
+ * Does so by looking for the name in the list at the index of the name's hash-value and retrieving its symbol content.
  * Should only be used after verifying that the name exists in the table using table_contains.
- * @param table a pointer to the hash-table that the value should be retrieved from
+ * @param table a pointer to the hash-table that the symbol should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the symbol content associated with the given name
  */
-char *table_get_string(HashTable *table, char *name) {
-    return table_get(table, name).sval;
+SymbolContent table_get_symbol(HashTable *table, char *name) {
+    return table_get(table, name).symbol;
 }
 
 /**
- * Adds a value with a given name to a hash-table.
+ * Adds an item with a given name to a hash-table.
  * Does so by adding it to the list at the index of the name's hash-value.
- * @param table a pointer to the table that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * @param table a pointer to the table that the item should be added to
+ * @param name the name of the item
+ * @param macro_content the content of the item to be added
  */
-void table_add(HashTable *table, char *name, Value value) {
-    list_add(table->lists[hash(name)], name, value);
+void table_add(HashTable *table, char *name, Content content) {
+    list_add(table->lists[hash(name)], name, content);
 }
 
 /**
- * Adds an integer value with a given name to a hash-table.
+ * Adds a macro with a given name to a hash-table.
  * Does so by adding it to the list at the index of the name's hash-value.
- * @param table a pointer to the table that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * @param table a pointer to the table that the macro should be added to
+ * @param name the name of the macro
+ * @param macro_content the content of the macro to be added
  */
-void table_add_int(HashTable *table, char *name, int value) {
-    list_add_int(table->lists[hash(name)], name, value);
+void table_add_macro(HashTable *table, char *name, MacroContent macro_content) {
+    list_add_macro(table->lists[hash(name)], name, macro_content);
+
 }
 
 /**
- * Adds a string value with a given name to a hash-table.
+ * Adds an symbol with a given name to a hash-table.
  * Does so by adding it to the list at the index of the name's hash-value.
- * @param table a pointer to the table that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * @param table a pointer to the table that the symbol should be added to
+ * @param name the name of the symbol
+ * @param symbol_content the content of the symbol to be added
  */
-void table_add_string(HashTable *table, char *name, char *value) {
-    list_add_string(table->lists[hash(name)], name, value);
+void table_add_symbol(HashTable *table, char *name, SymbolContent symbol_content) {
+    list_add_symbol(table->lists[hash(name)], name, symbol_content);
+
 }
 
 /**
