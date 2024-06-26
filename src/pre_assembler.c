@@ -147,7 +147,7 @@ int get_fields(char *line, char **first_field, char **second_field, char **third
  * @param parsed_file a pointer to the parsed file that the macro content should be written to.
  */
 void handle_macro_usage(char *macro, HashTable *macro_table, FILE *parsed_file) {
-    char *macro_content = table_get_string(macro_table, macro);
+    MacroContent macro_content = table_get_macro(macro_table, macro);
     fprintf(parsed_file, "%s", macro_content);
 }
 
@@ -197,7 +197,7 @@ int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char
  * @return 1 if the macro end has been found or an error has occurred, 0 otherwise
  */
 int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *line, int *error_found, int line_count,
-                               char *input_file_name, char *macro_content) {
+                               char *input_file_name, MacroContent macro_content) {
     /* the first, second and third fields of the line */
     char *first_field;
     char *second_field;
@@ -221,7 +221,7 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
             return 1;
         }
         /* adds the macro whose definition just ended to the macro table */
-        table_add_string(macro_table, macro_name, macro_content);
+        table_add_macro(macro_table, macro_name, macro_content);
         return 1;
     }
         /* checks if the macro end includes a label, reports an error if yes */
@@ -253,7 +253,7 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
 void handle_macro_definition(HashTable *macro_table, char *macro_name, char *post_macro_name, char *input_file_name,
                              FILE *input_file, int *line_count, int *error_found) {
     /* the macro's content */
-    char *macro_content = malloc(0);
+    MacroContent macro_content = malloc(0);
     /* the line being read */
     char line[MAX_LINE_LENGTH + 1];
     /* makes sure no macro with the same name has already been defined */
@@ -449,5 +449,6 @@ int pre_assemble(char file_name[]) {
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
     free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
+    free(macro_table);
     return error_found;
 }

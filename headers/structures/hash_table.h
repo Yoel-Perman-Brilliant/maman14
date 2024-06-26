@@ -25,46 +25,46 @@ typedef struct {
 HashTable *create_table();
 
 /**
- * Checks if a hash-table contains a value represented by a given name.
+ * Checks if a hash-table contains an item represented by a given name.
  * @param table a pointer to the hash-table to be checked
  * @param name the name to be checked
- * @return 1 if the hash-table contains a value with the given name, 0 otherwise
+ * @return 1 if the hash-table contains an item with the given name, 0 otherwise
  */
 int table_contains(HashTable *table, char *name);
 
 /**
- * Looks for a name in a hash-table and retrieves the integer value associated with that name.
+ * Looks for a name in a hash-table and retrieves the macro content associated with that name.
  * Should only be used after verifying that the name exists in the table using table_contains.
- * @param table a pointer to the hash-table that the value should be retrieved from
+ * @param table a pointer to the hash-table that the macro should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the macro content associated with the given name
  */
-int table_get_int(HashTable *table, char *name);
+MacroContent table_get_macro(HashTable *table, char *name);
 
 /**
- * Looks for a name in a hash-table and retrieves the string value associated with that name.
+ * Looks for a name in a hash-table and retrieves the symbol content associated with that name.
  * Should only be used after verifying that the name exists in the table using table_contains.
- * @param table a pointer to the hash-table that the value should be retrieved from
+ * @param table a pointer to the hash-table that the symbol should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the symbol content associated with the given name
  */
-char *table_get_string(HashTable *table, char *name);
+SymbolContent table_get_symbol(HashTable *table, char *name);
 
 /**
- * Adds an integer value with a given name to a hash-table.
- * @param table a pointer to the table that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * Adds a macro with a given name to a hash-table.
+ * @param table a pointer to the table that the macro should be added to
+ * @param name the name of the macro
+ * @param macro_content the content of the macro to be added
  */
-void table_add_int(HashTable *table, char *name, int value);
+void table_add_macro(HashTable *table, char *name, MacroContent macro_content);
 
 /**
- * Adds an string value with a given name to a hash-table.
- * @param table a pointer to the table that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * Adds an symbol with a given name to a hash-table.
+ * @param table a pointer to the table that the symbol should be added to
+ * @param name the name of the symbol
+ * @param symbol_content the content of the symbol to be added
  */
-void table_add_string(HashTable *table, char *name, char *value);
+void table_add_symbol(HashTable *table, char *name, SymbolContent symbol_content);
 
 /**
  * Frees a hash-table and all of its contents from the memory.

@@ -9,7 +9,26 @@
 #define MACRO_END "endmacr"
 #define COMMENT_START ';'
 
-#include "structures/hash_table.h"
+typedef enum SymbolLocation {
+    CODE, DATA
+} SymbolLocation;
+
+typedef enum SymbolUpdateFormat {
+    EXTERNAL, RELOCATABLE
+} SymbolUpdateFormat;
+
+typedef union Value {
+    int ival;
+    char *sval;
+} Value;
+
+typedef struct SymbolContent {
+    Value value;
+    SymbolLocation location;
+    SymbolUpdateFormat update_format;
+} SymbolContent;
+
+typedef char *MacroContent;
 
 /**
  * Determines if a label name is legal.

@@ -26,11 +26,11 @@ LinkedList *create_list() {
 }
 
 /**
- * Checks if a linked-list contains a value represented by a given name.
+ * Checks if a linked-list contains an item represented by a given name.
  * Does so by going over every node on the list and checking if its name is is equal to the given name.
  * @param list a pointer to the linked-list to be checked
  * @param name the name to be checked
- * @return 1 if the list contains a value with the given name, 0 otherwise
+ * @return 1 if the list contains an item with the given name, 0 otherwise
  */
 int list_contains(LinkedList *list, char *name) {
     Node *node = list->head;
@@ -44,101 +44,101 @@ int list_contains(LinkedList *list, char *name) {
 }
 
 /**
- * Looks for a name in a linked-list and retrieves the value associated with that name.
- * Does so by going over every item on the list, and if its name is equal to the given name, retrieving its value.
+ * Looks for a name in a linked-list and retrieves the content associated with that name.
+ * Does so by going over every item on the list, and if its name is equal to the given name, retrieving its content.
  * Should only be used after verifying that the name exists in the list using list_contains.
- * @param list a pointer to the linked-list that the value should be retrieved from
+ * @param list a pointer to the linked-list that the content should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the content associated with the given name
  */
-Value list_get(LinkedList *list, char *name) {
+Content list_get(LinkedList *list, char *name) {
     Node *node = list->head;
-    Value value;
+    /* an effectively empty content that should only be returned when a code error occurs */
+    Content content;
+    content.macro = NULL;
     while (node != NULL) {
         if (equal(node->name, name)) {
-            return node->value;
+            return node->content;
         }
         node = node->next;
     }
     /* this part of the code should not be reached, if it is then a bug exists in the code */
-    fprintf(stderr, "Code Error: Name not found in data structure!");
-    value.ival = 0;
-    value.sval = "\0";
-    return value;
+    fprintf(stderr, "Code Error: Name not found in data structure!\n");
+    return content;
 }
 
+
 /**
- * Looks for a name in a linked-list and retrieves the integer value associated with that name.
- * Does so by getting the value associated with the given name, and retrieving its integer field.
+ * Looks for a name in a linked-list and retrieves the macro content associated with that name.
+ * Does so by getting the content associated with the name, and retrieving its macro content.
  * Should only be used after verifying that the name exists in the list using list_contains.
- * @param list a pointer to the linked-list that the value should be retrieved from
+ * @param list a pointer to the linked-list that the macro should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the macro content associated with the given name
  */
-int list_get_int(LinkedList *list, char *name) {
-    return list_get(list, name).ival;
+MacroContent list_get_macro(LinkedList *list, char *name) {
+    return list_get(list, name).macro;
 }
 
 /**
- * Looks for a name in a linked-list and retrieves the string value associated with that name.
- * Does so by getting the value associated with the given name, and retrieving its string field.
+ * Looks for a name in a linked-list and retrieves the symbol content associated with that name.
+ * Does so by getting the content associated with the name, and retrieving its symbol content.
  * Should only be used after verifying that the name exists in the list using list_contains.
- * @param list a pointer to the linked-list that the value should be retrieved from
+ * @param list a pointer to the linked-list that the symbol should be retrieved from
  * @param name the name to look for
- * @return the value associated with the given name
+ * @return the symbol content associated with the given name
  */
-char *list_get_string(LinkedList *list, char *name) {
-    return list_get(list, name).sval;
+SymbolContent list_get_symbol(LinkedList *list, char *name) {
+    return list_get(list, name).symbol;
 }
 
 /**
- * Adds a value with a given name to a linked-list.
- * Does so by creating a new node, setting its value to be the given value, setting it to point to the current head of
- * the list as its next node, and finally setting it to be the new head of the list.
+ * Adds a content with a given name to a linked-list.
+ * Does so by creating a new node, setting its content to be the given content, setting it to point to the current 
+ * head of the list as its next node, and finally setting it to be the new head of the list.
  * @param list a pointer to the list that the value should be added to
  * @param name the name associated with the value
- * @param value the value to be added
+ * @param content the content to be added
  */
-void list_add(LinkedList *list, char *name, Value value) {
+void list_add(LinkedList *list, char *name, Content content) {
     Node *node = malloc(sizeof(Node));
     if (node == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating node");
         return;
     }
     node->name = name;
-    node->value = value;
+    node->content = content;
     node->next = list->head;
     list->head = node;
 }
 
 /**
- * Adds an integer value with a given name to a linked-list.
- * Does so by creating a new value struct with its integer field being the given value, and adding it to the list using
- * list_add.
- * @param list a pointer to the list that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * Adds a macro with a given name to a linked-list.
+ * Does so by creating a new Content struct with its macro field being the given macro content, and adding it to the
+ * list using list_add.
+ * @param list a pointer to the list that the macro should be added to
+ * @param name the name associated with the macro
+ * @param macro_content the content of the macro to be added
  */
-void list_add_int(LinkedList *list, char *name, int value) {
-    Value value_holder;
-    value_holder.ival = value;
-    list_add(list, name, value_holder);
+void list_add_macro(LinkedList *list, char *name, MacroContent macro_content) {
+    Content content;
+    content.macro = macro_content;
+    list_add(list, name, content);
 }
 
 /**
- * Adds a string value with a given name to a linked-list.
- * Does so by creating a new value struct with its string field being the given value, and adding it to the list using
- * list_add.
- * @param list a pointer to the list that the value should be added to
- * @param name the name associated with the value
- * @param value the value to be added
+ * Adds a symbol with a given name to a linked-list.
+ * Does so by creating a new Content struct with its symbol field being the given symbol content, and adding it to the
+ * list using list_add.
+ * @param list a pointer to the list that the symbol should be added to
+ * @param name the name associated with the symbol
+ * @param symbol_content the content of the symbol to be added
  */
-void list_add_string(LinkedList *list, char *name, char *value) {
-    Value value_holder;
-    value_holder.sval = value;
-    list_add(list, name, value_holder);
+void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content) {
+    Content content;
+    content.symbol = symbol_content;
+    list_add(list, name, content);
 }
-
 
 /**
  * Frees a linked-list and all of its contents from the memory.
@@ -156,19 +156,4 @@ void free_list(LinkedList *list) {
         node = next;
     }
     free(list);
-}
-
-/**
- * Prints a linked-list's items, assuming their values are all integers.
- * Does so by going over every item on the list and printing its name and integer value with appropriate formatting.
- * @param list a pointer to the list that should be printed
- */
-void print_int_list(LinkedList *list) {
-    Node *node = list->head;
-    printf("[");
-    while (node != NULL) {
-        printf("name: %s, value: %d;  ", node->name, node->value.ival);
-        node = node->next;
-    }
-    printf("]\n");
 }
