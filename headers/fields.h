@@ -13,9 +13,9 @@ typedef enum SymbolLocation {
     CODE, DATA
 } SymbolLocation;
 
-typedef enum SymbolUpdateFormat {
-    EXTERNAL, RELOCATABLE
-} SymbolUpdateFormat;
+typedef enum SymbolType {
+    EXTERNAL, ENTRY, REGULAR
+} SymbolType;
 
 typedef union Value {
     int ival;
@@ -25,7 +25,7 @@ typedef union Value {
 typedef struct SymbolContent {
     Value value;
     SymbolLocation location;
-    SymbolUpdateFormat update_format;
+    SymbolType type;
 } SymbolContent;
 
 typedef char *MacroContent;
