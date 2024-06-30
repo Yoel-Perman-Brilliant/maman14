@@ -3,10 +3,13 @@
 
 #include "structures/hash_table.h"
 
-#define MEMORY_SIZE_WORDS 4096
+#define MEMORY_SIZE 4096
 
 typedef struct {
     HashTable *symbol_table;
+    unsigned short data_array[MEMORY_SIZE / 2];
+    unsigned short instruction_array[MEMORY_SIZE / 2];
+
 } Requirements; 
 
 Requirements *create_requirements();
