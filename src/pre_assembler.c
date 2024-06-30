@@ -23,88 +23,9 @@
 #include "../headers/util/string_ops.h"
 #include "../headers/fields.h"
 #include "../headers/util/general_util.h"
+#include "../headers/files.h"
 
-#define INPUT_EXTENSION ".as"
-#define PARSED_EXTENSION ".am"
 #define BLANKS " \t"
-
-/**
- * Gets a file name without an extension and returns the name of the input file with the .as extension.
- * @param file_name the file name without the extension (as given as command line argument)
- * @return the name of the input file with the extension, or NULL if a memory allocation failure occurred
- */
-char *get_input_file_name(char file_name[]) {
-    /* allocates memory a string whose length is the sum of the length of the name with the extension, the length of the
-     * extension, and 1 for the closing '\0' */
-    char *input_file_name = calloc(strlen(file_name) + strlen(INPUT_EXTENSION) + 1, 1);
-    if (input_file_name == NULL) {
-        fprintf(stderr, "Memory Error: Memory allocation failure when copying file name\n");
-        return NULL;
-    }
-    /* copies the extensionless file name and the extension to the new string */
-    strcat(input_file_name, file_name);
-    strcat(input_file_name, INPUT_EXTENSION);
-    return input_file_name;
-}
-
-/**
- * Gets a file name without an extension and returns the name of the parsed input file with the .am extension.
- * @param file_name the file name without the extension (as given as command line argument)
- * @return the name of the parsed file with the extension, or NULL if a memory allocation failure occurred
- */
-char *get_parsed_file_name(char file_name[]) {
-    /* allocates memory a string whose length is the sum of the length of the name with the extension, the length of the
-     * extension, and 1 for the closing '\0' */
-    char *parsed_file_name = calloc(strlen(file_name) + strlen(PARSED_EXTENSION) + 1, 1);
-    if (parsed_file_name == NULL) {
-        fprintf(stderr, "Memory Error: Memory allocation failure when copying file name\n");
-        return NULL;
-    }
-    /* copies the extensionless file name and the extension to the new string */
-    strcat(parsed_file_name, file_name);
-    strcat(parsed_file_name, PARSED_EXTENSION);
-    return parsed_file_name;
-}
-
-/**
- * Returns a pointer to the input file with a read permission based on the extensionless file name.
- * @param file_name the name of the input file without the extension
- * @return a pointer to the now-open file, or NULL if the file could not be opened
- */
-FILE *get_input_file(char file_name[]) {
-    FILE *input_file;
-    char *input_file_name = get_input_file_name(file_name);
-    input_file = fopen(input_file_name, "r");
-    if (input_file == NULL) {
-        printf("Error: Can't open file %s\n", input_file_name);
-        return NULL;
-    }
-    free(input_file_name);
-    return input_file;
-}
-
-/**
- * Returns a pointer to a new file with an append permission based on the extensionless file name, which should act
- * as the parsed macro-less file.
- * Before opening the file, deletes any exsisting parsed file with the same to avoid writing to an existing file,
- * and instead generate a new one.
- * @param file_name the name of the input file without the extension
- * @return a pointer to the new file, or NULL if the file could not be created
- */
-FILE *get_parsed_file(char file_name[]) {
-    FILE *parsed_file;
-    char *parsed_file_name = get_parsed_file_name(file_name);
-    /* removes any already existing file with the same name */
-    remove(parsed_file_name);
-    /* since no file with the name exists, creates a new file */
-    parsed_file = fopen(parsed_file_name, "a");
-    if (parsed_file == NULL) {
-        printf("Error: Can't create file %s\n", parsed_file_name);
-        return NULL;
-    }
-    free(parsed_file_name);
-    return parsed_file;
-}
 
 /**
  * Reads the first, second and thirds fields of a given line, as well as the rest of the line,
@@ -170,6 +91,12 @@ int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char
     /* if the first field is a known macro name, writes its content into the parsed file. only does so if no error
      * was found */
     if (table_contains(macro_table, first_field) && !(*error_found)) {
+        if (!is_line_blank(second_field)) {
+            printf("Input Error: Extra characters after macro usage in line %d of file %s\n",
+                   line_count, input_file_name);
+            *error_found = 1;
+            return 1;
+        }
         handle_macro_usage(first_field, macro_table, parsed_file);
         return 1;
     }
@@ -410,7 +337,7 @@ int pre_assemble(char file_name[]) {
      * the error_found flag is set to 1 */
     parsed_file_name = get_parsed_file_name(file_name);
     if (parsed_file_name) {
-        parsed_file = get_parsed_file(file_name);
+        parsed_file = get_parsed_file_append(file_name);
         if (!parsed_file) error_found = 1;
     }
     else error_found = 1;
