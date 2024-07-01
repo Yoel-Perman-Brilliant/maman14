@@ -12,6 +12,7 @@
 
 int main() {
     Requirements *requirements = create_requirements();
+    int i;
     first_pass("h", requirements);
     return 0;
 }

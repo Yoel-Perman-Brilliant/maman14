@@ -7,9 +7,10 @@
 
 typedef struct {
     HashTable *symbol_table;
-    unsigned short data_array[MEMORY_SIZE / 2];
-    unsigned short instruction_array[MEMORY_SIZE / 2];
-
+    unsigned short *data_array;
+    unsigned short *instruction_array;
+    int dc;
+    int ic;
 } Requirements; 
 
 Requirements *create_requirements();

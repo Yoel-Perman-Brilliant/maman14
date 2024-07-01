@@ -113,3 +113,7 @@ int legal_label_name(char *name) {
 int is_label(char *field) {
     return field[strlen(field) - 1] == LABEL_END && field[0] != COMMENT_START;
 }
+
+void label_to_symbol(char *label) {
+    label[strlen(label) - 1] = '\0';
+}

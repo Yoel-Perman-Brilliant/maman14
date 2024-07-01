@@ -8,9 +8,13 @@
 #define MACRO_DEFINITION "macr"
 #define MACRO_END "endmacr"
 #define COMMENT_START ';'
+#define DATA_DIRECTIVE ".data"
+#define STRING_DIRECTIVE ".string"
+#define EXTERN_DIRECTIVE ".extern"
+#define ENTRY_DIRECTIVE ".entry"
 
 typedef enum SymbolLocation {
-    CODE, DATA
+    CODE, DATA, UNDEFINED
 } SymbolLocation;
 
 typedef enum SymbolType {
@@ -51,5 +55,7 @@ int legal_macro_name(char *name);
  * @return 1 if the field is a label, 0 otherwise
  */
 int is_label(char *field);
+
+void label_to_symbol(char *label);
 
 #endif

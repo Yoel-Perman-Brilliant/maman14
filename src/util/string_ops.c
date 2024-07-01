@@ -17,6 +17,7 @@ int exists(char *string, char c) {
 char *find_token(char *string, char *separators, char **rest) {
     char *output;
     int output_length = 0;
+    if (string == NULL) return NULL;
     if (*string == '\0') {
         output = malloc(1);
         output[0] = '\0';
@@ -36,7 +37,7 @@ char *find_token(char *string, char *separators, char **rest) {
     }
     output = (char *) malloc(output_length + 1);
     if (output == NULL) {
-        fprintf(stderr, "Memory Error: Memory allocation failure when creating string");
+        fprintf(stderr, "Memory Error: Memory allocation failure when creating string\n");
         return NULL;
     }
     strncpy(output, string - output_length, output_length);

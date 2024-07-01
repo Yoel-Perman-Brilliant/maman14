@@ -103,7 +103,7 @@ SymbolContent list_get_symbol(LinkedList *list, char *name) {
 void list_add(LinkedList *list, char *name, Content content) {
     Node *node = malloc(sizeof(Node));
     if (node == NULL) {
-        fprintf(stderr, "Memory Error: Memory allocation failure when creating node");
+        fprintf(stderr, "Memory Error: Memory allocation failure when creating node\n");
         return;
     }
     node->name = name;
