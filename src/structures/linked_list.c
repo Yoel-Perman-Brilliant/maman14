@@ -157,3 +157,19 @@ void free_list(LinkedList *list) {
     }
     free(list);
 }
+
+void list_foreach(LinkedList *list, void (*action)(Content content)) {
+    Node *node = list->head;
+    while (node != NULL) {
+        action(node->content);
+        node = node->next;
+    }
+}
+
+void list_foreach_symbol(LinkedList *list, void (*action)(SymbolContent *content)) {
+    Node *node = list->head;
+    while (node != NULL) {
+        action(&(node->content.symbol));
+        node = node->next;
+    }
+}

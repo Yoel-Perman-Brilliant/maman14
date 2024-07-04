@@ -101,4 +101,8 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
  */
 void free_list(LinkedList *list);
 
+void list_foreach(LinkedList *list, void (*action)(Content content));
+
+void list_foreach_symbol(LinkedList *list, void (*action)(SymbolContent *content));
+
 #endif
