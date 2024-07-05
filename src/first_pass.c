@@ -13,6 +13,36 @@
 #define MAX_WORD_SIZE (short)(pow(2, WORD_SIZE_BITS) - 1)
 #define MIN_WORD_SIZE (short)(-(pow(2, WORD_SIZE_BITS - 1)))
 
+
+void insert_data(char *rest, char *parsed_file_name, int line_count, Requirements *requirements, int *errors_found);
+
+void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
+                   int *error_found, int line_count, char *parsed_file_name);
+
+int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+                               Requirements *requirements);
+
+void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found);
+
+
+int first_pass(char file_name[], Requirements *requirements) {
+    int errors_found = 0;
+    int i;
+    char *label_name = NULL;
+    SymbolContent symbol_content;
+    char *line1 = "HELLO: .data   7, 32767, +17  ,  -9           ";
+    find_label(&line1, &label_name, 1, "th", &errors_found);
+    check_and_handle_directive(line1, label_name, 1, "th", &errors_found, requirements);
+    char *line2 = "HELLOW : .data   7, 32767, +17  ,  -9           ";
+    find_label(&line2, &label_name, 2, "th", &errors_found);
+    check_and_handle_directive(line2, label_name, 2, "th", &errors_found, requirements);
+    for (i = 0; i < 12; i++) {
+        printf("i: %d, value: %u\n", i, requirements->data_array[i]);
+    }
+    symbol_content = table_get_symbol(requirements->symbol_table, "HELLOW");
+    return 0;
+}
+
 void insert_data(char *rest, char *parsed_file_name, int line_count, Requirements *requirements, int *errors_found) {
     char *arg = NULL;
     char *trimmed_arg;
@@ -145,22 +175,4 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
         *label_name = first_field;
         *line = rest;
     }
-}
-
-int first_pass(char file_name[], Requirements *requirements) {
-    int errors_found = 0;
-    int i;
-    char *label_name = NULL;
-    SymbolContent symbol_content;
-    char *line1 = "HELLO: .data   7, 32767, +17  ,  -9           ";
-    find_label(&line1, &label_name, 1, "th", &errors_found);
-    check_and_handle_directive(line1, label_name, 1, "th", &errors_found, requirements);
-    char *line2 = "HELLOW : .data   7, 32767, +17  ,  -9           ";
-    find_label(&line2, &label_name, 2, "th", &errors_found);
-    check_and_handle_directive(line2, label_name, 2, "th", &errors_found, requirements);
-    for (i = 0; i < 12; i++) {
-        printf("i: %d, value: %u\n", i, requirements->data_array[i]);
-    }
-    symbol_content = table_get_symbol(requirements->symbol_table, "HELLOW");
-    return 0;
 }
