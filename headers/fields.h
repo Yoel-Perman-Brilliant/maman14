@@ -21,13 +21,8 @@ typedef enum SymbolType {
     EXTERNAL, ENTRY, REGULAR
 } SymbolType;
 
-typedef union Value {
-    int ival;
-    char *sval;
-} Value;
-
 typedef struct SymbolContent {
-    Value value;
+    int value;
     SymbolLocation location;
     SymbolType type;
 } SymbolContent;

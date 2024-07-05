@@ -94,9 +94,9 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
     }
     content.type = type;
     content.location = location;
-    if (location == CODE) content.value.ival = requirements->ic;
-    else if (location == DATA) content.value.ival = requirements->dc;
-    else content.value.ival = 0;
+    if (location == CODE) content.value = requirements->ic;
+    else if (location == DATA) content.value= requirements->dc;
+    else content.value = 0;
     table_add_symbol(requirements->symbol_table, symbol, content);
 }
 
@@ -162,6 +162,5 @@ int first_pass(char file_name[], Requirements *requirements) {
         printf("i: %d, value: %u\n", i, requirements->data_array[i]);
     }
     symbol_content = table_get_symbol(requirements->symbol_table, "HELLOW");
-    printf("value: %d", symbol_content.value.ival);
     return 0;
 }
