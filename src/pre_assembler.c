@@ -314,13 +314,11 @@ int pre_assemble(char file_name[]) {
         return 1;
     }
 
-    /* gets the name of the parsed file and a pointer to the file, if any of them is null then an error is reported and
+    /* gets the name of the parsed file and a pointer to the file, the parsed file is null then an error is reported and
      * the error_found flag is set to 1 */
     parsed_file_name = get_parsed_file_name(file_name);
-    if (parsed_file_name) {
-        parsed_file = get_parsed_file_append(file_name);
-        if (!parsed_file) error_found = 1;
-    } else error_found = 1;
+    parsed_file = get_parsed_file_append(file_name);
+    if (!parsed_file) error_found = 1;
 
     /* reads the input file line by line, and checks for macro usage and definition */
     line_count = 0;
