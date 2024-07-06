@@ -24,6 +24,8 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
 
 void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found);
 
+void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+                   Requirements *requirements);
 
 int first_pass(char file_name[], Requirements *requirements) {
     int errors_found = 0;
@@ -33,13 +35,19 @@ int first_pass(char file_name[], Requirements *requirements) {
     char *line1 = "HELLO: .data   7, 32767, +17  ,  -9           ";
     find_label(&line1, &label_name, 1, "th", &errors_found);
     check_and_handle_directive(line1, label_name, 1, "th", &errors_found, requirements);
-    char *line2 = "HELLOW : .data   7, 32767, +17  ,  -9           ";
+    char *line3 = ".extern POO";
+    find_label(&line3, &label_name, 3, "th", &errors_found);
+    check_and_handle_directive(line3, label_name, 3, "th", &errors_found, requirements);
+    char *line2 = "HELLOW: .data   7, 32767, +17  ,  -9           ";
     find_label(&line2, &label_name, 2, "th", &errors_found);
     check_and_handle_directive(line2, label_name, 2, "th", &errors_found, requirements);
     for (i = 0; i < 12; i++) {
         printf("i: %d, value: %u\n", i, requirements->data_array[i]);
     }
-    symbol_content = table_get_symbol(requirements->symbol_table, "HELLOW");
+    symbol_content = table_get_symbol(requirements->symbol_table, "POO");
+    printf("symbol value: %d\n", symbol_content.value);
+    printf("symbol location: %d\n", symbol_content.location);
+    printf("symbol type: %d\n", symbol_content.type);
     return 0;
 }
 
@@ -149,12 +157,42 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
         return 1;
     }
     else if (equal(directive, EXTERN_DIRECTIVE)) {
-        /* @TODO add */
+        handle_extern(rest, label_name, line_count, parsed_file_name, error_found, requirements);
+        return 1;
     }
     else if (equal(directive, ENTRY_DIRECTIVE)) {
         /* @TODO add */
     }
     return 0;
+}
+
+void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+                  Requirements *requirements) {
+    char *symbol;
+    if (label_name != NULL) {
+        printf("Warning: Label found before .extern directive in line %d of file %s\n",
+               line_count, parsed_file_name);
+    }
+    symbol = find_token(rest, BLANKS, &rest);
+    if (is_line_blank(symbol)) {
+        printf("Input Error: No argument given to .extern directive in line %d of file %s\n",
+               line_count, parsed_file_name);
+        *error_found = 1;
+        return;
+    }
+    if (!is_line_blank(rest)) {
+        printf("Input Error: Extra characters after the argument for .extern directive in line %d of file %s\n",
+               line_count, parsed_file_name); 
+        *error_found = 1;
+        return;
+    }
+    if (!legal_label_name(symbol)) {
+        printf("Input Error: Symbol given as argument to .extern in line %d of file %s has an illegal name\n",
+               line_count, parsed_file_name);
+        *error_found = 1;
+        return;
+    }
+    insert_symbol(symbol, EXTERNAL, UNDEFINED, requirements, error_found, line_count, parsed_file_name);
 }
 
 void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found) {
