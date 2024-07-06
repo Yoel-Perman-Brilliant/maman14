@@ -5,6 +5,7 @@
 #include "../../headers/structures/hash_table.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "../../headers/exit_codes.h"
 
 #define HASH_MULTIPLIER 31
 
@@ -34,7 +35,7 @@ HashTable *create_table() {
     int i;
     if (table == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating table");
-        return NULL;
+        exit(MEMORY_ALLOCATION_FAILURE);
     }
     for (i = 0; i < HASH_TABLE_SIZE; i++) {
         table->lists[i] = create_list();

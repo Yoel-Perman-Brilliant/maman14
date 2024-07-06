@@ -19,7 +19,7 @@ LinkedList *create_list() {
     LinkedList *list = malloc(sizeof(LinkedList));
     if (list == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating list");
-        return NULL;
+        exit(MEMORY_ALLOCATION_FAILURE);
     }
     list->head = NULL;
     return list;
@@ -104,7 +104,7 @@ void list_add(LinkedList *list, char *name, Content content) {
     Node *node = malloc(sizeof(Node));
     if (node == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating node\n");
-        return;
+        exit(MEMORY_ALLOCATION_FAILURE);
     }
     node->name = name;
     node->content = content;

@@ -1,4 +1,5 @@
 #include "../../headers/util/string_ops.h"
+#include "../../headers/exit_codes.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -20,6 +21,10 @@ char *find_token(char *string, char *separators, char **rest) {
     if (string == NULL) return NULL;
     if (*string == '\0') {
         output = malloc(1);
+        if (output == NULL) {
+            printf("Memory Error: Memory allocation failure when creating string token\n");
+            exit(MEMORY_ALLOCATION_FAILURE);
+        }
         output[0] = '\0';
         return output;
     } 
@@ -27,6 +32,10 @@ char *find_token(char *string, char *separators, char **rest) {
         string++;
         if (*string == '\0') {
             output = malloc(1);
+            if (output == NULL) {
+                printf("Memory Error: Memory allocation failure when creating string token\n");
+                exit(MEMORY_ALLOCATION_FAILURE);
+            }
             output[0] = '\0';
             return output;
         }
@@ -37,8 +46,8 @@ char *find_token(char *string, char *separators, char **rest) {
     }
     output = (char *) malloc(output_length + 1);
     if (output == NULL) {
-        fprintf(stderr, "Memory Error: Memory allocation failure when creating string\n");
-        return NULL;
+        printf("Memory Error: Memory allocation failure when creating string token\n");
+        exit(MEMORY_ALLOCATION_FAILURE);
     }
     strncpy(output, string - output_length, output_length);
     output[output_length] = '\0';
@@ -69,6 +78,10 @@ char *trim(char string[]) {
     int i;
     /* the output string, length is at most the length of the input without the blank spaces at the start */
     output = (char *) malloc(strlen(string) - head_length + 1);
+    if (output == NULL) {
+        printf("Memory Error: Memory allocation failure when creating trimmed string\n");
+        exit(MEMORY_ALLOCATION_FAILURE);
+    }
     strcpy(output, string + head_length);
     /* finds the first character (from the end) which isn't a blank space, and sets it to be the last character */
     i = strlen(output) - 1;
@@ -152,6 +165,10 @@ char *remove_all_blanks(char string[]) {
     input_length = strlen(string);
     output_length = input_length - number_of_blanks(string);
     output = (char *) malloc(output_length + 1);
+    if (output == NULL) {
+        printf("Memory Error: Memory allocation failure when creating string without whitespaces\n");
+        exit(MEMORY_ALLOCATION_FAILURE);
+    }
     /* goes over every character in the input string, and if it is not a blank space, enters it into the anext available
      * slot in the output string */
     output_index = 0;

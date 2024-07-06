@@ -9,23 +9,24 @@
 #include "../headers/util/general_util.h"
 #include "../headers/util/string_ops.h"
 #include "../headers/first_pass.h"
+#include "../headers/fields.h"
 
 void add_to_external(SymbolContent *content) {
-    if (content->type == EXTERNAL) content->value.ival += 100;
+    if (content->type == EXTERNAL) content->value += 100;
 }
 
 void print(SymbolContent *content) {
-    printf("%d\n", content->value.ival);
+    printf("%d\n", content->value);
 }
 
 int main() {
     LinkedList *list = create_list();
     SymbolContent content1;
-    content1.value.ival = 2;
+    content1.value = 2;
     content1.location = DATA;
     content1.type = EXTERNAL;
     SymbolContent content2;
-    content2.value.ival = 3;
+    content2.value = 3;
     content2.location = DATA;
     content2.type = REGULAR;
     list_add_symbol(list, "hello", content1);

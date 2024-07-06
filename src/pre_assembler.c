@@ -24,13 +24,13 @@
 #include "../headers/fields.h"
 #include "../headers/util/general_util.h"
 #include "../headers/files.h"
+#include "../headers/exit_codes.h"
 
 #define BLANKS " \t"
 
 /**
  * Reads the first, second and thirds fields of a given line, as well as the rest of the line,
- * into given pointers to strings. Separates fields by whitespace characters. Also sets the value of a given error_found
- * pointer to 1 if any error occurs.
+ * into given pointers to strings. Separates fields by whitespace characters.
  * Does so by using the find_token method to find the first token of the string (seperated by whitespaces), then does
  * the same twice more, each time with the rest of the string (the part after the token that was just found).
  * @param line the line whose fields should be found
@@ -38,26 +38,11 @@
  * @param second_field a pointer to a string that should hold the second field of the line
  * @param third_field a pointer to a string that should hold the third field of the line
  * @param rest a pointer to a string that should hold the rest of the line (the part after the third field)
- * @param error_found a pointer to an integer value that should hold whether an error has occurred
- * @return 1 if an error occurred, 0 otherwise
  */
-int get_fields(char *line, char **first_field, char **second_field, char **third_field, char **rest, int *error_found) {
+void get_fields(char *line, char **first_field, char **second_field, char **third_field, char **rest) {
     *first_field = find_token(line, BLANKS, rest);
-    if (*first_field == NULL) {
-        *error_found = 1;
-        return 1;
-    }
     *second_field = find_token(*rest, BLANKS, rest);
-    if (*second_field == NULL) {
-        *error_found = 1;
-        return 1;
-    }
     *third_field = find_token(*rest, BLANKS, rest);
-    if (*second_field == NULL) {
-        *error_found = 1;
-        return 1;
-    }
-    return 0;
 }
 
 /**
@@ -100,7 +85,7 @@ int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char
         handle_macro_usage(first_field, macro_table, parsed_file);
         return 1;
     }
-    /* if a label appears before the macro usage, reports an errors and updates the error_found pointer */
+        /* if a label appears before the macro usage, reports an errors and updates the error_found pointer */
     else if (is_label(first_field) && table_contains(macro_table, second_field)) {
         printf("Input Error: Label used before macro usage in line %d of file %s\n", line_count, input_file_name);
         *error_found = 1;
@@ -131,12 +116,8 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
     char *third_field;
     /* the part of the line after the third field */
     char *rest;
-    /* reads the fields into the variables, makes sure there are no errors */
-    if (get_fields(line, &first_field, &second_field, &third_field, &rest, error_found)) {
-        printf("Error: File %s could not be parsed due to a memory error\n", input_file_name);
-        free_all(3, first_field, second_field, third_field);
-        return 1;
-    }
+    /* reads the fields into the variables */
+    get_fields(line, &first_field, &second_field, &third_field, &rest);
     /* checks if the macro end keyword has been found */
     if (equal(first_field, MACRO_END)) {
         /* makes sure there are no extra characters after the macro end keyword */
@@ -179,10 +160,14 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
  */
 void handle_macro_definition(HashTable *macro_table, char *macro_name, char *post_macro_name, char *input_file_name,
                              FILE *input_file, int *line_count, int *error_found) {
-    /* the macro's content */
-    MacroContent macro_content = malloc(0);
     /* the line being read */
     char line[MAX_LINE_LENGTH + 1];
+    /* the macro's content */
+    MacroContent macro_content = (MacroContent) malloc(0);
+    if (macro_content == NULL) {
+        fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
+        exit(MEMORY_ALLOCATION_FAILURE);
+    }
     /* makes sure no macro with the same name has already been defined */
     if (table_contains(macro_table, macro_name)) {
         printf("Input error: Macro defined in line %d in file %s has already been defined\n", *line_count,
@@ -216,12 +201,13 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
                                        input_file_name, macro_content)) {
             break;
         }
-        /* if a macro end is not found, updates the macro's content */
+            /* if a macro end is not found, updates the macro's content */
         else {
             /* reallocates the macro content to a new string that has enough spaces for the next line */
             macro_content = realloc(macro_content, strlen(macro_content) + strlen(line) + 1);
             if (macro_content == NULL) {
                 fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
+                exit(MEMORY_ALLOCATION_FAILURE);
             }
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);
@@ -255,12 +241,8 @@ int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *
     char *third_field;
     /* the part of the line after the third field */
     char *rest;
-    /* reads the fields into the variables, makes sure there are no errors */
-    if (get_fields(line, &first_field, &second_field, &third_field, &rest, error_found)) {
-        printf("Error: File %s could not be parsed due to a memory error\n", input_file_name);
-        free_all(3, first_field, second_field, third_field);
-        return 0;
-    }
+    /* reads the fields into the variables */
+    get_fields(line, &first_field, &second_field, &third_field, &rest);
     /* if a macro definition keyword exists has a label, reports an error */
     if (is_label(first_field) && equal(second_field, MACRO_DEFINITION)) {
         printf("Input Error: Label used before macro definition in line %d of file %s\n", *line_count,
@@ -322,26 +304,24 @@ int pre_assemble(char file_name[]) {
     /* whether an error has occurred */
     int error_found = 0;
 
-    /* gets the name of the input file and a pointer to the file, if any of them is null then the file can't be read
-     * and the pre-assembly process is stopped for the file */
+    /* gets the name of the input file and a pointer to the file, if the file can't be read
+     * the pre-assembly process is stopped for the file */
     input_file_name = get_input_file_name(file_name);
-    if (!input_file_name) return 1;
     input_file = get_input_file(file_name);
     /* if the input file is null */
     if (!input_file) {
         free(input_file_name);
         return 1;
     }
-    
+
     /* gets the name of the parsed file and a pointer to the file, if any of them is null then an error is reported and
      * the error_found flag is set to 1 */
     parsed_file_name = get_parsed_file_name(file_name);
     if (parsed_file_name) {
         parsed_file = get_parsed_file_append(file_name);
         if (!parsed_file) error_found = 1;
-    }
-    else error_found = 1;
-    
+    } else error_found = 1;
+
     /* reads the input file line by line, and checks for macro usage and definition */
     line_count = 0;
     while (!feof(input_file)) {
@@ -350,11 +330,7 @@ int pre_assemble(char file_name[]) {
         if (read_line(input_file, input_file_name, line_count, line)) error_found = 1;
         /* puts the first, second and thirds fields of the line into the variables, as well as the portion after the
          * third field */
-        if (get_fields(line, &first_field, &second_field, &third_field, &rest, &error_found)) {
-            printf("Error: File %s could not be parsed due to a memory error", input_file_name);
-            free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
-            return 1;
-        }
+        get_fields(line, &first_field, &second_field, &third_field, &rest);
         /* if a macro usage is detected, its content are written to the parsed file, and the loop moves to the
          * next line */
         if (check_and_handle_macro_usage(macro_table, first_field, second_field, parsed_file,
