@@ -19,7 +19,8 @@ object/temp_main.o: src/temp_main.c headers/util/string_ops.h headers/structures
 object/conversions.o: src/conversions.c headers/conversions.h headers/fields.h headers/util/string_ops.h
 	gcc -c $(FLAGS) src/conversions.c -o object/conversions.o
 
-object/first_pass.o: src/first_pass.c headers/first_pass.h
+object/first_pass.o: src/first_pass.c headers/first_pass.h headers/files.h headers/requirements.h \
+ 					 headers/util/string_ops.h headers/conversions.h
 	gcc -c $(FLAGS) src/first_pass.c -o object/first_pass.o
 
 object/files.o: src/files.c headers/files.h headers/exit_codes.h

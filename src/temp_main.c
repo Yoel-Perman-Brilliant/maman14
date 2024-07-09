@@ -20,7 +20,6 @@ void print(SymbolContent *content) {
 }
 
 int main() {
-    printf("%s", get_operator_list()[0]);
-    printf("%s", get_operator_list()[2]);
-    return 0;
+    printf("NUM_TO_WORD(7): %d\n", NUM_TO_WORD(7));
+    first_pass("", create_requirements());
 }
