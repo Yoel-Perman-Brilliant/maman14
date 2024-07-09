@@ -20,6 +20,7 @@ void print(SymbolContent *content) {
 }
 
 int main() {
-    first_pass("hello", create_requirements());
+    printf("%s", get_operator_list()[0]);
+    printf("%s", get_operator_list()[2]);
     return 0;
 }
