@@ -31,3 +31,23 @@ void free_requirements(Requirements *requirements) {
     free(requirements->instruction_array);
     free(requirements);
 }
+
+int memory_insert_instruction(Requirements *requirements, unsigned short instruction, int line_count, char *parsed_file_name) {
+    if (requirements->ic + requirements->dc >= MEMORY_SIZE) {
+        printf("Input Error: Not enough space in the memory image (Error occurred in line %d of file %s)\n",
+               line_count, parsed_file_name);
+        return 1;
+    }
+    requirements->instruction_array[requirements->ic++] = instruction;
+    return 0;
+}
+
+int memory_insert_data(Requirements *requirements, unsigned short data, int line_count, char *parsed_file_name) {
+    if (requirements->ic + requirements->dc >= MEMORY_SIZE) {
+        printf("Input Error: Not enough space in the memory image (Error occurred in line %d of file %s)\n",
+               line_count, parsed_file_name);
+        return 1;
+    }
+    requirements->data_array[requirements->dc++] = data;
+    return 0;
+}

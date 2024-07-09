@@ -20,6 +20,5 @@ void print(SymbolContent *content) {
 }
 
 int main() {
-    printf("NUM_TO_WORD(7): %d\n", NUM_TO_WORD(7));
     first_pass("", create_requirements());
 }

@@ -17,4 +17,9 @@ Requirements *create_requirements();
 
 void free_requirements(Requirements *requirements);
 
+int memory_insert_instruction(Requirements *requirements, unsigned short instruction, int line_count, char *parsed_file_name);
+
+int memory_insert_data(Requirements *requirements, unsigned short data, int line_count, char *parsed_file_name);
+
+
 #endif
