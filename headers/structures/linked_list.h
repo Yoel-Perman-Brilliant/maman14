@@ -7,6 +7,7 @@
 #define MAMAN14_LINKED_LIST_H
 
 #include "../fields.h"
+#include "stdarg.h"
 
 typedef union {
     MacroContent macro;
@@ -101,8 +102,8 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
  */
 void free_list(LinkedList *list);
 
-void list_foreach(LinkedList *list, void (*action)(Content content));
+void list_add_to_all_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol));
 
-void list_foreach_symbol(LinkedList *list, void (*action)(SymbolContent *content));
+void list_print_symbols(LinkedList *list);
 
 #endif

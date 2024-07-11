@@ -21,6 +21,20 @@ void print(SymbolContent *content) {
 }
 
 int main() {
-    first_pass("", create_requirements());
+    int i;
+    Requirements *requirements = create_requirements();
+    pre_assemble("bodingo");
+    first_pass("bodingo", requirements);
+    /*printf("\033[1;33mINSTRUCTIONS:\n\033[0m");
+    for (i = 98; i < 200; i++) {
+        printf("i: %d ", i);
+        print_binary((requirements->instruction_array)[i]);
+    }
+    printf("\033[1;33mDATA:\n\033[0m");
+    for (i = 0; i < 20; i++) {
+        printf("i: %d ", i);
+        print_binary((requirements->data_array)[i]);
+    }*/
+    table_print_symbols(requirements->symbol_table);
     return 0;
 }

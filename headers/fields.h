@@ -8,6 +8,7 @@
 #define MACRO_DEFINITION "macr"
 #define MACRO_END "endmacr"
 #define COMMENT_START ';'
+#define DIRECTIVE_START '.'
 #define DATA_DIRECTIVE ".data"
 #define STRING_DIRECTIVE ".string"
 #define EXTERN_DIRECTIVE ".extern"
@@ -54,5 +55,7 @@ int legal_macro_name(char *name);
 int is_label(char *field);
 
 void label_to_symbol(char *label);
+
+int is_data_symbol(SymbolContent symbol);
 
 #endif

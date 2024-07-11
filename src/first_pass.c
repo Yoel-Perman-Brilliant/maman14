@@ -51,9 +51,41 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
 void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                      int *error_found, Requirements *requirements);
 
+int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found);
+
 int first_pass(char file_name[], Requirements *requirements) {
+    char *parsed_file_name = get_parsed_file_name(file_name);
+    FILE *parsed_file = get_parsed_file_read(file_name);
     int error_found = 0;
-    return 0;
+    /* the number of the line being read */
+    int line_count = 0;
+    /* the line being read */
+    char line_read[MAX_LINE_LENGTH + 1];
+    char *label;
+    if (!parsed_file) {
+        free(parsed_file_name);
+        return 1;
+    }
+    while (!feof(parsed_file)) {
+        char *line;
+        line_count++;
+        read_line(parsed_file, parsed_file_name, line_count, line_read);
+        line = line_read;
+        label = NULL;
+        find_label(&line, &label, line_count, parsed_file_name, &error_found);
+        if (is_line_blank(line)) continue;
+        if (line[0] == COMMENT_START) continue;
+        if (has_comment_start(line, line_count, parsed_file_name, &error_found)) continue;
+        if (check_and_handle_directive(line, label, line_count, parsed_file_name, &error_found,
+                                       requirements)) {
+            continue;
+        }
+        handle_instruction(line, label, line_count, parsed_file_name, &error_found, requirements);
+    }
+    table_add_to_all_apply(requirements->symbol_table, requirements->ic, is_data_symbol);
+    fclose(parsed_file);
+    free(parsed_file_name);
+    return error_found;
 }
 
 void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
@@ -174,6 +206,7 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
                                Requirements *requirements) {
     char *rest;
     char *directive = find_token(line, BLANKS, &rest);
+    if (directive[0] != DIRECTIVE_START) return 0;
     if (equal(directive, DATA_DIRECTIVE)) {
         if (label_name != NULL) {
             insert_symbol(label_name, REGULAR, DATA, requirements, error_found,
@@ -192,9 +225,12 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
         handle_extern(rest, label_name, line_count, parsed_file_name, error_found, requirements);
         return 1;
     } else if (equal(directive, ENTRY_DIRECTIVE)) {
-        /* @TODO add */
+        return 1;
+    } else {
+        printf("Input Error: Illegal directive \"%s\" in line %d of file %s", directive, line_count, parsed_file_name);
+        *error_found = 1;
+        return 0;
     }
-    return 0;
 }
 
 void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
@@ -410,4 +446,14 @@ AddressMethod get_address_method(char *operand) {
     if (operand[0] == INDIRECT_REGISTER_ADDRESS_START) return INDIRECT_REGISTER_ADDRESS;
     if (is_register(operand)) return DIRECT_REGISTER_ADDRESS;
     return DIRECT_ADDRESS;
+}
+
+int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found) {
+    if (exists(line, COMMENT_START)) {
+        printf("Input Error: Semicolon signifying a comment appears after the first character in line %d of file "
+               "%s\n", line_count, parsed_file_name);
+        *error_found = 1;
+        return 1;
+    }
+    return 0;
 }

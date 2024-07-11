@@ -20,7 +20,7 @@ Requirements *create_requirements() {
         printf("Memory Error: Memory allocation failure when creating instruction array\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
-    requirements->ic = 0;
+    requirements->ic = IC_START;
     requirements->dc = 0;
     return requirements;
 }

@@ -166,10 +166,19 @@ void list_foreach(LinkedList *list, void (*action)(Content content)) {
     }
 }
 
-void list_foreach_symbol(LinkedList *list, void (*action)(SymbolContent *content)) {
+void list_add_to_all_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol)) {
     Node *node = list->head;
     while (node != NULL) {
-        action(&(node->content.symbol));
+        if (condition(node->content.symbol))
+            node->content.symbol.value += to_add;
+        node = node->next;
+    }
+}
+
+void list_print_symbols(LinkedList *list) {
+    Node *node = list->head;
+    while (node != NULL) {
+        printf("%s: %d\n", node->name, node->content.symbol.value);
         node = node->next;
     }
 }

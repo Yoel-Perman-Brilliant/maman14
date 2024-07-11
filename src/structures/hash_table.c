@@ -137,3 +137,17 @@ void free_table(HashTable *table) {
     }
     free(table);
 }
+
+void table_add_to_all_apply(HashTable *table, int to_add, int (*condition)(SymbolContent symbol)) {
+    int i;
+    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+        list_add_to_all_apply(table->lists[i], to_add, condition);
+    }
+}
+
+void table_print_symbols(HashTable *table) {
+    int i;
+    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+        list_print_symbols(table->lists[i]);
+    }
+}
