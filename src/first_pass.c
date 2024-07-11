@@ -21,8 +21,8 @@
 #define INDIRECT_REGISTER_ADDRESS_START '*'
 
 
-void
-insert_data_numbers(char *rest, char *parsed_file_name, int line_count, Requirements *requirements, int *error_found);
+void insert_data_numbers(char *rest, char *parsed_file_name, int line_count, Requirements *requirements,
+                         int *error_found);
 
 void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
                    int *error_found, int line_count, char *parsed_file_name);
@@ -53,22 +53,6 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
 
 int first_pass(char file_name[], Requirements *requirements) {
     int error_found = 0;
-    int i;
-    char *label_name = NULL;
-    SymbolContent symbol_content;
-    char *line2 = "BELLO: mov r21, *r3";
-    find_label(&line2, &label_name, 2, "th", &error_found);
-    handle_instruction(line2, label_name, 2, "th", &error_found, requirements);
-    char *line1 = "HELLO: rts";
-    find_label(&line1, &label_name, 1, "th", &error_found);
-    handle_instruction(line1, label_name, 1, "th", &error_found, requirements);
-    for (i = 0; i < 20; i++) {
-        printf("i: %d, value: %x\n", i, requirements->instruction_array[i]);
-    }
-    symbol_content = table_get_symbol(requirements->symbol_table, "HELLO");
-    printf("symbol value: %d\n", symbol_content.value);
-    printf("symbol location: %d\n", symbol_content.location);
-    printf("symbol type: %d\n", symbol_content.type);
     return 0;
 }
 
@@ -283,6 +267,7 @@ void handle_instruction(char *line, char *label_name, int line_count, char *pars
     } else {
         handle_zero_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
     }
+    free(operator_name);
 }
 
 void handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
@@ -355,6 +340,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
         *error_found = 1;
         return;
     }
+    free_all(2, trimmed_source_operand, trimmed_destination_operand);
     first_word = build_instruction_first_word(op, source_address_method, destination_address_method);
     memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
     if (should_combine_additional_words(source_address_method, destination_address_method)) {
@@ -400,6 +386,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
         *error_found = 1;
         return;
     }
+    free(destination_operand);
     first_word = build_instruction_first_word(op, NO_OPERAND, destination_address_method);
     memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
     requirements->ic++;
