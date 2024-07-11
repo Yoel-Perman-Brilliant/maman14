@@ -15,13 +15,3 @@ void print_binary(unsigned short num) {
     }
     printf("\n");
 }
-
-unsigned char get_opcode(char *operator) {
-    unsigned char i;
-    char **operators = get_operator_list();
-    for (i = 0; i < INSTRUCTION_COUNT; i++) {
-        if (equal(operators[i], operator)) return i;
-    }
-    return (unsigned char) UNDEFINED_OPCODE;
-}
-

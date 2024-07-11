@@ -200,3 +200,13 @@ int includes_consecutive(char string[], char c) {
     return 0;
 }
 
+unsigned binary_string_to_number(char string[]) {
+    unsigned num = 0;
+    int i;
+    for (i = 0; string[i] != 0; i++) {
+        num <<= 1;
+        if (string[i] == '1') num |= 1;
+    }
+    return num;
+}
+

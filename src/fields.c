@@ -118,10 +118,3 @@ int is_label(char *field) {
 void label_to_symbol(char *label) {
     label[strlen(label) - 1] = '\0';
 }
-
-char **get_operator_list() {
-    static char *instructions[] = {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc",
-                            "dec", "jmp", "bne", "red", "prn","jsr", "rts", "stop"};
-    return instructions;
-}
-

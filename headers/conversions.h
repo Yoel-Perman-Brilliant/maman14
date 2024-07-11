@@ -9,8 +9,7 @@
 #define UNDEFINED_OPCODE 16
 
 #define NUM_TO_WORD(x) (((unsigned short)((x) > 0 ? (x) : (pow(2, WORD_SIZE_BITS)) - (-(x)))))
-void print_binary(unsigned short num);
 
-unsigned char get_opcode(char *operator);
+void print_binary(unsigned short num);
 
 #endif

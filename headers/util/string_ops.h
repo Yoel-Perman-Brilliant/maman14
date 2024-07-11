@@ -32,4 +32,6 @@ int number_of_blanks(char string[]);
 
 int includes_consecutive(char string[], char c);
 
+unsigned binary_string_to_number(char string[]);
+
 #endif

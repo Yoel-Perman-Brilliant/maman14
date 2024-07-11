@@ -10,6 +10,7 @@
 #include "../headers/util/string_ops.h"
 #include "../headers/first_pass.h"
 #include "../headers/fields.h"
+#include "../headers/operators.h"
 
 void add_to_external(SymbolContent *content) {
     if (content->type == EXTERNAL) content->value += 100;
@@ -20,5 +21,6 @@ void print(SymbolContent *content) {
 }
 
 int main() {
-    first_pass("", create_requirements());
+    printf("%p\n", (operators()[0].name));
+    printf("%p\n", (operators()[0].name));
 }

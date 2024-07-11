@@ -51,8 +51,6 @@ int legal_macro_name(char *name);
  */
 int is_label(char *field);
 
-char **get_operator_list();
-
 void label_to_symbol(char *label);
 
 #endif
