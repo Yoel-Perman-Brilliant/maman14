@@ -5,7 +5,8 @@
 #define ILLEGAL_OPERATOR_NAME "illegal"
 
 typedef enum {
-    IMMEDIATE_ADDRESS = 0, DIRECT_ADDRESS = 1, INDIRECT_REGISTER_ADDRESS = 2, DIRECT_REGISTER_ADDRESS = 3
+    IMMEDIATE_ADDRESS = 0, DIRECT_ADDRESS = 1, INDIRECT_REGISTER_ADDRESS = 2, DIRECT_REGISTER_ADDRESS = 3,
+    NO_OPERAND = 4
 } AddressMethod;
 
 typedef struct {
@@ -27,5 +28,7 @@ Operator *operators();
 int get_opcode(char *operator_name);
 
 Operator get_operator(char *operator_name);
+
+int is_operator(char *name);
 
 #endif

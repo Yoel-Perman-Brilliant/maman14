@@ -30,8 +30,8 @@ Operator *operators() {
     operators[0] = create_operator("mov", "1111", "1110");
     operators[1] = create_operator("cmp", "1111", "1111");
     operators[2] = create_operator("add", "1111", "1110");
-    operators[3] = create_operator("sub", "0010", "1110");
-    operators[4] = create_operator("lea", "0000", "1110");
+    operators[3] = create_operator("sub", "1111", "1110");
+    operators[4] = create_operator("lea", "0010", "1110");
     operators[5] = create_operator("clr", "0000", "1110");
     operators[6] = create_operator("not", "0000", "1110");
     operators[7] = create_operator("inc", "0000", "1110");
@@ -62,4 +62,8 @@ Operator get_operator(char *operator_name) {
         if (equal(operators()[i].name, operator_name)) return operators()[i];
     }
     return operators()[NUMBER_OF_OPERATORS];
+}
+
+int is_operator(char *name) {
+    return !equal((get_operator(name)).name, ILLEGAL_OPERATOR_NAME);
 }

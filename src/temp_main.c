@@ -21,6 +21,6 @@ void print(SymbolContent *content) {
 }
 
 int main() {
-    printf("%p\n", (operators()[0].name));
-    printf("%p\n", (operators()[0].name));
+    first_pass("", create_requirements());
+    return 0;
 }

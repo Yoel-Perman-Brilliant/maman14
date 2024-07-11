@@ -29,6 +29,8 @@ typedef struct SymbolContent {
 
 typedef char *MacroContent;
 
+int is_register(char *field);
+
 /**
  * Determines if a label name is legal.
  * @param name the label name to be checked
