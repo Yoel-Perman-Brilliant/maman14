@@ -12,14 +12,6 @@
 #include "../headers/fields.h"
 #include "../headers/operators.h"
 
-void add_to_external(SymbolContent *content) {
-    if (content->type == EXTERNAL) content->value += 100;
-}
-
-void print(SymbolContent *content) {
-    printf("%d\n", content->value);
-}
-
 int main() {
     int i;
     Requirements *requirements = create_requirements();

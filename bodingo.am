@@ -1,15 +1,19 @@
 MAIN:   add r3, LIST
 LOOP:   prn #48
-        lea STR, r6
-        inc r6
+        leap STR, r6
+;        ;inc #6
         mov    *r6,K
         sub r1, r4
         cmp r3, #-6
-        bne END
+        END
         dec K
+        cmp r3, #-6
+        END
         jmp LOOP
 END:     stop
-STR:    .string "abcd"
+STR:    .strig "abcd
 LIST:    .data 6, -9
-        .data -100
+LIST:        .data -100
 K:       .data 31
+        .extern LIST
+

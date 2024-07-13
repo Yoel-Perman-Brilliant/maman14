@@ -102,7 +102,7 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
  */
 void free_list(LinkedList *list);
 
-void list_add_to_all_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol));
+void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol));
 
 void list_print_symbols(LinkedList *list);
 

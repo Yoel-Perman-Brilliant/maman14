@@ -82,7 +82,7 @@ int first_pass(char file_name[], Requirements *requirements) {
         }
         handle_instruction(line, label, line_count, parsed_file_name, &error_found, requirements);
     }
-    table_add_to_all_apply(requirements->symbol_table, requirements->ic, is_data_symbol);
+    table_add_to_all_that_apply(requirements->symbol_table, requirements->ic, is_data_symbol);
     fclose(parsed_file);
     free(parsed_file_name);
     return error_found;

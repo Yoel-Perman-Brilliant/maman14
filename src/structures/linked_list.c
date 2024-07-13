@@ -166,7 +166,7 @@ void list_foreach(LinkedList *list, void (*action)(Content content)) {
     }
 }
 
-void list_add_to_all_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol)) {
+void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol)) {
     Node *node = list->head;
     while (node != NULL) {
         if (condition(node->content.symbol))

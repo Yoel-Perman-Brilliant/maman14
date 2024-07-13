@@ -138,10 +138,10 @@ void free_table(HashTable *table) {
     free(table);
 }
 
-void table_add_to_all_apply(HashTable *table, int to_add, int (*condition)(SymbolContent symbol)) {
+void table_add_to_all_that_apply(HashTable *table, int to_add, int (*condition)(SymbolContent symbol)) {
     int i;
     for (i = 0; i < HASH_TABLE_SIZE; i++) {
-        list_add_to_all_apply(table->lists[i], to_add, condition);
+        list_add_to_all_that_apply(table->lists[i], to_add, condition);
     }
 }
 
