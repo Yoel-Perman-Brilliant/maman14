@@ -165,7 +165,7 @@ void insert_string(char *rest, int line_count, char *parsed_file_name, int *erro
         return;
     }
     if (last_non_blank(rest) != STRING_START_AND_END) {
-        printf("Input Error: Argument for .string directive in line %d of file %s does not start with "
+        printf("Input Error: Argument for .string directive in line %d of file %s does not end with "
                "double quotation marks\n", line_count, parsed_file_name);
         *error_found = 1;
         return;
