@@ -1,3 +1,7 @@
+/**
+ * Includes prototypes for functions that perform operations on strings.
+ * All strings are assumed to end with a terminating 0.
+ */
 #ifndef MAMAN14_STRING_OPS_H
 #define MAMAN14_STRING_OPS_H
 
