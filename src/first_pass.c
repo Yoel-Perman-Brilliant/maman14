@@ -227,7 +227,8 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
     } else if (equal(directive, ENTRY_DIRECTIVE)) {
         return 1;
     } else {
-        printf("Input Error: Illegal directive \"%s\" in line %d of file %s", directive, line_count, parsed_file_name);
+        printf("Input Error: Illegal directive \"%s\" in line %d of file %s\n",
+               directive, line_count, parsed_file_name);
         *error_found = 1;
         return 0;
     }
