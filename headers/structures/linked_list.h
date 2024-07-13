@@ -102,6 +102,14 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
  */
 void free_list(LinkedList *list);
 
+/**
+ * Adds a given integer to the value of every symbol in a hash-linked-list that meets a given condition.
+ * Assumes that that the content of every item in the list is a symbol.
+ * @param list a pointer to the list whose items' values should be changed
+ * @param to_add the integer to add to the values
+ * @param condition a pointer to a function that accepts a symbol and returns 1 if it meets the wanted condition and 0
+ *                  otherwise
+ */
 void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol));
 
 void list_print_symbols(LinkedList *list);

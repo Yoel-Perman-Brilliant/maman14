@@ -73,6 +73,14 @@ void table_add_symbol(HashTable *table, char *name, SymbolContent symbol_content
  */
 void free_table(HashTable *table);
 
+/**
+ * Adds a given integer to the value of every symbol in a hash-table that meets a given condition.
+ * Assumes that that the content of every item in the table is a symbol.
+ * @param table a pointer to the hash table whose items' values should be changed
+ * @param to_add the integer to add to the values
+ * @param condition a pointer to a function that accepts a symbol and returns 1 if it meets the wanted condition and 0
+ *                  otherwise
+ */
 void table_add_to_all_that_apply(HashTable *table, int to_add, int (*condition)(SymbolContent symbol));
 
 void table_print_symbols(HashTable *table);
