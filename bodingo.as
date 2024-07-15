@@ -13,7 +13,7 @@ LOOP:   prn #48
         macro
         jmp LOOP
 END:     stop
-STR:    .strig "abcd
+STRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTR:    .strig "abcd
 LIST:    .data 6, -9
 LIST:        .data -100
 POO:    

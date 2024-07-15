@@ -447,7 +447,6 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
             printf("Input Error: Label in line %d of file %s has an illegal name\n",
                    line_count, parsed_file_name);
             *error_found = 1;
-            return;
         }
         *label_name = first_field;
         *line = rest;
