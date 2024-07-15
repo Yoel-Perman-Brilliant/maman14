@@ -5,15 +5,16 @@ LOOP:   prn #48
         mov    *r6,K
         sub r1, r4
         cmp r3, #-6
-        END
+        END:
         dec K
         cmp r3, #-6
-        END
+        END:
         jmp LOOP
 END:     stop
 STR:    .strig "abcd
 LIST:    .data 6, -9
 LIST:        .data -100
+POO:    
 K:       .data 31
         .extern LIST
 
