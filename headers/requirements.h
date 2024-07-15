@@ -36,7 +36,7 @@ typedef struct {
 } Requirements; 
 
 /**
- * Creates a new instant of Requirement to be used for the assembly of one file.
+ * Creates a new instance of Requirements to be used for the assembly of one file.
  * @return a pointer to new Requirements
  */
 Requirements *create_requirements();

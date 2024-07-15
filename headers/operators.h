@@ -43,6 +43,8 @@ typedef struct {
 
 /**
  * Returns a static list of the operators, where each operator's index is its opcode.
+ * Also includes an additional, illegal operator which is used for default return values of functions that look for an
+ * operator on the list.
  * @return the list described in the function summary
  */
 Operator *operators();
@@ -64,30 +66,30 @@ int is_legal_source_method(Operator op, AddressMethod method);
 int is_legal_destination_method(Operator op, AddressMethod method);
 
 /**
- * Checks if a given operator requires a source operand
+ * Checks if a given operator requires a source operand.
  * @param op the operator
- * @return 1 if op requires a source operand, 0 otherwise
+ * @return a non-zero value if op requires a source operand, 0 otherwise
  */
 int has_source(Operator op);
 
 /**
- * Checks if a given operator requires a destination operand
+ * Checks if a given operator requires a destination operand.
  * @param op the operator
- * @return 1 if op requires a destination operand, 0 otherwise
+ * @return a non-zero value if op requires a destination operand, 0 otherwise
  */
 int has_destination(Operator op);
 
 /**
  * Returns the opcode of an operator based on its name.
  * @param operator_name the name of the operator
- * @return the operator's opcode
+ * @return the operator's opcode, or 16 if there is no operator with the given name
  */
 int get_opcode(char *operator_name);
 
 /**
- * Returns an operator based on its name
+ * Returns an operator based on its name.
  * @param operator_name the name of the operator
- * @return the operator
+ * @return the operator, or the illegal operator if no such operator exists
  */
 Operator get_operator(char *operator_name);
 
