@@ -176,6 +176,17 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
  */
 int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found);
 
+/**
+ * Checks if a line is blank, and should only be used if a label appears before the blank line, since if this is the
+ * case, throws an error.
+ * @param line the line to be checked
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @return 1 if the line is blank, 0 otherwise 
+ */
+int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found);
+
 
 /**
  * Executes the first pass of the assembler over a parsed, macro-less file.
@@ -230,6 +241,8 @@ int first_pass(char file_name[], Requirements *requirements) {
         label = NULL;
         /* finds the label and changes line to be the part after the label */
         find_label(&line, &label, line_count, parsed_file_name, &error_found);
+        /* makes sure that the line is not a blank line with a label */
+        if (label != NULL && blank_after_label(line, line_count, parsed_file_name, &error_found)) continue;
         /* checks if the line is a directive and handles it if it is */
         if (check_and_handle_directive(line, label, line_count, parsed_file_name, &error_found,
                                        requirements)) {
@@ -611,6 +624,15 @@ int has_comment_start(char *line, int line_count, char *parsed_file_name, int *e
     if (exists(line, COMMENT_START)) {
         printf("Input Error: Semicolon signifying a comment appears after the first character in line %d of file "
                "%s\n", line_count, parsed_file_name);
+        *error_found = 1;
+        return 1;
+    }
+    return 0;
+}
+
+int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found) {
+    if (is_line_blank(line)) {
+        printf("Input Error: Line %d of file %s is empty but has a label\n", line_count, parsed_file_name);
         *error_found = 1;
         return 1;
     }
