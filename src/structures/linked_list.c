@@ -1,5 +1,5 @@
 /**
- * Includes prototype functions that allow for interacting with linked-lists.
+ * Includes functions that allow for interacting with linked-lists.
  */
 
 #include "../../headers/structures/linked_list.h"
@@ -158,14 +158,16 @@ void free_list(LinkedList *list) {
     free(list);
 }
 
-void list_foreach(LinkedList *list, void (*action)(Content content)) {
-    Node *node = list->head;
-    while (node != NULL) {
-        action(node->content);
-        node = node->next;
-    }
-}
-
+/**
+ * Adds a given integer to the value of every symbol in a hash-linked-list that meets a given condition.
+ * Does so by going over every item, and if applying the condition to its symbol content yields 1, adding the given
+ * integer to its value.
+ * Assumes that that the content of every item in the list is a symbol.
+ * @param list a pointer to the list whose items' values should be changed
+ * @param to_add the integer to add to the values
+ * @param condition a pointer to a function that accepts a symbol and returns 1 if it meets the wanted condition and 0
+ *                  otherwise
+ */
 void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol)) {
     Node *node = list->head;
     while (node != NULL) {

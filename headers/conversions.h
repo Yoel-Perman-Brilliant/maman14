@@ -1,6 +1,6 @@
 /**
  * Includes macros and prototypes for functions that handle conversions from fields in the assembly files to binary
- * words in the memory. All macros functions that return a word return a short unsigned, whose leftmost bit is 0 and the
+ * words in the memory. All macros and functions that return a word return a short unsigned, whose leftmost bit is 0 and the
  * rest are the bits representing the word.
  */
 #ifndef MAMAN14_CONVERSIONS_H
@@ -34,6 +34,7 @@ short unsigned build_instruction_first_word(Operator op, AddressMethod source_me
 
 /**
  * Checks if the second and third words of an instruction should be combined to a single word.
+ * Should only for two-operand instructions.
  * @param source_method the address method for the source operand
  * @param destination_method the address method for the destination operand
  * @return 1 if the additional words should be combined, 0 otherwise

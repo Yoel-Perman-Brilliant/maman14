@@ -1,5 +1,6 @@
 /**
- * Includes functions that have to do with identifying and verifying various fields in the input.
+ * Includes functions that have to do with identifying, verifying and handling various fields in the input,
+ * except for operators (see operators.c).
  */
 
 #include "../headers/fields.h"
@@ -114,10 +115,20 @@ int is_label(char *field) {
     return field[strlen(field) - 1] == LABEL_END && field[0] != COMMENT_START;
 }
 
+/**
+ * Transforms a given label (including the colon) into the appropriate symbol it represents (without the colon).
+ * Does so by changing its last character to be 0, this ending it one character early and removing the colon.
+ * @param label the label to be transformed
+ */
 void label_to_symbol(char *label) {
     label[strlen(label) - 1] = '\0';
 }
 
+/**
+ * Checks if a given symbol represents a word in the data portion.
+ * @param symbol the content of the symbol to be checked
+ * @return 1 if symbol is a data symbol, 0 otherwise
+ */
 int is_data_symbol(SymbolContent symbol) {
     return symbol.location == DATA;
 }

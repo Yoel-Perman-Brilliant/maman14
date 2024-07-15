@@ -1,3 +1,7 @@
+/**
+ * Includes miscellaneous utility functions. 
+ */
+ 
 #include "../../headers/util/general_util.h"
 #include "stdlib.h"
 #include "stdio.h"

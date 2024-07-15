@@ -1,7 +1,6 @@
 /**
  * Includes prototypes for miscellaneous utility functions. 
  */
-
 #ifndef MAMAN14_GENERAL_UTIL_H
 #define MAMAN14_GENERAL_UTIL_H
 

@@ -1,7 +1,7 @@
 /**
  * Includes the Operator structure, which represents one of the 16 possible operators for an instruction.
  * Also includes an enum which represents the different possible address methods for the operands, and prototypes for 
- * functions that handle analyzing given operators and address methods.
+ * functions that handle retrieving and analyzing operators and address methods.
  */
 #ifndef MAMAN14_OPERATORS_H
 #define MAMAN14_OPERATORS_H

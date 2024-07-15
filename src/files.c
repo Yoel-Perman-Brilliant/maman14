@@ -1,3 +1,7 @@
+/**
+ * Includes functions that handle getting the names and opening files in different formats.
+ */
+ 
 #include "../headers/files.h"
 #include "../headers/exit_codes.h"
 #include "stdio.h"
@@ -77,6 +81,11 @@ FILE *get_parsed_file_append(char file_name[]) {
     return parsed_file;
 }
 
+/**
+ * Returns a pointer to the parsed, macro-less file with a read permission based on the extensionless file name.
+ * @param file_name the name of the input file without the extension
+ * @return a pointer to the new file, or NULL if the file could not be created
+ */
 FILE *get_parsed_file_read(char file_name[]) {
     FILE *parsed_file;
     char *parsed_file_name = get_parsed_file_name(file_name);

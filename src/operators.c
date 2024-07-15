@@ -1,3 +1,7 @@
+/**
+ * Includes functions that handle retrieving and analyzing operators and address methods.
+ */
+
 #include "../headers/operators.h"
 #include "../headers/util/string_ops.h"
 
@@ -17,6 +21,13 @@ int has_destination(Operator op) {
     return op.legal_destination_methods;
 }
 
+/**
+ * Creates an operator based on the given values.
+ * @param name the name of the operator
+ * @param legal_source_methods 
+ * @param legal_destination_methods 
+ * @return 
+ */
 Operator create_operator(char *name, char *legal_source_methods, char *legal_destination_methods) {
     Operator op;
     op.name = name;
@@ -25,6 +36,13 @@ Operator create_operator(char *name, char *legal_source_methods, char *legal_des
     return op;
 }
 
+/**
+ * Returns a static list of the operators, where each operator's index is its opcode.
+ * Does so by creating an operator for every index based on the task definition.
+ * Also includes an additional, illegal operator which is used for default return values of functions that look for an
+ * operator on the list.
+ * @return the list described in the function summary
+ */
 Operator *operators() {
     static Operator operators[NUMBER_OF_OPERATORS + 1];
     operators[0] = create_operator("mov", "1111", "1110");
