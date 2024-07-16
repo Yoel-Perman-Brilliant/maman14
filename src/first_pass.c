@@ -3,11 +3,9 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
-#include "../headers/requirements.h"
 #include "../headers/conversions.h"
 #include "../headers/util/string_ops.h"
 #include "../headers/util/general_util.h"
-#include "../headers/operators.h"
 
 #define DATA_SEPARATOR ","
 #define DOUBLE_DATA_SEPARATOR ",,"
@@ -20,171 +18,41 @@
 #define IMMEDIATE_ADDRESS_START '#'
 #define INDIRECT_REGISTER_ADDRESS_START '*'
 
-/**
- * Reads the data values from a .data directive and inserts them into the memory image while finding errors.
- * 
- * @param rest the part of the line that should contain only the values to insert (the part after .data)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param requirements a pointer to the requirements for the file
- * @param error_found a pointer to a value that represents whether an error has been found
- */
+/** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
+/** FOR DOCUMENTATION, SEE DEFINITIONS **/
+
 void insert_data_numbers(char *rest, char *parsed_file_name, int line_count, Requirements *requirements,
                          int *error_found);
 
-/**
- * Inserts a symbol to the symbol table while finding errors.
- * 
- * @param symbol the name of the symbol (without a colon)
- * @param type the type of the symbol (regular, external or entry)
- * @param location the location of the symbol (code or data)
- * @param requirements a pointer to the requirements for the file
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- */
 void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
                    int *error_found, int line_count, char *parsed_file_name);
-
 
 int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                                Requirements *requirements);
 
-/**
- * Finds the label of a line with a given pointer to it and changes the pointer's value to not include the label.
- * 
- * @param line a pointer to the line being read
- * @param label_name a pointer to a string whose value should be the label if there is one, or NULL if there isn't
- * @param line_count he number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to the requirements for the file
- */
 void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found);
 
-/**
- * Analyzes and handles a .extern directive while finding errors.
- * Assumes .extern may only get one parameter.
- * 
- * @param rest the part of the line after .extern
- * @param label_name the name of line's label if there is one, or NULL if there isn't
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param requirements a pointer to the requirements for the file
- */
 void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                    Requirements *requirements);
 
-/**
- * Reads the string from a .string directive and inserts its characters into the memory image while finding errors.
- * Assumes that the string is defined as anything that resides between the most external double quotes.
- * For example, if the directive is: .string "hell"o world", then the characters of hell"o world (including the double
- * quotes) would be inserted into the memory. 
- * Also ignores escape characters and treats each character as individual.
- * 
- * @param rest the part of the line after .string
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param requirements a pointer to the requirements for the file
- */
 void insert_string(char *rest, int line_count, char *parsed_file_name, int *error_found, Requirements *requirements);
 
-/**
- * Gets the address method of a given operand.
- * 
- * @param operand the operand to check
- * @return the address method of operand
- */
 AddressMethod get_address_method(char *operand);
 
-/**
- * Handles an instruction line while finding errors and inserting the line's label (if it exists) into the symbol table.
- * This function validates the syntax of the line and the operator and inserts the instruction's first word into 
- * the memory image. It does not, however, check the content of the operands and does not insert the additional words
- * into the memory image. These are kept for the second pass.
- * Considers "instruction" to be anything that is not a blank line, a comment line or a directive. If it's non of these
- * but also not a valid instruction (as far as the function checks), the problem would be found and reported.
- * 
- * @param line the part of the line after the label
- * @param label_name the name of the line's label if there is one, or NULL if there isn't
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param requirements a pointer to the requirements for the file
- */
 void handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements);
 
-/**
- * Handles an instruction line that should have two operands while finding errors.
- * This function validates the syntax of the line and inserts the instruction's first word into 
- * the memory image. It does not, however, check the content of the operands and does not insert the additional words
- * into the memory image. These are kept for the second pass.
- * 
- * @param op the instruction's operator
- * @param rest the part of the line after the operator
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param requirements a pointer to the requirements for the file
- */
 void handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements);
 
-/**
- * Handles an instruction line that should have one operand while finding errors.
- * This function validates the syntax of the line and inserts the instruction's first word into 
- * the memory image. It does not, however, check the content of the operand and does not insert the additional word
- * into the memory image. These are kept for the second pass.
- * 
- * @param op the instruction's operator
- * @param rest the part of the line after the operator
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param requirements a pointer to the requirements for the file
- */
 void handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements);
 
-/**
- * Handles an instruction line that should have no operands while finding errors.
- * This function validates the syntax of the line and inserts the instruction's first word into 
- * the memory image.
- * 
- * @param op the instruction's operator
- * @param rest the part of the line after the operator
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param requirements a pointer to the requirements for the file
- */
 void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                      int *error_found, Requirements *requirements);
 
-/**
- * Checks if a line includes a semicolon. Should be used when knowing that the first character is 
- * not a semicolon and therefore the line is not a comment. If a semicolon is found, throws an error.
- * 
- * @param line the line to be checked
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @return 1 if the line includes a semicolon, 0 otherwise
- */
 int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found);
 
-/**
- * Checks if a line is blank, and should only be used if a label appears before the blank line, since if this is the
- * case, throws an error.
- * 
- * @param line the line to be checked
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @return 1 if the line is blank, 0 otherwise 
- */
 int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found);
 
 
