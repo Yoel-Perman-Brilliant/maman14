@@ -799,13 +799,14 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
         *error_found = 1;
         return;
     }
-    
+    /* if the operand includes a comma, then it is made of two operands */
     if (exists(destination_operand, *OPERAND_SEPARATOR)) {
         printf("Input Error: Too many operands for operator \"%s\" in line %d of file %s\n",
                op.name, line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* makes sure the part of the line after the operand is empty */
     if (!is_line_blank(rest)) {
         printf("Input Error: Extra characters after destination operand in line %d of file %s\n",
                line_count, parsed_file_name);
@@ -813,6 +814,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
         return;
     }
     destination_address_method = get_address_method(destination_operand);
+    /* makes sure the operand's address method is legal based on the operator */
     if (!is_legal_destination_method(op, destination_address_method)) {
         printf("Input Error: Illegal destination address method in line %d of file %s\n",
                line_count, parsed_file_name);
@@ -820,8 +822,12 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
         return;
     }
     free(destination_operand);
+    /* builds the instruction's first word in the memory */
     first_word = build_instruction_first_word(op, NO_OPERAND, destination_address_method);
-    memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
+    /* inserts the word into the memory while updating the value of error_found to 1 if there
+     * are any errors in the process */
+    *error_found |= memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
+    /* advances the instruction counter to account for the additional word */
     requirements->ic++;
 }
 
