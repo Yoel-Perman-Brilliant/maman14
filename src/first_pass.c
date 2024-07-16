@@ -644,8 +644,8 @@ void handle_instruction(char *line, char *label_name, int line_count, char *pars
  * into the memory image. These are kept for the second pass.
  * 
  * Does so by verifying the syntax (makes sure there are two operands split by a single comma and any amount of
- * whitespaces, then finding the address method of each operand, building the memory word, inserting it to the
- * memory image, and advancing the instruction counter to account for the additional words.
+ * whitespaces), then finding the address method of each operand, building the memory word, verifying it, inserting
+ * it to the memory image, and advancing the instruction counter to account for the additional words.
  * 
  * @param op the instruction's operator
  * @param rest the part of the line after the operator
@@ -759,12 +759,39 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     } else requirements->ic += 2;
 }
 
+/**
+ * Handles an instruction line that should have one operand while finding errors.
+ * This function validates the syntax of the line and inserts the instruction's first word into 
+ * the memory image. It does not, however, check the content of the operand and does not insert the additional word
+ * into the memory image. These are kept for the second pass.
+ * 
+ * Does so by verifying the syntax of the line (only one operand and no commas), then finding the operand's address
+ * method, verifying it, building the instruction's first memory word, inserting it to the memory and advancing the
+ * instruction counter to account for the additional word.
+ * 
+ * @param op the instruction's operator
+ * @param rest the part of the line after the operator
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param requirements a pointer to the requirements for the file
+ */
 void handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements) {
+    /* the destination operand is the next field after the operator */
     char *destination_operand = find_token(rest, BLANKS, &rest);
+    /* the destination operand's address method */
     AddressMethod destination_address_method;
+    /* the instruction's first word in the memory */
     short unsigned first_word;
-
+    /* makes sure that the destination operand is not empty */
+    if (is_line_blank(destination_operand)) {
+        printf("Input Error: Missing destination operand in line %d of file %s\n",
+               line_count, parsed_file_name);
+        *error_found = 1;
+        return;
+    }
+    /* if the operand starts or ends with a comma, it is illegal */
     if (first_non_blank(destination_operand) == *OPERAND_SEPARATOR ||
         last_non_blank(destination_operand) == *OPERAND_SEPARATOR) {
         printf("Input Error: Illegal comma in line %d of file %s\n",
@@ -772,12 +799,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
         *error_found = 1;
         return;
     }
-    if (is_line_blank(destination_operand)) {
-        printf("Input Error: Missing destination operand in line %d of file %s\n",
-               line_count, parsed_file_name);
-        *error_found = 1;
-        return;
-    }
+    
     if (exists(destination_operand, *OPERAND_SEPARATOR)) {
         printf("Input Error: Too many operands for operator \"%s\" in line %d of file %s\n",
                op.name, line_count, parsed_file_name);
