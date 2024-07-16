@@ -22,6 +22,7 @@
 
 /**
  * Reads the data values from a .data directive and inserts them into the memory image while finding errors.
+ * 
  * @param rest the part of the line that should contain only the values to insert (the part after .data)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -33,6 +34,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count, Req
 
 /**
  * Inserts a symbol to the symbol table while finding errors.
+ * 
  * @param symbol the name of the symbol (without a colon)
  * @param type the type of the symbol (regular, external or entry)
  * @param location the location of the symbol (code or data)
@@ -50,6 +52,7 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
 
 /**
  * Finds the label of a line with a given pointer to it and changes the pointer's value to not include the label.
+ * 
  * @param line a pointer to the line being read
  * @param label_name a pointer to a string whose value should be the label if there is one, or NULL if there isn't
  * @param line_count he number of the line in the file that is being analyzed (used for error reporting)
@@ -61,6 +64,7 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
 /**
  * Analyzes and handles a .extern directive while finding errors.
  * Assumes .extern may only get one parameter.
+ * 
  * @param rest the part of the line after .extern
  * @param label_name the name of line's label if there is one, or NULL if there isn't
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -77,6 +81,7 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
  * For example, if the directive is: .string "hell"o world", then the characters of hell"o world (including the double
  * quotes) would be inserted into the memory. 
  * Also ignores escape characters and treats each character as individual.
+ * 
  * @param rest the part of the line after .string
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
@@ -87,6 +92,7 @@ void insert_string(char *rest, int line_count, char *parsed_file_name, int *erro
 
 /**
  * Gets the address method of a given operand.
+ * 
  * @param operand the operand to check
  * @return the address method of operand
  */
@@ -99,6 +105,7 @@ AddressMethod get_address_method(char *operand);
  * into the memory image. These are kept for the second pass.
  * Considers "instruction" to be anything that is not a blank line, a comment line or a directive. If it's non of these
  * but also not a valid instruction (as far as the function checks), the problem would be found and reported.
+ * 
  * @param line the part of the line after the label
  * @param label_name the name of the line's label if there is one, or NULL if there isn't
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -114,6 +121,7 @@ void handle_instruction(char *line, char *label_name, int line_count, char *pars
  * This function validates the syntax of the line and inserts the instruction's first word into 
  * the memory image. It does not, however, check the content of the operands and does not insert the additional words
  * into the memory image. These are kept for the second pass.
+ * 
  * @param op the instruction's operator
  * @param rest the part of the line after the operator
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -129,6 +137,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
  * This function validates the syntax of the line and inserts the instruction's first word into 
  * the memory image. It does not, however, check the content of the operand and does not insert the additional word
  * into the memory image. These are kept for the second pass.
+ * 
  * @param op the instruction's operator
  * @param rest the part of the line after the operator
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -143,6 +152,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
  * Handles an instruction line that should have no operands while finding errors.
  * This function validates the syntax of the line and inserts the instruction's first word into 
  * the memory image.
+ * 
  * @param op the instruction's operator
  * @param rest the part of the line after the operator
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -156,6 +166,7 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
 /**
  * Checks if a line includes a semicolon. Should be used when knowing that the first character is 
  * not a semicolon and therefore the line is not a comment. If a semicolon is found, throws an error.
+ * 
  * @param line the line to be checked
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
@@ -167,6 +178,7 @@ int has_comment_start(char *line, int line_count, char *parsed_file_name, int *e
 /**
  * Checks if a line is blank, and should only be used if a label appears before the blank line, since if this is the
  * case, throws an error.
+ * 
  * @param line the line to be checked
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
@@ -249,8 +261,10 @@ int first_pass(char file_name[], Requirements *requirements) {
 
 /**
  * Reads the data values from a .data directive and inserts them into the memory image while finding errors.
+ * 
  * Does so by splitting the string based on commas to find the arguments, trimming each one to remove whitespaces at the
  * start and the end, finding the integer value of each one, verifying it, and inserting it to the memory.
+ * 
  * @param rest the part of the line that should contain only the values to insert (the part after .data)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -540,8 +554,10 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
 
 /**
  * Finds the label of a line with a given pointer to it and changes the pointer's value to not include the label.
+ * 
  * Does so by finding the first field of the line and setting the value of the the pointer to the label to it,
  * then setting the value of the pointer to the line to the part after the first field.
+ * 
  * @param line a pointer to the line being read
  * @param label_name a pointer to a string whose value should be the label if there is one, or NULL if there isn't
  * @param line_count he number of the line in the file that is being analyzed (used for error reporting)
@@ -555,32 +571,62 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
     char *first_field = find_token(*line, BLANKS, &rest);
     /* if the first field is a label */
     if (is_label(first_field)) {
+        /* removes the colon from the label to find the symbol */
         label_to_symbol(first_field);
+        /* verifies that the label is legal */
         if (!legal_label_name(first_field)) {
             printf("Input Error: Label in line %d of file %s has an illegal name\n",
                    line_count, parsed_file_name);
             *error_found = 1;
         }
+        /* sets the value of the label_name pointer to the symbol */
         *label_name = first_field;
+        /* sets the value of the line pointer to the part after the label */
         *line = rest;
     }
+    /* if the first field is not a label, sets the value of the label_name pointer to NULL */
     else *label_name = NULL;
 }
 
+/**
+ * Handles an instruction line while finding errors and inserting the line's label (if it exists) into the symbol table.
+ * This function validates the syntax of the line and the operator and inserts the instruction's first word into 
+ * the memory image. It does not, however, check the content of the operands and does not insert the additional words
+ * into the memory image. These are kept for the second pass.
+ * Considers "instruction" to be anything that is not a blank line, a comment line or a directive. If it's non of these
+ * but also not a valid instruction (as far as the function checks), the problem would be found and reported.
+ * 
+ * Does so by first inserting the label (if there is one) to the symbol table, finding the operator, verifying it, and
+ * find the amount of operands that the operator requires. Then analyzes the rest of the line based on the number
+ * of expected operators.
+ * 
+ * @param line the part of the line after the label
+ * @param label_name the name of the line's label if there is one, or NULL if there isn't
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param requirements a pointer to the requirements for the file
+ */
 void handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements) {
+    /* the part of the line after the operator */
     char *rest;
+    /* the name of the operator must be the first field of the line */
     char *operator_name = find_token(line, BLANKS, &rest);
+    /* the instruction's operator */
     Operator op;
+    /* if there is a label, inserts it to the symbol table */ 
     if (label_name != NULL)
         insert_symbol(label_name, REGULAR, CODE, requirements,
                       error_found, line_count, parsed_file_name);
+    /* makes sure that the operator is legal */
     if (!is_operator(operator_name)) {
         printf("Input Error: Illegal instruction name \"%s\" in line %d of file %s\n",
                operator_name, line_count, parsed_file_name);
         return;
     }
     op = get_operator(operator_name);
+    /* handles the instruction based on the expected operand */
     if (has_source(op)) {
         handle_two_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
     } else if (has_destination(op)) {
@@ -591,70 +637,109 @@ void handle_instruction(char *line, char *label_name, int line_count, char *pars
     free(operator_name);
 }
 
+/**
+ * Handles an instruction line that should have two operands while finding errors.
+ * This function validates the syntax of the line and inserts the instruction's first word into 
+ * the memory image. It does not, however, check the content of the operands and does not insert the additional words
+ * into the memory image. These are kept for the second pass.
+ * 
+ * Does so by verifying the syntax (makes sure there are two operands split by a single comma and any amount of
+ * whitespaces, then finding the address method of each operand, building the memory word, inserting it to the
+ * memory image, and advancing the instruction counter to account for the additional words.
+ * 
+ * @param op the instruction's operator
+ * @param rest the part of the line after the operator
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param requirements a pointer to the requirements for the file
+ */
 void handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements) {
     char *source_operand;
     char *destination_operand;
+    /* the source operand without heading or trailing whitespaces */
     char *trimmed_source_operand;
+    /* the destination operand without heading or trailing whitespaces */
     char *trimmed_destination_operand;
     AddressMethod source_address_method;
     AddressMethod destination_address_method;
+    /* the instruction's first word in the memory */
     short unsigned first_word;
+    /* makes sure there is no comma before the first operand */
     if (first_non_blank(rest) == *OPERAND_SEPARATOR) {
         printf("Input Error: Operand list in line %d of file %s starts with an illegal comma\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* makes sure there is no after the last operand */
     if (last_non_blank(rest) == *OPERAND_SEPARATOR) {
         printf("Input Error: Operand list in line %d of file %s ends with an illegal comma\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* makes sure there are no multiple consecutive commas (including ones with only whitespaces between them) */
     if (includes_consecutive(rest, *OPERAND_SEPARATOR)) {
         printf("Input Error: Operand list in line %d of file %s includes multiple consecutive commas\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* the source operand is the first field of the part after the operator when separating by commas,
+     * may include whitespaces */
     source_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    /* the source operand is the first field of the part after the source operand when separating by commas,
+     * may include whitespaces */
     destination_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    /* removes heading and trailing whitespaces from the operands */
     trimmed_source_operand = trim(source_operand);
     trimmed_destination_operand = trim(destination_operand);
     free_all(2, source_operand, destination_operand);
+    /* makes sure there is a source operand */
     if (is_line_blank(trimmed_source_operand)) {
         printf("Input Error: Missing source operand in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* if the trimmed source operand includes blank spaces, then it must be made of two operands without a 
+     * comma between them */ 
     if (strpbrk(trimmed_source_operand, BLANKS)) {
         printf("Input Error: Missing comma between operands in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* makes sure there is a destination operand */
     if (is_line_blank(trimmed_destination_operand)) {
         printf("Input Error: Missing destination operand in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* if the trimmed destination operand includes blank spaces, then it must be made of two operands without a comma
+     * between them, which would classify as extra characters after the second operand (the destination);
+     * if the part after the field which represents the destination operand (when split by commas) is not a blank line,
+     * then there are also extra characters after the destination operand */
     if (strpbrk(trimmed_destination_operand, BLANKS) || !is_line_blank(rest)) {
         printf("Input Error: Extra characters after destination operand in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* the address methods of the operands */
     source_address_method = get_address_method(trimmed_source_operand);
     destination_address_method = get_address_method(trimmed_destination_operand);
+    /* makes sure the source operand's address method is legal */
     if (!is_legal_source_method(op, source_address_method)) {
         printf("Input Error: Illegal source address method in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* makes sure the destination operand's address method is legal */
     if (!is_legal_destination_method(op, destination_address_method)) {
         printf("Input Error: Illegal destination address method in line %d of file %s\n",
                line_count, parsed_file_name);
@@ -662,8 +747,13 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
         return;
     }
     free_all(2, trimmed_source_operand, trimmed_destination_operand);
-    first_word = build_instruction_first_word(op, source_address_method, destination_address_method);
-    memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
+    /* build's the instruction first memory word based on the operator and address methods */
+    first_word = build_instruction_first_word(op, source_address_method,
+                                              destination_address_method);
+    /* inserts the word into the memory while updating the value of error_found to 1 if there
+     * are any errors in the process */
+    *error_found |= memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
+    /* advances the instruction counter based on the number of additional words */
     if (should_combine_additional_words(source_address_method, destination_address_method)) {
         requirements->ic++;
     } else requirements->ic += 2;
