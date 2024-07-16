@@ -30,8 +30,9 @@ void print_binary(unsigned short num) {
  * Returns the first memory word representing an instruction.
  * Does so by creating 4 unsigned short values, each representing a portion of the word with the rest
  * of its bits being 0, and ORing them all.
- * @param op the instruction's operator
- * @param source_method the address method for the source operand
+ * 
+ * @param op                 the instruction's operator
+ * @param source_method      the address method for the source operand
  * @param destination_method the address method for the destination operand
  * @return the first word of the instruction's binary value, padded with a zero on the left so it can be returned
  * as an unsigned short.

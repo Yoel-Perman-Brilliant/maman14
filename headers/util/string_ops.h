@@ -110,7 +110,7 @@ char *remove_all_blanks(char string[]);
  * Assumes it is not null.
  * 
  * @param string string to be checked
- * @return he number of whitespace characters in string
+ * @return the number of whitespace characters in string
  */
 int number_of_blanks(char string[]);
 

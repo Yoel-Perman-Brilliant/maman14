@@ -33,11 +33,12 @@
  * into given pointers to strings. Separates fields by whitespace characters.
  * Does so by using the find_token method to find the first token of the string (seperated by whitespaces), then does
  * the same twice more, each time with the rest of the string (the part after the token that was just found).
- * @param line the line whose fields should be found
- * @param first_field a pointer to a string that should hold the first field of the line
+ * 
+ * @param line         the line whose fields should be found
+ * @param first_field  a pointer to a string that should hold the first field of the line
  * @param second_field a pointer to a string that should hold the second field of the line
- * @param third_field a pointer to a string that should hold the third field of the line
- * @param rest a pointer to a string that should hold the rest of the line (the part after the third field)
+ * @param third_field  a pointer to a string that should hold the third field of the line
+ * @param rest         a pointer to a string that should hold the rest of the line (the part after the third field)
  */
 void get_fields(char *line, char **first_field, char **second_field, char **third_field, char **rest) {
     *first_field = find_token(line, BLANKS, rest);
@@ -48,7 +49,8 @@ void get_fields(char *line, char **first_field, char **second_field, char **thir
 /**
  * Writes a macro's content into a file (should be the parsed file).
  * Assumes that the macro exists in the macro table.
- * @param macro the name of the macro
+ * 
+ * @param macro       the name of the macro
  * @param macro_table a pointer to the macro table
  * @param parsed_file a pointer to the parsed file that the macro content should be written to.
  */
@@ -62,13 +64,13 @@ void handle_macro_usage(char *macro, HashTable *macro_table, FILE *parsed_file) 
  * writes the macro content into the parsed file. Also makes sure that there is no label before the macro usage, and
  * if there is, reports an error.
  * 
- * @param macro_table a pointer to the macro table
- * @param first_field the first field of the line
- * @param second_field the second field of the line
- * @param parsed_file a pointer to the parsed file
- * @param line_count the number of the line being checked in the input file (used for error reporting)
+ * @param macro_table     a pointer to the macro table
+ * @param first_field     the first field of the line
+ * @param second_field    the second field of the line
+ * @param parsed_file     a pointer to the parsed file
+ * @param line_count      the number of the line being checked in the input file (used for error reporting)
  * @param input_file_name the name of the input file (used for error reporting)
- * @param error_found a pointer to an integer value that should hold whether an error has occurred
+ * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro usage was found, 0 otherwise
  */
 int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char *second_field,
@@ -99,13 +101,14 @@ int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char
  * Does so by checking if the first field of the line is the macro end keyword, and making sure that it is the
  * only field (there is no label and there are no characters after the keyword). If so, inserts the macro name and
  * content to the table.
- * @param macro_table a pointer to the macro table
- * @param macro_name the name of the macro whose definition is being read
- * @param line the current line being analyzed
- * @param error_found a pointer to an integer value that should hold whether an error has occurred
- * @param line_count the number of the line being checked in the input file (used for error reporting)
+ * 
+ * @param macro_table     a pointer to the macro table
+ * @param macro_name      the name of the macro whose definition is being read
+ * @param line            the current line being analyzed
+ * @param error_found     a pointer to an integer value that should hold whether an error has occurred
+ * @param line_count      the number of the line being checked in the input file (used for error reporting)
  * @param input_file_name the name of the input file (used for error reporting)
- * @param macro_content the content of the macro being defined
+ * @param macro_content   the content of the macro being defined
  * @return 1 if the macro end has been found or an error has occurred, 0 otherwise
  */
 int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *line, int *error_found, int line_count,
@@ -149,13 +152,14 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
  * Does so by reading the lines after the definition title one by one and updating the macro's content accordingly
  * until the macro's end is found, and then inserting the macro to the macro table.
  * Assumes that the definition's first line has already been read.
- * @param macro_table   a pointer to the macro table
- * @param macro_name the name of the macro whose definition is being read
+ * 
+ * @param macro_table     a pointer to the macro table
+ * @param macro_name      the name of the macro whose definition is being read
  * @param post_macro_name the part of the definition's first line after the macro name
  * @param input_file_name the name of the input file (used for error reporting)
- * @param input_file a pointer to the input file
- * @param line_count a pointer to a variable representing the number of the line being checked in the 
- *                   input file (used for error reporting)
+ * @param input_file      a pointer to the input file
+ * @param line_count      a pointer to a variable representing the number of the line being checked in the 
+ *                        input file (used for error reporting)
  * @param error_found a pointer to an integer value that should hold whether an error has occurred
  */
 void handle_macro_definition(HashTable *macro_table, char *macro_name, char *post_macro_name, char *input_file_name,
@@ -224,13 +228,14 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
  * it to the macro table.
  * Does so by checking if the first field of the line is the macro definition keyword, and that it has no label. If it
  * is, sees the second field as the macro name, and handles the macro definition using handle_macro_definition.
- * @param macro_table a pointer to the macro table
- * @param line the current line being analyzed
+ * 
+ * @param macro_table     a pointer to the macro table
+ * @param line            the current line being analyzed
  * @param input_file_name the name of the input file (used for error reporting)
- * @param input_file a pointer to the input file
- * @param line_count a pointer to a variable representing the number of the line being checked in the 
- *                   input file (used for error reporting)
- * @param error_found a pointer to an integer value that should hold whether an error has occurred
+ * @param input_file      a pointer to the input file
+ * @param line_count      a pointer to a variable representing the number of the line being checked in the 
+ *                        input file (used for error reporting)
+ * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro definition was found, 0 otherwise
  */
 int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *input_file_name, FILE *input_file,
@@ -276,7 +281,8 @@ int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *
  * Assumes that the definition of every macro comes before its usage, that there are no nested macro definitions, that
  * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
  * ending cannot have labels.
- * @param file_name the name of the input file without the .as extension
+ * 
+ * @param file_name   the name of the input file without the .as extension
  * @param macro_table a pointer to the macro table.
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */

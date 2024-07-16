@@ -67,6 +67,7 @@ char is_line_blank(char *string) {
 * Removes any heading and trailing spaces or tabs from a string.
 * Does so by finding the number of blank spaces at the start and creating a copy of the string that starts after
 * those blank spaces, and then placing the closing '\0' after the first non-blank character from the end.
+*
 * @param string a string which should be trimmed
 * @return a new trimmed version of the original string
 */
@@ -133,6 +134,7 @@ char last_non_blank(char string[]) {
 
 /**
  * Finds the number of blank spaces (spaces or tabs) in a given string.
+ * 
  * @param string the string whose number of blank spaces should be found
  * @return the number of blank spaces in the string 
  */
@@ -149,6 +151,7 @@ int number_of_blanks(char string[]) {
 /**
  * Returns a string that is the same as a given string, without any blank spaces. Does so by creating a new character
  * array and copying to it each character from the given string that is not a whitespace.
+ * 
  * @param string a string whose spaces should be removed
  * @return the given string without blank spaces
  */
