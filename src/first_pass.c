@@ -864,6 +864,16 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
     *error_found |= memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
 }
 
+/**
+ * Gets the address method of a given operand.
+ * 
+ * Does so by checking if it starts with a pound - if it does, it must be immediate address. If it starts with an
+ * asterisk, it must be indirect register address. If it's a register, then it is direct register. Otherwise, assumes
+ * it's a symbol and therefore it is direct address.
+ * 
+ * @param operand the operand to check
+ * @return the address method of operand
+ */
 AddressMethod get_address_method(char *operand) {
     if (operand[0] == IMMEDIATE_ADDRESS_START) return IMMEDIATE_ADDRESS;
     if (operand[0] == INDIRECT_REGISTER_ADDRESS_START) return INDIRECT_REGISTER_ADDRESS;
@@ -871,7 +881,18 @@ AddressMethod get_address_method(char *operand) {
     return DIRECT_ADDRESS;
 }
 
+/**
+ * Checks if a line includes a semicolon. Should be used when knowing that the first character is 
+ * not a semicolon and therefore the line is not a comment. If a semicolon is found, throws an error.
+ * 
+ * @param line the line to be checked
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @return 1 if the line includes a semicolon, 0 otherwise
+ */
 int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found) {
+    /* makes sure the line (that is known to not be a comment line) doesn't have a semicolon, which would be illegal */
     if (exists(line, COMMENT_START)) {
         printf("Input Error: Semicolon signifying a comment appears after the first character in line %d of file "
                "%s\n", line_count, parsed_file_name);
@@ -881,7 +902,18 @@ int has_comment_start(char *line, int line_count, char *parsed_file_name, int *e
     return 0;
 }
 
+/**
+ * Checks if a line is blank, and should only be used if a label appears before the line, which would cause a blank
+ * line to have a label which is illegal. If the line is blank, throws and appropriate error.
+ * 
+ * @param line the line to be checked (the part after the label)
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @return 1 if the line is blank, 0 otherwise 
+ */
 int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found) {
+    /* checks that the line after the label is not blank, which would be illegal */
     if (is_line_blank(line)) {
         printf("Input Error: Line %d of file %s is empty but has a label\n", line_count, parsed_file_name);
         *error_found = 1;
