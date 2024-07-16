@@ -18,15 +18,44 @@
 #include "../headers/util/string_ops.h"
 #include "../headers/util/general_util.h"
 
+/**
+ * Separates between .data arguments.
+ */
 #define DATA_SEPARATOR ","
-#define DOUBLE_DATA_SEPARATOR ",,"
+
+/**
+ * Separates between operands in instructions.
+ */
 #define OPERAND_SEPARATOR ","
-#define DOUBLE_OPERAND_SEPARATOR ",,"
+
+/**
+ * A string consisting of whitespace characters that can appear in a line.
+ */
 #define BLANKS " \t"
+
+/**
+ * The start and end of .string arguments.
+ */
 #define STRING_START_AND_END '"'
-#define MAX_WORD_SIZE (short)(pow(2, WORD_SIZE_BITS) - 1)
+
+/**
+ * The maximum value that a word in the memory can hold.
+ */
+#define MAX_WORD_SIZE (short)(pow(2, WORD_SIZE_BITS - 1) - 1)
+
+/**
+ * The minimum value that a word in the memory can hold.
+ */
 #define MIN_WORD_SIZE (short)(-(pow(2, WORD_SIZE_BITS - 1)))
+
+/**
+ * The first character of an operand in the immediate address method.
+ */
 #define IMMEDIATE_ADDRESS_START '#'
+
+/**
+ * The first character of an operand in the indirect register address method.
+ */
 #define INDIRECT_REGISTER_ADDRESS_START '*'
 
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
