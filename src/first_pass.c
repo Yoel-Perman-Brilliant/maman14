@@ -222,8 +222,9 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
  * quotes) would be inserted into the memory. 
  * Also ignores escape characters and treats each character as individual.
  *
- * Does so by verifying that the first and last non-whitespace characters of the argument are double quotes, and for
- * every character except for these, inserts the ascii value of the character to memory.
+ * Does so by verifying that the directive has an argument, that the first and last non-whitespace characters of the 
+ * argument are double quotes, and for every character except for these, inserts the ascii value of the 
+ * character to memory.
  * 
  * @param rest the part of the line after .string
  * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
@@ -238,6 +239,13 @@ void insert_string(char *rest, int line_count, char *parsed_file_name, int *erro
     int trimmed_rest_length;
     /* the index of the character being read in trimmed_rest */
     int i;
+    /* verifies that there is an argument */
+    if (is_line_blank(rest)) {
+        printf("Input Error: Missing argument for .string directive in line %d of"
+               "file %s\n", line_count, parsed_file_name);
+        *error_found = 1;
+        return;
+    }
     /* verifies that the first non-whitespace character of the argument is double quotes */
     if (first_non_blank(rest) != STRING_START_AND_END) {
         printf("Input Error: Argument for .string directive in line %d of file %s does not start with "

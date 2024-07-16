@@ -1,9 +1,9 @@
 MAIN:   add r3, LIST
 LOOP:   prn #48
-        leap STR, r6
+        lea STR, r6
         macr macro 
         cmp r3, #-6
-        END:
+        bne n
         endmacr
 ;        ;inc #6
         mov    *r6,K
@@ -13,9 +13,8 @@ LOOP:   prn #48
         macro
         jmp LOOP
 END:     stop
-STRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTRSTR:    .strig "abcd
+STRSTRSR:    .string "abcd"
 LIST:    .data 6, -9
-LIST:        .data -100
-POO:    
-K:       .data 31
-        .extern LIST
+        .data -100
+    .extern POO
+K:       .string 
