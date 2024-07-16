@@ -859,7 +859,8 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
     }
     /* builds the instruction's first word in the memory */
     first_word = build_instruction_first_word(op, NO_OPERAND, NO_OPERAND);
-    /* advances the instruction counter to account for the additional word */
+    /* inserts the word into the memory while updating the value of error_found to 1 if there
+     * are any errors in the process */
     *error_found |= memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
 }
 
