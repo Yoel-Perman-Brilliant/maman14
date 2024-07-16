@@ -1,3 +1,14 @@
+/**
+ * Handles the first pass of the assembler over the parsed, macro-less file.
+ * The first pass handles the encoding of everything that never depends on the values of any symbol: That includes 
+ * the .data, .string and .extern directives and the first word of every instruction.
+ * In addition, the first pass checks for the legality of everything it encodes, 
+ * as well as the legality of the syntax of an instruction (does not check that the content of the operands is legal,
+ * but checks everything else in the instruction).
+ * The main function in this file is first_pass, which executes the assembler's first pass over a given file.
+ * Assumes that the input .as file has already been parsed to a macro-less .am file.
+ */
+
 #include "../headers/first_pass.h"
 #include "../headers/files.h"
 #include "stdlib.h"

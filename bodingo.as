@@ -17,4 +17,4 @@ STRSTRSR:    .string "abcd"
 LIST:    .data 6, -9
         .data -100
     .extern POO
-K:       .string 
+K:       .string "hello "world"
