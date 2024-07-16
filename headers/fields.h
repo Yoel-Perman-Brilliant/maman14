@@ -9,6 +9,9 @@
 #define MACRO_DEFINITION "macr"
 #define MACRO_END "endmacr"
 #define COMMENT_START ';'
+/**
+ * The first field of a line (excluding the label) is considered a directive if it starts with a period.
+ */
 #define DIRECTIVE_START '.'
 #define DATA_DIRECTIVE ".data"
 #define STRING_DIRECTIVE ".string"

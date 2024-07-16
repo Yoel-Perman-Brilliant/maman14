@@ -9,9 +9,16 @@
 #include "math.h"
 #include "operators.h"
 
+/**
+ * The number of bits in a memory word.
+ */
 #define WORD_SIZE_BITS 15
+
 #define BITS_IN_BYTE 8
-#define INSTRUCTION_COUNT 16
+
+/**
+ * Opcode representing an illegal operator.
+ */
 #define UNDEFINED_OPCODE 16
 
 /**

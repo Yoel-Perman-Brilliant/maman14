@@ -9,6 +9,9 @@
 #include "linked_list.h"
 #include "stdarg.h"
 
+/**
+ * The number of slots in the table.
+ */
 #define HASH_TABLE_SIZE 101
 
 /**
