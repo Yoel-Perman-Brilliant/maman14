@@ -831,17 +831,36 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
     requirements->ic++;
 }
 
+/**
+ * Handles an instruction line that should have no operands while finding errors.
+ * This function validates the syntax of the line and inserts the instruction's first word into 
+ * the memory image.
+ * 
+ * Does so by verifying the syntax of the line (only includes the operator), then builds the instruction's first memory
+ * word and inserts it to the memory.
+ * 
+ * @param op the instruction's operator
+ * @param rest the part of the line after the operator
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param requirements a pointer to the requirements for the file
+ */
 void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                      int *error_found, Requirements *requirements) {
+    /* the instruction's first word in the memory */
     unsigned short first_word;
+    /* makes sure there are no extra characters after the operator */
     if (!is_line_blank(rest)) {
         printf("Input Error: Extra characters after instruction in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* builds the instruction's first word in the memory */
     first_word = build_instruction_first_word(op, NO_OPERAND, NO_OPERAND);
-    memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
+    /* advances the instruction counter to account for the additional word */
+    *error_found |= memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
 }
 
 AddressMethod get_address_method(char *operand) {
