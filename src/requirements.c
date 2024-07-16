@@ -74,6 +74,7 @@ int memory_insert_instruction(Requirements *requirements, unsigned short instruc
  * Inserts a word into the Requirement's data array while advancing its data counter.
  * If the sum of the instruction and data counters is larger than the size of the memory, then there is no more
  * space for the new data in the memory image, so an error is thrown.
+ * 
  * @param requirements     the requirements of the file
  * @param data             the word to be added, padded with a 0 on the left
  * @param line_count       the number of the line in the parsed file whose portion is being inserted to
