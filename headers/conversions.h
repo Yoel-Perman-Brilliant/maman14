@@ -31,8 +31,9 @@ void print_binary(unsigned short num);
 
 /**
  * Returns the first memory word representing an instruction.
- * @param op the instruction's operator
- * @param source_method the address method for the source operand
+ * 
+ * @param op                 the instruction's operator
+ * @param source_method      the address method for the source operand
  * @param destination_method the address method for the destination operand
  * @return the first word of the instruction's binary value, padded with a zero on the left so it can be returned
  * as an unsigned short.
@@ -42,7 +43,8 @@ short unsigned build_instruction_first_word(Operator op, AddressMethod source_me
 /**
  * Checks if the second and third words of an instruction should be combined to a single word.
  * Should only for two-operand instructions.
- * @param source_method the address method for the source operand
+ * 
+ * @param source_method      the address method for the source operand
  * @param destination_method the address method for the destination operand
  * @return 1 if the additional words should be combined, 0 otherwise
  */

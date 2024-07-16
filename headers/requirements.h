@@ -37,22 +37,25 @@ typedef struct {
 
 /**
  * Creates a new instance of Requirements to be used for the assembly of one file.
+ * 
  * @return a pointer to new Requirements
  */
 Requirements *create_requirements();
 
 /**
  * Frees a pointer to an instance of Requirements and all of its members.
+ * 
  * @param requirements a pointer to the requirements to be freed
  */
 void free_requirements(Requirements *requirements);
 
 /**
  * Inserts a word into the Requirement's instruction array while advancing its instruction counter.
- * @param requirements the requirements of the file
- * @param instruction the word to be added, padded with a 0 on the left
- * @param line_count the number of the line in the parsed file whose portion is being inserted to
- *        the memory (used for error reporting)
+ * 
+ * @param requirements     the requirements of the file
+ * @param instruction      the word to be added, padded with a 0 on the left
+ * @param line_count       the number of the line in the parsed file whose portion is being inserted to
+ *                         the memory (used for error reporting)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @return 0 if the insertion was successful, 1 otherwise
  */
@@ -60,10 +63,11 @@ int memory_insert_instruction(Requirements *requirements, unsigned short instruc
 
 /**
  * Inserts a word into the Requirement's data array while advancing its data counter.
- * @param requirements the requirements of the file
- * @param data the word to be added, padded with a 0 on the left
- * @param line_count the number of the line in the parsed file whose portion is being inserted to
- *        the memory (used for error reporting)
+ * 
+ * @param requirements     the requirements of the file
+ * @param data             the word to be added, padded with a 0 on the left
+ * @param line_count       the number of the line in the parsed file whose portion is being inserted to
+ *                         the memory (used for error reporting)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @return 0 if the insertion was successful, 1 otherwise
  */

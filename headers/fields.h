@@ -50,6 +50,7 @@ typedef char *MacroContent;
 
 /**
  * Checks if a given field is the name of a register.
+ * 
  * @param field the field to be checked
  * @return 1 if field is a register, 0 otherwise
  */
@@ -57,6 +58,7 @@ int is_register(char *field);
 
 /**
  * Determines if a label name is legal.
+ * 
  * @param name the label name to be checked
  * @return 1 if the given name is legal, 0 otherwise
  */
@@ -64,6 +66,7 @@ int legal_label_name(char *name);
 
 /**
  * Determines if a macro name is legal.
+ * 
  * @param name the macro name to be checked
  * @return 1 if the given name is legal, 0 otherwise
  */
@@ -72,6 +75,7 @@ int legal_macro_name(char *name);
 /**
  * Determines if a given field is a label.
  * Should be used on the first field of the line.
+ * 
  * @param field the field to be checked
  * @return 1 if the field is a label, 0 otherwise
  */
@@ -79,12 +83,14 @@ int is_label(char *field);
 
 /**
  * Transforms a given label (including the colon) into the appropriate symbol it represents (without the colon).
+ * 
  * @param label the label to be transformed
  */
 void label_to_symbol(char *label);
 
 /**
  * Checks if a given symbol represents a word in the data portion.
+ * 
  * @param symbol the content of the symbol to be checked
  * @return 1 if symbol is a data symbol, 0 otherwise
  */

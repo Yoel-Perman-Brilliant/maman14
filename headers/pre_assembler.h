@@ -21,7 +21,8 @@
  * Assumes that the definition of every macro comes before its usage, that there are no nested macro definitions, that
  * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
  * ending cannot have labels.
- * @param file_name the name of the input file without the .as extension
+ * 
+ * @param file_name   the name of the input file without the .as extension
  * @param macro_table a pointer to the macro table.
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */
