@@ -491,42 +491,69 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
     }
 }
 
+/**
+ * Analyzes and handles a .extern directive while finding errors.
+ * Assumes .extern may only get one parameter.
+ * Does so by inserting the field after .extern to the symbol table if it's legal.
+ * @param rest the part of the line after .extern
+ * @param label_name the name of line's label if there is one, or NULL if there isn't
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param requirements a pointer to the requirements for the file
+ */
 void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                    Requirements *requirements) {
+    /* the symbol given as argument for .extern */
     char *symbol;
+    /* if the line has a label, issues a warning */
     if (label_name != NULL) {
         printf("Warning: Label found before .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
     }
+    /* the argument is the field directly after .extern */
     symbol = find_token(rest, BLANKS, &rest);
+    /* makes sure the argument field is not empty */
     if (is_line_blank(symbol)) {
         printf("Input Error: No argument given to .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* makes sure the part of the line after the argument is empty */
     if (!is_line_blank(rest)) {
         printf("Input Error: Extra characters after the argument for .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* makes sure the symbol has a legal name */
     if (!legal_label_name(symbol)) {
         printf("Input Error: Symbol given as argument to .extern in line %d of file %s has an illegal name\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* inserts the symbol to the symbol table */
     insert_symbol(symbol, EXTERNAL, UNDEFINED, requirements, error_found, line_count, parsed_file_name);
 }
 
+/**
+ * Finds the label of a line with a given pointer to it and changes the pointer's value to not include the label.
+ * Does so by finding the first field of the line and setting the value of the the pointer to the label to it,
+ * then setting the value of the pointer to the line to the part after the first field.
+ * @param line a pointer to the line being read
+ * @param label_name a pointer to a string whose value should be the label if there is one, or NULL if there isn't
+ * @param line_count he number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to the requirements for the file
+ */
 void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found) {
+    /* the part of the line after the label */
     char *rest;
+    /* the first field of the line */
     char *first_field = find_token(*line, BLANKS, &rest);
-    if (first_field == NULL) {
-        *error_found = 1;
-        return;
-    }
+    /* if the first field is a label */
     if (is_label(first_field)) {
         label_to_symbol(first_field);
         if (!legal_label_name(first_field)) {
@@ -537,6 +564,7 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
         *label_name = first_field;
         *line = rest;
     }
+    else *label_name = NULL;
 }
 
 void handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
