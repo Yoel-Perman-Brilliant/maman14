@@ -44,19 +44,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count, Req
 void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
                    int *error_found, int line_count, char *parsed_file_name);
 
-/**
- * Checks if the line being read is a directive, and if so, handles it while finding errors (unless it's .entry,
- * which is handled in the second pass). Also inserts the line's label (if it exists) into the symbol table if 
- * it's a .data or .string directive.
- * Considers a line whose first field starts with a period as a directive.
- * @param line the line being read, not including the label (if there is one)
- * @param label_name the name of line's label if there is one, or NULL if there isn't
- * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found a pointer to a value that represents whether an error has been found
- * @param requirements a pointer to the requirements for the file
- * @return 1 if the line is a directive, 0 otherwise
- */
+
 int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                                Requirements *requirements);
 
@@ -259,50 +247,67 @@ int first_pass(char file_name[], Requirements *requirements) {
     return error_found;
 }
 
+/**
+ * Reads the data values from a .data directive and inserts them into the memory image while finding errors.
+ * Does so by splitting the string based on commas to find the arguments, trimming each one to remove whitespaces at the
+ * start and the end, finding the integer value of each one, verifying it, and inserting it to the memory.
+ * @param rest the part of the line that should contain only the values to insert (the part after .data)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param requirements a pointer to the requirements for the file
+ * @param error_found a pointer to a value that represents whether an error has been found
+ */
 void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
                          Requirements *requirements, int *error_found) {
+    /* the current argument for the directive */
     char *arg = NULL;
+    /* the trimmed version of the argument (without whitespaces at the start and the end */
     char *trimmed_arg;
+    /* verifies that the argument list is not empty */
+    if (is_line_blank(rest)) {
+        printf("Input Error: .data directive in line %d of file %s has no arguments\n", line_count, parsed_file_name);
+        *error_found = 1;
+        return;
+    }
+    /* verifies that the argument list does not start with a comma */
     if (first_non_blank(rest) == *DATA_SEPARATOR) {
         printf("Input Error: .data directive in line %d of file %s starts with an illegal comma\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* verifies that the argument list does not end with a comma */
     if (last_non_blank(rest) == *DATA_SEPARATOR) {
         printf("Input Error: .data directive in line %d of file %s ends with an illegal comma\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* verifies that the argument list does not include multiple consecutive commas, including ones with whitespaces
+     * between them */
     if (includes_consecutive(rest, *DATA_SEPARATOR)) {
         printf("Input Error: .data directive in line %d of file %s includes multiple consecutive commas\n",
                line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
-    if (is_line_blank(rest)) {
-        printf("Input Error: .data directive in line %d of file %s has no arguments\n", line_count, parsed_file_name);
-        *error_found = 1;
-        return;
-    }
+    /* finds and times the argument */
     arg = find_token(rest, DATA_SEPARATOR, &rest);
     trimmed_arg = trim(arg);
     free(arg);
+    /* for each argument (until the argument is not empty) */
     while (!is_line_blank(trimmed_arg)) {
+        /* the int value of the argument */
         int value;
-        if (is_line_blank(trimmed_arg)) {
-            printf("Input Error: .data directive in line %d of file %s has multiple consecutive commas\n",
-                   line_count, parsed_file_name);
-            *error_found = 1;
-            return;
-        }
+        /* if the argument includes whitespaces (which are necessarily not the start or the end), it must be made of
+         * two arguments without a comma between them */
         if (strpbrk(trimmed_arg, BLANKS)) {
             printf("Input Error: Missing comma in .data directive in line %d of file %s\n",
                    line_count, parsed_file_name);
             *error_found = 1;
             return;
         }
+        /* verifies that the argument is an integer */
         if (!is_integer(trimmed_arg)) {
             printf("Input Error: argument \"%s\" of .data directive in line %d of file %s is not an integer\n",
                    trimmed_arg, line_count, parsed_file_name);
@@ -310,13 +315,17 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
             return;
         }
         value = to_integer(trimmed_arg);
+        /* verifies that the argument's integer value is within the limits of the machine */
         if (value > MAX_WORD_SIZE || value < MIN_WORD_SIZE) {
             printf("Input Error: argument \"%d\" of .data directive in line %d of file %s is not "
                    "within the machine's memory cell bounds\n", value, line_count, parsed_file_name);
             *error_found = 1;
             return;
         }
+        /* inserts the data to the memory image while updating the value of error_found to 1 if an error is found
+         * in the inserting process */
         *error_found |= memory_insert_data(requirements, value, line_count, parsed_file_name);
+        /* the next argument */
         arg = find_token(rest, DATA_SEPARATOR, &rest);
         trimmed_arg = trim(arg);
         free(arg);
@@ -324,25 +333,49 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
     free(trimmed_arg);
 }
 
-/* consider better error reporting */
+/**
+ * Reads the string from a .string directive and inserts its characters into the memory image while finding errors.
+ * Assumes that the string is defined as anything that resides between the most external double quotes.
+ * For example, if the directive is: .string "hell"o world", then the characters of hell"o world (including the double
+ * quotes) would be inserted into the memory. 
+ * Also ignores escape characters and treats each character as individual.
+ *
+ * Does so by verifying that the first and last non-whitespace characters of the argument are double quotes, and for
+ * every character except for these, inserts the ascii value of the character to memory.
+ * 
+ * @param rest the part of the line after .string
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param requirements a pointer to the requirements for the file
+ */
 void insert_string(char *rest, int line_count, char *parsed_file_name, int *error_found, Requirements *requirements) {
+    /* the part of the line after .string without heading and trailing whitespaces */
     char *trimmed_rest;
+    /* the length of the part after .string without heading and trailing whitespaces */
     int trimmed_rest_length;
+    /* the index of the character being read in trimmed_rest */
     int i;
+    /* verifies that the first non-whitespace character of the argument is double quotes */
     if (first_non_blank(rest) != STRING_START_AND_END) {
         printf("Input Error: Argument for .string directive in line %d of file %s does not start with "
                "double quotation marks\n", line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* verifies that the last non-whitespace character of the argument is double quotes */
     if (last_non_blank(rest) != STRING_START_AND_END) {
         printf("Input Error: Argument for .string directive in line %d of file %s does not end with "
                "double quotation marks\n", line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
+    /* trims the argument and finds its length */
     trimmed_rest = trim(rest);
     trimmed_rest_length = strlen(trimmed_rest);
+    /* foe every character in the argument besides the first and last (the quotation marks), inserts their
+     * unsigned short ascii value to the memory, and changes the value of error_found to 1 if an error is found
+     * in the process */
     for (i = 1; i < trimmed_rest_length - 1; i++) {
         unsigned short value = NUM_TO_WORD(trimmed_rest[i]);
         *error_found |= memory_insert_data(requirements, value, line_count, parsed_file_name);
@@ -351,9 +384,26 @@ void insert_string(char *rest, int line_count, char *parsed_file_name, int *erro
     free(trimmed_rest);
 }
 
+/**
+ * Inserts a symbol to the symbol table while finding errors.
+ * 
+ * Does so by making sure that the symbol is not already defined, setting its value to either the instruction counter
+ * or data counter if the location is known, or 0 if it's external, then adding it to the symbol table with the given
+ * parameters.
+ * 
+ * @param symbol the name of the symbol (without a colon)
+ * @param type the type of the symbol (regular, external or entry)
+ * @param location the location of the symbol (code or data)
+ * @param requirements a pointer to the requirements for the file
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ */
 void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
                    int *error_found, int line_count, char *parsed_file_name) {
+    /* the content of the symbol to be added */
     SymbolContent content;
+    /* makes sure that the symbol is not already defined in the file */
     if (table_contains(requirements->symbol_table, symbol)) {
         if (type == EXTERNAL) {
             printf("Input Error: Symbol \"%s\" given as a parameter for .extern in line %d of file %s is "
@@ -365,39 +415,75 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
         *error_found = 1;
         return;
     }
+    /* sets the attributes of the symbol based on the given parameters */
     content.type = type;
     content.location = location;
+    /* sets the value to ic, dc or 0 based on the known or unknown location in the memory image */
     if (location == CODE) content.value = requirements->ic;
     else if (location == DATA) content.value = requirements->dc;
     else content.value = 0;
+    /* adds the symbol to the symbol table */
     table_add_symbol(requirements->symbol_table, symbol, content);
 }
 
+/**
+ * Checks if the line being read is a directive, and if so, handles it while finding errors (unless it's .entry,
+ * which is handled in the second pass). Also inserts the line's label (if it exists) into the symbol table if 
+ * it's a .data or .string directive.
+ * Considers a line whose first field starts with a period as a directive.
+ * 
+ * Does so by first checking that the directive itself starts with a period, then checks what directive it is.
+ * If it's .data or .string, inserts the line's label (if there is one) to the symbol table, then inserts the
+ * directive's data. If it's .extern, handles the directive. If it's .entry, does nothing as it is left for the second
+ * pass. Otherwise it's an illegal directive.
+ * 
+ * @param line the line being read, not including the label (if there is one)
+ * @param label_name the name of line's label if there is one, or NULL if there isn't
+ * @param line_count the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found a pointer to a value that represents whether an error has been found
+ * @param requirements a pointer to the requirements for the file
+ * @return 1 if the line is a directive, 0 otherwise
+ */
 int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                                Requirements *requirements) {
+    /* the part of the line after the directive */
     char *rest;
+    /* the first field of the line (which is passed without the label) */
     char *directive = find_token(line, BLANKS, &rest);
+    /* checks that it is a directive */
     if (directive[0] != DIRECTIVE_START) return 0;
+    /* if it's .data */
     if (equal(directive, DATA_DIRECTIVE)) {
+        /* inserts the label to the symbol table if there is one */
         if (label_name != NULL) {
             insert_symbol(label_name, REGULAR, DATA, requirements, error_found,
                           line_count, parsed_file_name);
         }
         insert_data_numbers(rest, parsed_file_name, line_count, requirements, error_found);
         return 1;
-    } else if (equal(directive, STRING_DIRECTIVE)) {
+    }
+    /* if it's .string */
+    else if (equal(directive, STRING_DIRECTIVE)) {
+        /* inserts the label to the symbol table if there is one */
         if (label_name != NULL) {
             insert_symbol(label_name, REGULAR, DATA, requirements, error_found,
                           line_count, parsed_file_name);
         }
         insert_string(rest, line_count, parsed_file_name, error_found, requirements);
         return 1;
-    } else if (equal(directive, EXTERN_DIRECTIVE)) {
+    }
+    /* if it's .extern */
+    else if (equal(directive, EXTERN_DIRECTIVE)) {
         handle_extern(rest, label_name, line_count, parsed_file_name, error_found, requirements);
         return 1;
-    } else if (equal(directive, ENTRY_DIRECTIVE)) {
+    }
+    /* if it's .entry */
+    else if (equal(directive, ENTRY_DIRECTIVE)) {
         return 1;
-    } else {
+    }
+    /* any other directive is illegal */
+    else {
         printf("Input Error: Illegal directive \"%s\" in line %d of file %s\n",
                directive, line_count, parsed_file_name);
         *error_found = 1;
