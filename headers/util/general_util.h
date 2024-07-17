@@ -8,7 +8,7 @@
 #include "stdio.h"
 
 /**
- * THe maximum length of a line that can be read using read_line.
+ * The maximum length of a line that can be read using read_line.
  */
 #define MAX_LINE_LENGTH 80
 
