@@ -1,5 +1,6 @@
 /**
- * Includes functions that have to do with identifying and verifying various fields in the input.
+ * Includes functions that have to do with identifying, verifying and handling various fields in the input,
+ * except for operators (see operators.c).
  */
 
 #include "../headers/fields.h"
@@ -13,6 +14,7 @@
 /**
  * Determines if a field name is the name of an instruction.
  * Does so by going over every instruction name and comparing it to the field name.
+ * 
  * @param name the name to be checked
  * @return 1 if the field has the name of an instruction, 0 otherwise
  */
@@ -29,6 +31,7 @@ int is_instruction(char *field) {
 /**
  * Determines if a field name is the name of an directive.
  * Does so by going over every directive name and comparing it to the field name.
+ * 
  * @param name the name to be checked
  * @return 1 if the field has the name of a directive, 0 otherwise
  */
@@ -44,6 +47,7 @@ int is_directive(char *field) {
 /**
  * Determines if a field name is the name of a register.
  * Does so by going over every register name and comparing it to the field name.
+ * 
  * @param name the name to be checked
  * @return 1 if the field has the name of a register, 0 otherwise
  */
@@ -59,6 +63,7 @@ int is_register(char *field) {
 /**
  * Determines if a field name is the name of a keyword that doesn't belong to any other checked category.
  * Does so by comparing the field name to every possible other.
+ * 
  * @param name the name to be checked
  * @return 1 if the field has the name of one of the checked keywords, 0 otherwise
  */
@@ -70,6 +75,7 @@ int is_other_keyword(char *field) {
  * Determines if a macro name is legal.
  * Does so by making sure that it isn't a keyword, that it is within the length limit, that the first character is a
  * latin letter and that the following characters are printable (not whitespaces).
+ * 
  * @param name the macro name to be checked
  * @return 1 if the given name is legal, 0 otherwise
  */
@@ -88,6 +94,7 @@ int legal_macro_name(char *name) {
  * Determines if a label name is legal.
  * Does so by making sure that it isn't a keyword, that it is within the length limit, that the first character is a
  * latin letter and that the following characters are either letters or numbers.
+ * 
  * @param name the label name to be checked
  * @return 1 if the given name is legal, 0 otherwise
  */
@@ -107,9 +114,30 @@ int legal_label_name(char *name) {
  * Does so by checking if its last character is a colon, as well as making sure that it isn't a comment by checking
  * that the first character is not a comma.
  * Should be used on the first field of the line.
+ * 
  * @param field the field to be checked
  * @return 1 if the field is a label, 0 otherwise
  */
 int is_label(char *field) {
     return field[strlen(field) - 1] == LABEL_END && field[0] != COMMENT_START;
+}
+
+/**
+ * Transforms a given label (including the colon) into the appropriate symbol it represents (without the colon).
+ * Does so by changing its last character to be 0, this ending it one character early and removing the colon.
+ * 
+ * @param label the label to be transformed
+ */
+void label_to_symbol(char *label) {
+    label[strlen(label) - 1] = '\0';
+}
+
+/**
+ * Checks if a given symbol represents a word in the data portion.
+ * @param symbol the content of the symbol to be checked
+ * 
+ * @return 1 if symbol is a data symbol, 0 otherwise
+ */
+int is_data_symbol(SymbolContent symbol) {
+    return symbol.location == DATA;
 }

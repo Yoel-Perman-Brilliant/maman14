@@ -1,4 +1,9 @@
+/**
+ * Includes functions that handle getting the names and opening files in different formats.
+ */
+ 
 #include "../headers/files.h"
+#include "../headers/exit_codes.h"
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
@@ -10,7 +15,7 @@ char *get_file_name_with_extension(char file_name[], char extension[]) {
     char *name_with_extension = calloc(strlen(file_name) + strlen(extension) + 1, 1);
     if (name_with_extension == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when copying file name\n");
-        return NULL;
+        exit(MEMORY_ALLOCATION_FAILURE);
     }
     /* copies the extensionless file name and the extension to the new string */
     strcat(name_with_extension, file_name);
@@ -20,6 +25,7 @@ char *get_file_name_with_extension(char file_name[], char extension[]) {
 
 /**
  * Gets a file name without an extension and returns the name of the input file with the .as extension.
+ * 
  * @param file_name the file name without the extension (as given as command line argument)
  * @return the name of the input file with the extension, or NULL if a memory allocation failure occurred
  */
@@ -29,6 +35,7 @@ char *get_input_file_name(char file_name[]) {
 
 /**
  * Gets a file name without an extension and returns the name of the parsed input file with the .am extension.
+ * 
  * @param file_name the file name without the extension (as given as command line argument)
  * @return the name of the parsed file with the extension, or NULL if a memory allocation failure occurred
  */
@@ -38,6 +45,7 @@ char *get_parsed_file_name(char file_name[]) {
 
 /**
  * Returns a pointer to the input file with a read permission based on the extensionless file name.
+ * 
  * @param file_name the name of the input file without the extension
  * @return a pointer to the now-open file, or NULL if the file could not be opened
  */
@@ -58,6 +66,7 @@ FILE *get_input_file(char file_name[]) {
  * as the parsed macro-less file.
  * Before opening the file, deletes any exsisting parsed file with the same to avoid writing to an existing file,
  * and instead generate a new one.
+ * 
  * @param file_name the name of the input file without the extension
  * @return a pointer to the new file, or NULL if the file could not be created
  */
@@ -76,6 +85,12 @@ FILE *get_parsed_file_append(char file_name[]) {
     return parsed_file;
 }
 
+/**
+ * Returns a pointer to the parsed, macro-less file with a read permission based on the extensionless file name.
+ * 
+ * @param file_name the name of the input file without the extension
+ * @return a pointer to the new file, or NULL if the file could not be created
+ */
 FILE *get_parsed_file_read(char file_name[]) {
     FILE *parsed_file;
     char *parsed_file_name = get_parsed_file_name(file_name);

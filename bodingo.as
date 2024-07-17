@@ -1,28 +1,20 @@
 MAIN:   add r3, LIST
 LOOP:   prn #48
-        macr m_macr
-        cmp r3, #-6
-        bne END
-        endmacr
         lea STR, r6
-        
-        
-        
-        inc r6
-        move    *r6,K
- ;HELLO:       sub r1, r4
-        m_macr
-               macr macr2
-        whatupnewyork
-        whatupmodiin
-        whichisbetter
+        macr macro 
+        cmp r3, #-6
+        bne n
         endmacr
-        m_macr
-        macr2
+;        ;inc #6
+        mov    *r6,K
+        sub r1, r4
+        macro
         dec K
+        macro
         jmp LOOP
-END     stop
-STR     .string "abcd"
-LIST    .data 6, -9
+END:     stop
+STRSTRSR:    .string "abcd"
+LIST:    .data 6, -9
         .data -100
-K       .data 31
+    .extern POO
+K:       .string "hello "world"
