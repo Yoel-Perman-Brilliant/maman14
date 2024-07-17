@@ -11,6 +11,7 @@
 #include "../headers/first_pass.h"
 #include "../headers/fields.h"
 #include "../headers/operators.h"
+#include "../headers/structures/set.h"
 
 int main() {
     int i;
@@ -22,12 +23,14 @@ int main() {
         printf("i: %d ", i);
         print_binary((requirements->instruction_array)[i]);
     }
-    /*printf("\033[1;33mDATA:\n\033[0m");
+    printf("\033[1;33mDATA:\n\033[0m");
     for (i = 0; i < 20; i++) {
         printf("i: %d ", i);
         print_binary((requirements->data_array)[i]);
-    }*/
+    }
     table_print_symbols(requirements->symbol_table);
+    printf("\033[1;33mFAULTY INSTRUCTIONS:\n\033[0m");
+    set_print(requirements->faulty_instructions);
     free(requirements);
     return 0;
 }

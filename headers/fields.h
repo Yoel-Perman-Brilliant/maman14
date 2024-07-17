@@ -19,36 +19,6 @@
 #define ENTRY_DIRECTIVE ".entry"
 
 /**
- * Represents the location of a symbol's value (code or data).
- * Undefined is used for external symbols whose location is not yet known.
- */
-typedef enum SymbolLocation {
-    CODE, DATA, UNDEFINED
-} SymbolLocation;
-
-/**
- * Represents the type of a symbol - external or entry if it is given as parameter for an appropriate directive,
- * and regular otherwise.
- */
-typedef enum SymbolType {
-    EXTERNAL, ENTRY, REGULAR
-} SymbolType;
-
-/**
- * Represents a symbol's content - its value, location and type.
- */
-typedef struct SymbolContent {
-    int value;
-    SymbolLocation location;
-    SymbolType type;
-} SymbolContent;
-
-/**
- * Represents a macro's content, which is effectively one string.
- */
-typedef char *MacroContent;
-
-/**
  * Checks if a given field is the name of a register.
  * 
  * @param field the field to be checked
@@ -87,13 +57,5 @@ int is_label(char *field);
  * @param label the label to be transformed
  */
 void label_to_symbol(char *label);
-
-/**
- * Checks if a given symbol represents a word in the data portion.
- * 
- * @param symbol the content of the symbol to be checked
- * @return 1 if symbol is a data symbol, 0 otherwise
- */
-int is_data_symbol(SymbolContent symbol);
 
 #endif

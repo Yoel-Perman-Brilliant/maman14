@@ -26,6 +26,7 @@ Requirements *create_requirements() {
         printf("Memory Error: Memory allocation failure when creating data array\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
+    requirements->faulty_instructions = create_set();
     requirements->instruction_array = calloc(MEMORY_SIZE, sizeof(short));
     if (requirements->instruction_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating instruction array\n");
@@ -43,6 +44,7 @@ Requirements *create_requirements() {
  */
 void free_requirements(Requirements *requirements) {
     free_table(requirements->symbol_table);
+    free_set(requirements->faulty_instructions);
     free(requirements->data_array);
     free(requirements->instruction_array);
     free(requirements);

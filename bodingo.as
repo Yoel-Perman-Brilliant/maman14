@@ -9,10 +9,11 @@ LOOP:   prn #48
         mov    *r6,K
         sub r1, r4
         macro
-        dec K
+        dec K K
         macro
         jmp LOOP
-END:     stop
+END:    stop h
+        asd beep boop
 STRSTRSR:    .string "abcd"
 LIST:    .data 6, -9
         .data -100

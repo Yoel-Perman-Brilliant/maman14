@@ -18,7 +18,7 @@
  * @param s the name to be hashed
  * @return the hash value for the given string
  */
-unsigned hash(char *string) {
+unsigned table_hash(char *string) {
     unsigned hash_val;
     for (hash_val = 0; *string != '\0'; string++) {
         hash_val = *string + HASH_MULTIPLIER * hash_val;
@@ -54,7 +54,7 @@ HashTable *create_table() {
  * @return 1 if the table contains an item with the given name, 0 otherwise
  */
 int table_contains(HashTable *table, char *name) {
-    return list_contains(table->lists[hash(name)], name);
+    return list_contains(table->lists[table_hash(name)], name);
 }
 
 /**
@@ -67,7 +67,7 @@ int table_contains(HashTable *table, char *name) {
  * @return a pointer to the content associated with the given name
  */
 Content *table_get(HashTable *table, char *name) {
-    return list_get(table->lists[hash(name)], name);
+    return list_get(table->lists[table_hash(name)], name);
 }
 
 /**
@@ -105,7 +105,7 @@ SymbolContent *table_get_symbol(HashTable *table, char *name) {
  * @param macro_content the content of the item to be added
  */
 void table_add(HashTable *table, char *name, Content content) {
-    list_add(table->lists[hash(name)], name, content);
+    list_add(table->lists[table_hash(name)], name, content);
 }
 
 /**
@@ -117,7 +117,7 @@ void table_add(HashTable *table, char *name, Content content) {
  * @param macro_content the content of the macro to be added
  */
 void table_add_macro(HashTable *table, char *name, MacroContent macro_content) {
-    list_add_macro(table->lists[hash(name)], name, macro_content);
+    list_add_macro(table->lists[table_hash(name)], name, macro_content);
 
 }
 
@@ -130,8 +130,7 @@ void table_add_macro(HashTable *table, char *name, MacroContent macro_content) {
  * @param symbol_content the content of the symbol to be added
  */
 void table_add_symbol(HashTable *table, char *name, SymbolContent symbol_content) {
-    list_add_symbol(table->lists[hash(name)], name, symbol_content);
-
+    list_add_symbol(table->lists[table_hash(name)], name, symbol_content);
 }
 
 /**

@@ -45,6 +45,17 @@ int list_contains(LinkedList *list, char *name) {
     return 0;
 }
 
+int list_contains_line_number(LinkedList *list, LineNumber line_number) {
+    Node *node = list->head;
+    while (node != NULL) {
+        if (node->content.line_number == line_number) {
+            return 1;
+        }
+        node = node->next;
+    }
+    return 0;
+}
+
 /**
  * Looks for a name in a linked-list and retrieves the content associated with that name.
  * Does so by going over every item on the list, and if its name is equal to the given name, retrieving its content.
@@ -145,6 +156,12 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
     list_add(list, name, content);
 }
 
+void list_add_line_number(LinkedList *list, LineNumber line_number) {
+    Content content;
+    content.line_number = line_number;
+    list_add(list, NULL, content);
+}
+
 /**
  * Frees a linked-list and all of its contents from the memory.
  * Does so by going over every node in the list, getting the next node and freeing the current one, then doing the same
@@ -191,3 +208,12 @@ void list_print_symbols(LinkedList *list) {
         node = node->next;
     }
 }
+
+void list_print_numbers(LinkedList *list) {
+    Node *node = list->head;
+    while (node != NULL) {
+        printf("%d\n", node->content.line_number);
+        node = node->next;
+    }
+}
+

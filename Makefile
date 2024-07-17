@@ -1,7 +1,7 @@
 FLAGS = -Wall -ansi -pedantic -g
 ALL_OBJECT_FILES = object/hash_table.o object/linked_list.o object/string_ops.o object/temp_main.o object/fields.o \
 		 		   object/pre_assembler.o object/general_util.o object/requirements.o object/files.o \
-		 		   object/conversions.o object/first_pass.o object/operators.o
+		 		   object/conversions.o object/first_pass.o object/operators.o object/set.o
 
 test: $(ALL_OBJECT_FILES)
 	gcc $(FLAGS) $(ALL_OBJECT_FILES) -o test
@@ -13,7 +13,7 @@ object/pre_assembler.o: src/pre_assembler.c headers/pre_assembler.h headers/stru
 object/temp_main.o: src/temp_main.c headers/util/string_ops.h headers/structures/linked_list.h \
 					headers/pre_assembler.h headers/structures/hash_table.h headers/requirements.h \
 					headers/conversions.h headers/util/general_util.h headers/util/string_ops.h \
-					headers/first_pass.h headers/fields.h headers/operators.h
+					headers/first_pass.h headers/fields.h headers/operators.h headers/structures/set.h
 	gcc -c $(FLAGS) src/temp_main.c -o object/temp_main.o
 
 object/operators.o: src/operators.c headers/operators.h headers/util/string_ops.h
@@ -29,13 +29,18 @@ object/first_pass.o: src/first_pass.c headers/first_pass.h headers/files.h heade
 object/files.o: src/files.c headers/files.h headers/exit_codes.h
 	gcc -c $(FlAGS) src/files.c -o object/files.o
 
-object/requirements.o: src/requirements.c headers/requirements.h headers/exit_codes.h
+object/requirements.o: src/requirements.c headers/requirements.h headers/exit_codes.h headers/structures/set.h \
+					   headers/structures/hash_table.h
 	gcc -c $(FlAGS) src/requirements.c -o object/requirements.o
 
 object/fields.o: src/fields.c headers/fields.h headers/util/string_ops.h
 	gcc -c $(FLAGS) src/fields.c -o object/fields.o
 
-object/hash_table.o: src/structures/hash_table.c headers/structures/hash_table.h headers/exit_codes.h
+object/set.o: src/structures/set.c headers/structures/set.h headers/exit_codes.h src/structures/linked_list.c
+	gcc -c $(FLAGS) src/structures/set.c -o object/set.o
+
+object/hash_table.o: src/structures/hash_table.c headers/structures/hash_table.h headers/exit_codes.h \
+ 					 src/structures/linked_list.c
 	gcc -c $(FLAGS) src/structures/hash_table.c -o object/hash_table.o
 	
 object/linked_list.o: src/structures/linked_list.c headers/structures/linked_list.h headers/util/string_ops.h \

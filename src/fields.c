@@ -131,13 +131,3 @@ int is_label(char *field) {
 void label_to_symbol(char *label) {
     label[strlen(label) - 1] = '\0';
 }
-
-/**
- * Checks if a given symbol represents a word in the data portion.
- * @param symbol the content of the symbol to be checked
- * 
- * @return 1 if symbol is a data symbol, 0 otherwise
- */
-int is_data_symbol(SymbolContent symbol) {
-    return symbol.location == DATA;
-}

@@ -95,6 +95,8 @@ int has_comment_start(char *line, int line_count, char *parsed_file_name, int *e
 
 int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found);
 
+int is_data_symbol(SymbolContent symbol);
+
 
 /**
  * Executes the first pass of the assembler over a parsed, macro-less file.
@@ -541,6 +543,7 @@ void handle_instruction(char *line, char *label_name, int line_count, char *pars
     if (!is_operator(operator_name)) {
         printf("Input Error: Illegal instruction name \"%s\" in line %d of file %s\n",
                operator_name, line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         return;
     }
     op = get_operator(operator_name);
@@ -588,6 +591,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (first_non_blank(rest) == *OPERAND_SEPARATOR) {
         printf("Input Error: Operand list in line %d of file %s starts with an illegal comma\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -595,6 +599,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (last_non_blank(rest) == *OPERAND_SEPARATOR) {
         printf("Input Error: Operand list in line %d of file %s ends with an illegal comma\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -602,6 +607,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (includes_consecutive(rest, *OPERAND_SEPARATOR)) {
         printf("Input Error: Operand list in line %d of file %s includes multiple consecutive commas\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -619,6 +625,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (is_line_blank(trimmed_source_operand)) {
         printf("Input Error: Missing source operand in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -627,6 +634,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (strpbrk(trimmed_source_operand, BLANKS)) {
         printf("Input Error: Missing comma between operands in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -634,6 +642,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (is_line_blank(trimmed_destination_operand)) {
         printf("Input Error: Missing destination operand in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -644,6 +653,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (strpbrk(trimmed_destination_operand, BLANKS) || !is_line_blank(rest)) {
         printf("Input Error: Extra characters after destination operand in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -654,6 +664,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (!is_legal_source_method(op, source_address_method)) {
         printf("Input Error: Illegal source address method in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -661,6 +672,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
     if (!is_legal_destination_method(op, destination_address_method)) {
         printf("Input Error: Illegal destination address method in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -706,6 +718,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
     if (is_line_blank(destination_operand)) {
         printf("Input Error: Missing destination operand in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -714,6 +727,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
         last_non_blank(destination_operand) == *OPERAND_SEPARATOR) {
         printf("Input Error: Illegal comma in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -721,6 +735,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
     if (exists(destination_operand, *OPERAND_SEPARATOR)) {
         printf("Input Error: Too many operands for operator \"%s\" in line %d of file %s\n",
                op.name, line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -728,6 +743,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
     if (!is_line_blank(rest)) {
         printf("Input Error: Extra characters after destination operand in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -736,6 +752,7 @@ void handle_one_operand_instruction(Operator op, char *rest, int line_count, cha
     if (!is_legal_destination_method(op, destination_address_method)) {
         printf("Input Error: Illegal destination address method in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -772,6 +789,7 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
     if (!is_line_blank(rest)) {
         printf("Input Error: Extra characters after instruction in line %d of file %s\n",
                line_count, parsed_file_name);
+        set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
         return;
     }
@@ -838,4 +856,14 @@ int blank_after_label(char *line, int line_count, char *parsed_file_name, int *e
         return 1;
     }
     return 0;
+}
+
+/**
+ * Checks if a given symbol represents a word in the data portion.
+ * @param symbol the content of the symbol to be checked
+ * 
+ * @return 1 if symbol is a data symbol, 0 otherwise
+ */
+int is_data_symbol(SymbolContent symbol) {
+    return symbol.location == DATA;
 }

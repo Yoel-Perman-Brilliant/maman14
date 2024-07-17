@@ -7,6 +7,7 @@
 #define MAMAN14_REQUIREMENTS_H
 
 #include "structures/hash_table.h"
+#include "structures/set.h"
 
 #define MEMORY_SIZE 4096
 #define IC_START 100
@@ -16,6 +17,7 @@
  */
 typedef struct {
     HashTable *symbol_table;
+    Set *faulty_instructions;
     /**
      * The file's data portion of the memory image.
      */
