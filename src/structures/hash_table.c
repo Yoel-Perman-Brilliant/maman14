@@ -54,7 +54,7 @@ HashTable *create_table() {
  * @return 1 if the table contains an item with the given name, 0 otherwise
  */
 int table_contains(HashTable *table, char *name) {
-    return list_contains_name(table->lists[hash(name)], name);
+    return list_contains(table->lists[hash(name)], name);
 }
 
 /**

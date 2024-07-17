@@ -12,7 +12,6 @@
 typedef union {
     MacroContent macro;
     SymbolContent symbol;
-    LineNumber line_number;
 } Content;
 
 /**
@@ -45,13 +44,11 @@ LinkedList *create_list();
  * @param name the name to be checked
  * @return 1 if the list contains an item with the given name, 0 otherwise
  */
-int list_contains_name(LinkedList *list, char *name);
-
-int list_contains_line_number(LinkedList *list, LineNumber line_number);
+int list_contains(LinkedList *list, char *name);
 
 /**
  * Looks for a name in a linked-list and retrieves the content associated with that name.
- * Should only be used after verifying that the name exists in the list using list_contains_name.
+ * Should only be used after verifying that the name exists in the list using list_contains.
  * 
  * @param list a pointer to the linked-list that the content should be retrieved from
  * @param name the name to look for
@@ -61,7 +58,7 @@ Content *list_get(LinkedList *list, char *name);
 
 /**
  * Looks for a name in a linked-list and retrieves the macro content associated with that name.
- * Should only be used after verifying that the name exists in the list using list_contains_name.
+ * Should only be used after verifying that the name exists in the list using list_contains.
  * 
  * @param list a pointer to the linked-list that the macro should be retrieved from
  * @param name the name to look for
@@ -71,7 +68,7 @@ MacroContent *list_get_macro(LinkedList *list, char *name);
 
 /**
  * Looks for a name in a linked-list and retrieves the symbol content associated with that name.
- * Should only be used after verifying that the name exists in the list using list_contains_name.
+ * Should only be used after verifying that the name exists in the list using list_contains.
  * 
  * @param list a pointer to the linked-list that the symbol should be retrieved from
  * @param name the name to look for
@@ -87,8 +84,6 @@ SymbolContent *list_get_symbol(LinkedList *list, char *name);
  * @param content the content to be added
  */
 void list_add(LinkedList *list, char *name, Content content);
-
-void list_add_line_number(LinkedList *list, LineNumber line_number);
 
 /**
  * Adds a macro with a given name to a linked-list.
