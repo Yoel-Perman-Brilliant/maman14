@@ -15,7 +15,7 @@
  * @return a pointer to new Requirements
  */
 Requirements *create_requirements() {
-    Requirements *requirements = malloc(sizeof(requirements));
+    Requirements *requirements = malloc(sizeof(Requirements));
     if (requirements == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating requirements\n");
         exit(MEMORY_ALLOCATION_FAILURE);

@@ -28,5 +28,6 @@ int main() {
         print_binary((requirements->data_array)[i]);
     }*/
     table_print_symbols(requirements->symbol_table);
+    free(requirements);
     return 0;
 }
