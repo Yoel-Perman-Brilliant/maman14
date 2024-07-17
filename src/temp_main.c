@@ -13,8 +13,14 @@
 #include "../headers/operators.h"
 
 int main() {
-    int i;
-    Requirements *requirements = create_requirements();
+    /*Requirements *requirements = create_requirements();
+    printf("requirements size: %lu\n", sizeof(*requirements));
+    printf("table pointer size: %lu\n", sizeof(requirements->symbol_table));
+    printf("in array pointer size: %lu\n", sizeof(requirements->instruction_array));
+    printf("da array pointer size: %lu\n", sizeof(requirements->data_array));
+    printf("ic size: %lu\n", sizeof(requirements->ic));
+    printf("dc size: %lu\n", sizeof(requirements->dc));
+    
     pre_assemble("bodingo");
     first_pass("bodingo", requirements);
     printf("\033[1;33mINSTRUCTIONS:\n\033[0m");
@@ -22,11 +28,19 @@ int main() {
         printf("i: %d ", i);
         print_binary((requirements->instruction_array)[i]);
     }
-    /*printf("\033[1;33mDATA:\n\033[0m");
+    /printf("\033[1;33mDATA:\n\033[0m");
     for (i = 0; i < 20; i++) {
         printf("i: %d ", i);
         print_binary((requirements->data_array)[i]);
-    }*/
+    }
     table_print_symbols(requirements->symbol_table);
+    free_requirements(requirements);*/
+    LinkedList *list = create_list();
+    list_add_line_number(list, 7);
+    list_add_line_number(list, 98);
+    printf("7: %d\n", list_contains_line_number(list, 7));
+    printf("98, %d\n", list_contains_line_number(list, 98));
+    printf("101: %d\n", list_contains_line_number(list, 101));
+    free_list(list);
     return 0;
 }

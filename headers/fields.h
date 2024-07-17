@@ -48,6 +48,8 @@ typedef struct SymbolContent {
  */
 typedef char *MacroContent;
 
+typedef int LineNumber;
+
 /**
  * Checks if a given field is the name of a register.
  * 

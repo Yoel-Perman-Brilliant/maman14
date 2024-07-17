@@ -31,4 +31,6 @@ int read_line(FILE *file, char *file_name, int line_number, char s[]);
  */
 void free_all(int num, ...);
 
+int number_of_digits(int num);
+
 #endif

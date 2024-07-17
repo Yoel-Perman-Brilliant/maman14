@@ -15,12 +15,12 @@
  * @return a pointer to new Requirements
  */
 Requirements *create_requirements() {
-    Requirements *requirements = malloc(sizeof(requirements));
+    Requirements *requirements = (Requirements *)malloc(sizeof(Requirements));
     if (requirements == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating requirements\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
-    requirements->symbol_table = create_table();
+    requirements->symbol_table = (HashTable *)create_table();
     requirements->data_array = calloc(MEMORY_SIZE, sizeof(short));
     if (requirements->data_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating data array\n");

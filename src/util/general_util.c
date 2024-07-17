@@ -53,3 +53,12 @@ void free_all(int num, ...) {
     }
     va_end(pointers);
 }
+
+int number_of_digits(int num) {
+    int digits = 0;
+    while (num > 0) {
+        digits++;
+        num /= 10;
+    }
+    return digits;
+}

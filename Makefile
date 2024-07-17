@@ -35,11 +35,12 @@ object/requirements.o: src/requirements.c headers/requirements.h headers/exit_co
 object/fields.o: src/fields.c headers/fields.h headers/util/string_ops.h
 	gcc -c $(FLAGS) src/fields.c -o object/fields.o
 
-object/hash_table.o: src/structures/hash_table.c headers/structures/hash_table.h headers/exit_codes.h
+object/hash_table.o: src/structures/hash_table.c headers/structures/hash_table.h headers/exit_codes.h \
+					 headers/util/general_util.h
 	gcc -c $(FLAGS) src/structures/hash_table.c -o object/hash_table.o
 	
 object/linked_list.o: src/structures/linked_list.c headers/structures/linked_list.h headers/util/string_ops.h \
-					  headers/exit_codes.h
+					  headers/exit_codes.h headers/util/general_util.h
 	gcc -c $(FLAGS) src/structures/linked_list.c -o object/linked_list.o
 
 object/string_ops.o: src/util/string_ops.c headers/util/string_ops.h headers/exit_codes.h

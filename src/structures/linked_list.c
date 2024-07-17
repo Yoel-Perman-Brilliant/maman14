@@ -7,6 +7,7 @@
 #include "../../headers/util/string_ops.h"
 #include "../../headers/exit_codes.h"
 #include "stdio.h"
+#include "../../headers/util/general_util.h"
 
 #define VALUE_NOT_FOUND_EXIT_CODE 1
 
@@ -34,7 +35,7 @@ LinkedList *create_list() {
  * @param name the name to be checked
  * @return 1 if the list contains an item with the given name, 0 otherwise
  */
-int list_contains(LinkedList *list, char *name) {
+int list_contains_name(LinkedList *list, char *name) {
     Node *node = list->head;
     while (node != NULL) {
         if (equal(node->name, name)) {
@@ -45,10 +46,21 @@ int list_contains(LinkedList *list, char *name) {
     return 0;
 }
 
+int list_contains_line_number(LinkedList *list, LineNumber lineNumber) {
+    Node *node = list->head;
+    while (node != NULL) {
+        if (node->content.line_number == lineNumber) {
+            return 1;
+        }
+        node = node->next;
+    }
+    return 0;
+}
+
 /**
  * Looks for a name in a linked-list and retrieves the content associated with that name.
  * Does so by going over every item on the list, and if its name is equal to the given name, retrieving its content.
- * Should only be used after verifying that the name exists in the list using list_contains.
+ * Should only be used after verifying that the name exists in the list using list_contains_name.
  * 
  * @param list a pointer to the linked-list that the content should be retrieved from
  * @param name the name to look for
@@ -71,7 +83,7 @@ Content *list_get(LinkedList *list, char *name) {
 /**
  * Looks for a name in a linked-list and retrieves the macro content associated with that name.
  * Does so by getting the content associated with the name, and retrieving its macro content.
- * Should only be used after verifying that the name exists in the list using list_contains.
+ * Should only be used after verifying that the name exists in the list using list_contains_name.
  * 
  * @param list a pointer to the linked-list that the macro should be retrieved from
  * @param name the name to look for
@@ -84,7 +96,7 @@ MacroContent *list_get_macro(LinkedList *list, char *name) {
 /**
  * Looks for a name in a linked-list and retrieves the symbol content associated with that name.
  * Does so by getting the content associated with the name, and retrieving its symbol content.
- * Should only be used after verifying that the name exists in the list using list_contains.
+ * Should only be used after verifying that the name exists in the list using list_contains_name.
  * 
  * @param list a pointer to the linked-list that the symbol should be retrieved from
  * @param name the name to look for
@@ -145,10 +157,17 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
     list_add(list, name, content);
 }
 
+void list_add_line_number(LinkedList *list, LineNumber line_number) {
+    Content content;
+    content.line_number = line_number;
+    list_add(list, NULL, content);
+}
+
 /**
  * Frees a linked-list and all of its contents from the memory.
- * Does so by going over every node in the list, getting the next node and freeing the current one, then doing the same
- * with the next node.
+ * Does so by going over every node in the list, getting the next node and freeing the current one and
+ * its name, then doing the same with the next node.
+ * @TODO document about how the name must be dynamically allocated
  * Finally frees the list pointer.
  * 
  * @param list a pointer to the list that should be freed
@@ -158,6 +177,7 @@ void free_list(LinkedList *list) {
     Node *next;
     while (node != NULL) {
         next = node->next;
+        free(node->name);
         free(node);
         node = next;
     }
