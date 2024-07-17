@@ -52,22 +52,19 @@ int list_contains(LinkedList *list, char *name) {
  * 
  * @param list a pointer to the linked-list that the content should be retrieved from
  * @param name the name to look for
- * @return the content associated with the given name
+ * @return a pointer to the content associated with the given name
  */
-Content list_get(LinkedList *list, char *name) {
+Content *list_get(LinkedList *list, char *name) {
     Node *node = list->head;
-    /* an effectively empty content that should only be returned when a code error occurs */
-    Content content;
-    content.macro = NULL;
     while (node != NULL) {
         if (equal(node->name, name)) {
-            return node->content;
+            return &node->content;
         }
         node = node->next;
     }
     /* this part of the code should not be reached, if it is then a bug exists in the code */
     fprintf(stderr, "Code Error: Name not found in data structure!\n");
-    return content;
+    return NULL;
 }
 
 
@@ -78,10 +75,10 @@ Content list_get(LinkedList *list, char *name) {
  * 
  * @param list a pointer to the linked-list that the macro should be retrieved from
  * @param name the name to look for
- * @return the macro content associated with the given name
+ * @return a pointer to the macro content associated with the given name
  */
-MacroContent list_get_macro(LinkedList *list, char *name) {
-    return list_get(list, name).macro;
+MacroContent *list_get_macro(LinkedList *list, char *name) {
+    return &list_get(list, name)->macro;
 }
 
 /**
@@ -91,10 +88,10 @@ MacroContent list_get_macro(LinkedList *list, char *name) {
  * 
  * @param list a pointer to the linked-list that the symbol should be retrieved from
  * @param name the name to look for
- * @return the symbol content associated with the given name
+ * @return a pointer to the symbol content associated with the given name
  */
-SymbolContent list_get_symbol(LinkedList *list, char *name) {
-    return list_get(list, name).symbol;
+SymbolContent *list_get_symbol(LinkedList *list, char *name) {
+    return &list_get(list, name)->symbol;
 }
 
 /**

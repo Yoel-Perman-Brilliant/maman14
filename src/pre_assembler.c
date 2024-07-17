@@ -55,7 +55,7 @@ void get_fields(char *line, char **first_field, char **second_field, char **thir
  * @param parsed_file a pointer to the parsed file that the macro content should be written to.
  */
 void handle_macro_usage(char *macro, HashTable *macro_table, FILE *parsed_file) {
-    MacroContent macro_content = table_get_macro(macro_table, macro);
+    MacroContent macro_content = *table_get_macro(macro_table, macro);
     fprintf(parsed_file, "%s", macro_content);
 }
 

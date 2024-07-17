@@ -52,9 +52,9 @@ int list_contains(LinkedList *list, char *name);
  * 
  * @param list a pointer to the linked-list that the content should be retrieved from
  * @param name the name to look for
- * @return the content associated with the given name
+ * @return a pointer to the content associated with the given name
  */
-Content list_get(LinkedList *list, char *name);
+Content *list_get(LinkedList *list, char *name);
 
 /**
  * Looks for a name in a linked-list and retrieves the macro content associated with that name.
@@ -62,9 +62,9 @@ Content list_get(LinkedList *list, char *name);
  * 
  * @param list a pointer to the linked-list that the macro should be retrieved from
  * @param name the name to look for
- * @return the macro content associated with the given name
+ * @return a pointer to the macro content associated with the given name
  */
-MacroContent list_get_macro(LinkedList *list, char *name);
+MacroContent *list_get_macro(LinkedList *list, char *name);
 
 /**
  * Looks for a name in a linked-list and retrieves the symbol content associated with that name.
@@ -72,9 +72,9 @@ MacroContent list_get_macro(LinkedList *list, char *name);
  * 
  * @param list a pointer to the linked-list that the symbol should be retrieved from
  * @param name the name to look for
- * @return the symbol content associated with the given name
+ * @return a pointer to the symbol content associated with the given name
  */
-SymbolContent list_get_symbol(LinkedList *list, char *name);
+SymbolContent *list_get_symbol(LinkedList *list, char *name);
 
 /**
  * Adds a content with a given name to a linked-list.
