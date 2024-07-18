@@ -201,6 +201,15 @@ void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(S
     }
 }
 
+void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condition)(SymbolContent symbol)) {
+    Node *node = list1->head;
+    while (node != NULL) {
+        if (condition(node->content.symbol))
+            list_add(list2, node->name, node->content);
+        node = node->next;
+    }
+}
+
 void list_print_symbols(LinkedList *list) {
     Node *node = list->head;
     while (node != NULL) {

@@ -1,8 +1,11 @@
 #include "../headers/second_pass.h"
-#include "../headers/string_ops.h"
+#include "../headers/util/string_ops.h"
+#include "../headers/util/general_util.h"
 #include "../headers/fields.h"
 #include "../headers/requirements.h"
+#include "../headers/files.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 void handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements);

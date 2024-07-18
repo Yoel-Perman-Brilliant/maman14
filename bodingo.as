@@ -7,15 +7,15 @@ LOOP:   prn #48
         endmacr
 ;        ;inc #6
         mov    *r6,K
+        .extern OOP
         sub r1, r4
         macro
-        dec K K
+        dec K 
         macro
         jmp LOOP
-END:    stop h
-        asd beep boop
+END:    stop 
 STRSTRSR:    .string "abcd"
-LIST:    .data 6, -9
-        .data -100
-    .extern POO
-K:       .string "hello "world"
+LIST:    .data 6, -9, -16384
+;        .data -100
+;    .extern POO
+;K:       .string "hello "world"

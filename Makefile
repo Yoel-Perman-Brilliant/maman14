@@ -1,7 +1,7 @@
 FLAGS = -Wall -ansi -pedantic -g
 ALL_OBJECT_FILES = object/hash_table.o object/linked_list.o object/string_ops.o object/temp_main.o object/fields.o \
 		 		   object/pre_assembler.o object/general_util.o object/requirements.o object/files.o \
-		 		   object/conversions.o object/first_pass.o object/operators.o object/set.o
+		 		   object/conversions.o object/first_pass.o object/operators.o object/set.o object/second_pass.o
 
 test: $(ALL_OBJECT_FILES)
 	gcc $(FLAGS) $(ALL_OBJECT_FILES) -o test
@@ -13,19 +13,28 @@ object/pre_assembler.o: src/pre_assembler.c headers/pre_assembler.h headers/stru
 object/temp_main.o: src/temp_main.c headers/util/string_ops.h headers/structures/linked_list.h \
 					headers/pre_assembler.h headers/structures/hash_table.h headers/requirements.h \
 					headers/conversions.h headers/util/general_util.h headers/util/string_ops.h \
-					headers/first_pass.h headers/fields.h headers/operators.h headers/structures/set.h
+					headers/first_pass.h headers/fields.h headers/operators.h headers/structures/set.h \
+					headers/second_pass.h
 	gcc -c $(FLAGS) src/temp_main.c -o object/temp_main.o
 
 object/operators.o: src/operators.c headers/operators.h headers/util/string_ops.h
 		gcc -c $(FLAGS) src/operators.c -o object/operators.o
 
-object/conversions.o: src/conversions.c headers/conversions.h headers/operators.h headers/util/string_ops.h
+object/conversions.o: src/conversions.c headers/conversions.h headers/operators.h headers/util/string_ops.h \
+					  headers/symbols.h
 	gcc -c $(FLAGS) src/conversions.c -o object/conversions.o
 
 object/first_pass.o: src/first_pass.c headers/first_pass.h headers/files.h headers/requirements.h \
  					 headers/util/string_ops.h headers/conversions.h headers/operators.h headers/util/general_util.h \
- 					 headers/fields.h
+ 					 headers/fields.h headers/structures/hash_table.h headers/structures/set.h \
+ 					 headers/symbols.h
 	gcc -c $(FLAGS) src/first_pass.c -o object/first_pass.o
+
+object/second_pass.o: src/second_pass.c headers/second_pass.h headers/util/string_ops.h headers/fields.h \
+					  headers/requirements.h headers/structures/hash_table.h headers/structures/set.h \
+					  headers/operators.h headers/conversions.h headers/files.h headers/util/general_util.h \
+					  headers/symbols.h
+	gcc -c $(FLAGD) src/second_pass.c -o object/second_pass.o
 
 object/files.o: src/files.c headers/files.h headers/exit_codes.h
 	gcc -c $(FlAGS) src/files.c -o object/files.o
@@ -41,11 +50,11 @@ object/set.o: src/structures/set.c headers/structures/set.h headers/exit_codes.h
 	gcc -c $(FLAGS) src/structures/set.c -o object/set.o
 
 object/hash_table.o: src/structures/hash_table.c headers/structures/hash_table.h headers/exit_codes.h \
- 					 src/structures/linked_list.c
+ 					 src/structures/linked_list.c headers/symbols.h
 	gcc -c $(FLAGS) src/structures/hash_table.c -o object/hash_table.o
 	
 object/linked_list.o: src/structures/linked_list.c headers/structures/linked_list.h headers/util/string_ops.h \
-					  headers/exit_codes.h
+					  headers/exit_codes.h headers/symbols.h
 	gcc -c $(FLAGS) src/structures/linked_list.c -o object/linked_list.o
 
 object/string_ops.o: src/util/string_ops.c headers/util/string_ops.h headers/exit_codes.h

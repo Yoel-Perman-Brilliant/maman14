@@ -93,6 +93,8 @@ void free_table(HashTable *table);
  */
 void table_add_to_all_that_apply(HashTable *table, int to_add, int (*condition)(SymbolContent symbol));
 
+void table_add_matching_to_list(HashTable *table, LinkedList *list, int (*condition)(SymbolContent symbol));
+
 void table_print_symbols(HashTable *table);
 
 #endif

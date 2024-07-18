@@ -8,6 +8,7 @@
 
 #include "math.h"
 #include "operators.h"
+#include "symbols.h"
 
 /**
  * The number of bits in a memory word.
@@ -25,7 +26,10 @@
  * The unsigned value of a word in the memory representing an integer in the 2's complement method.
  * Returns it as an unsigned short whose leftmost bit is 0.
  */
-#define NUM_TO_WORD(x) (((unsigned short)((x) > 0 ? (x) : (pow(2, WORD_SIZE_BITS)) - (-(x)))))
+#define DATA_NUM_TO_WORD(x) (((unsigned short)((x) > 0 ? (x) : (pow(2, WORD_SIZE_BITS)) - (-(x)))))
+#define IMMEDIATE_VALUE_SIZE_BITS 12
+#define IMMEDIATE_VALUE_MAX (pow(2, (IMMEDIATE_VALUE_SIZE_BITS - 1)) - 1)
+#define IMMEDIATE_VALUE_MIN (-pow(2, (IMMEDIATE_VALUE_SIZE_BITS - 1)))
 
 void print_binary(unsigned short num);
 

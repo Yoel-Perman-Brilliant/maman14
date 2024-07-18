@@ -8,31 +8,7 @@
 
 #include "../fields.h"
 #include "stdarg.h"
-
-/**
- * Represents the location of a symbol's value (code or data).
- * Undefined is used for external symbols whose location is not yet known.
- */
-typedef enum SymbolLocation {
-    CODE, DATA, UNDEFINED
-} SymbolLocation;
-
-/**
- * Represents the type of a symbol - external or entry if it is given as parameter for an appropriate directive,
- * and regular otherwise.
- */
-typedef enum SymbolType {
-    EXTERNAL, ENTRY, REGULAR
-} SymbolType;
-
-/**
- * Represents a symbol's content - its value, location and type.
- */
-typedef struct SymbolContent {
-    int value;
-    SymbolLocation location;
-    SymbolType type;
-} SymbolContent;
+#include "../symbols.h"
 
 /**
  * Represents a macro's content, which is effectively one string.
@@ -157,6 +133,8 @@ void free_list(LinkedList *list);
  *                  otherwise
  */
 void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol));
+
+void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condition)(SymbolContent symbol));
 
 void list_print_symbols(LinkedList *list);
 

@@ -244,6 +244,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
             *error_found = 1;
             return;
         }
+        value = DATA_NUM_TO_WORD(value);
         /* inserts the data to the memory image while updating the value of error_found to 1 if an error is found
          * in the inserting process */
         *error_found |= memory_insert_data(requirements, value, line_count, parsed_file_name);
@@ -307,7 +308,7 @@ void insert_string(char *rest, int line_count, char *parsed_file_name, int *erro
      * unsigned short ascii value to the memory, and changes the value of error_found to 1 if an error is found
      * in the process */
     for (i = 1; i < trimmed_rest_length - 1; i++) {
-        unsigned short value = NUM_TO_WORD(trimmed_rest[i]);
+        unsigned short value = DATA_NUM_TO_WORD(trimmed_rest[i]);
         *error_found |= memory_insert_data(requirements, value, line_count, parsed_file_name);
     }
     *error_found |= memory_insert_data(requirements, 0, line_count, parsed_file_name);

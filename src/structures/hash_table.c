@@ -1,7 +1,7 @@
 /**
  * Includes functions that allow for interacting with hash-tables.
  */
- 
+
 #include "../../headers/structures/hash_table.h"
 #include "stdlib.h"
 #include "stdio.h"
@@ -170,3 +170,11 @@ void table_print_symbols(HashTable *table) {
         list_print_symbols(table->lists[i]);
     }
 }
+
+void table_add_matching_to_list(HashTable *table, LinkedList *list, int (*condition)(SymbolContent symbol)) {
+    int i;
+    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+        list_add_matching_to_list(table->lists[i], list, condition);
+    }
+}
+

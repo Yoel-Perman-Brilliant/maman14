@@ -7,13 +7,21 @@
 #include "../headers/conversions.h"
 #include "stdio.h"
 #include "../headers/util/string_ops.h"
+#include "string.h"
 
 #define RIGHTMOST_BIT(x) (x & 1)
 #define OPCODE_SHIFT 11
 #define SOURCE_METHOD_SHIFT 7
 #define DESTINATION_METHOD_SHIFT 3
+#define SOURCE_REGISTER_NUMBER_SHIFT 3
+#define DESTINATION_REGISTER_NUMBER_SHIFT 7
 #define FIRST_WORD_ARE_STRING "100" 
-
+#define REGISTER_WORD_ARE_STRING "100"
+#define IMMEDIATE_VALUE_WORD_ARE_STRING "100"
+#define IMMEDIATE_VALUE_NUM_SHIFT 3
+#define DIRECT_ADDRESS_WORD_RELOCATABLE_ARE_STRING "010"
+#define DIRECT_ADDRESS_WORD_EXTERNAL_ARE_STRING "001"
+#define DIRECT_ADDRESS_WORD_VALUE_SHIFT 3
 
 void print_binary(unsigned short num) {
     /* For every i in the range [0, INT_SIZE - 1], prints the last bit of the number without its last i bits, as in the
@@ -74,5 +82,54 @@ short unsigned build_instruction_first_word(Operator op, AddressMethod source_me
 int should_combine_additional_words(AddressMethod source_method, AddressMethod destination_method) {
     return (source_method == DIRECT_REGISTER_ADDRESS || source_method == INDIRECT_REGISTER_ADDRESS) &&
             (destination_method == DIRECT_REGISTER_ADDRESS || destination_method == INDIRECT_REGISTER_ADDRESS);
+}
+
+short unsigned create_source_register_word(char *reg) {
+    int get_register_number(char *reg);
+    int reg_number = get_register_number(reg);
+    short unsigned source_register_bits = reg_number << SOURCE_REGISTER_NUMBER_SHIFT;
+    short unsigned are = binary_string_to_number(REGISTER_WORD_ARE_STRING);
+    return source_register_bits | are;
+}
+
+short unsigned create_destination_register_word(char *reg) {
+    int get_register_number(char *reg);
+    int reg_number = get_register_number(reg);
+    short unsigned destination_register_bits = reg_number << DESTINATION_REGISTER_NUMBER_SHIFT;
+    short unsigned are = binary_string_to_number(REGISTER_WORD_ARE_STRING);
+    return destination_register_bits | are;
+}
+
+short unsigned create_combined_register_word(char *source_reg, char *destination_reg) {
+    int get_register_number(char *reg);
+    int source_reg_number = get_register_number(source_reg);
+    int destination_reg_number = get_register_number(destination_reg);
+    short unsigned source_register_bits = source_reg_number << SOURCE_REGISTER_NUMBER_SHIFT;
+    short unsigned destination_register_bits = destination_reg_number << DESTINATION_REGISTER_NUMBER_SHIFT;
+    short unsigned are = binary_string_to_number(REGISTER_WORD_ARE_STRING);
+    return source_register_bits | destination_register_bits | are;
+}
+
+short unsigned create_immediate_address_word(short num) {
+    short unsigned num_bits = (unsigned short)(num > 0 ? num : (pow(2, WORD_SIZE_BITS)) + num)
+            << IMMEDIATE_VALUE_NUM_SHIFT;
+    short unsigned are = binary_string_to_number(REGISTER_WORD_ARE_STRING);
+    return num_bits | are;
+}
+
+short unsigned create_direct_address_word(short unsigned symbol_value, SymbolType symbol_type) {
+    short unsigned value_bits = symbol_value << DIRECT_ADDRESS_WORD_VALUE_SHIFT;
+    short unsigned are;
+    if (symbol_type == EXTERNAL) {
+        are = binary_string_to_number(DIRECT_ADDRESS_WORD_EXTERNAL_ARE_STRING);
+    } else {
+        are = binary_string_to_number(DIRECT_ADDRESS_WORD_RELOCATABLE_ARE_STRING);
+    }
+    return value_bits | are;
+}
+
+/* assumes reg is a valid register */
+int get_register_number(char *reg) {
+    return atoi(reg + 1);
 }
 

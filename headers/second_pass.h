@@ -3,6 +3,6 @@
 
 #include "requirements.h"
 
-int second_pass(char file_name[], Requirements requirements);
+int second_pass(char file_name[], Requirements *requirements);
 
 #endif
