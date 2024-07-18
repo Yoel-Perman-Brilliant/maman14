@@ -54,4 +54,16 @@ short unsigned build_instruction_first_word(Operator op, AddressMethod source_me
  */
 int should_combine_additional_words(AddressMethod source_method, AddressMethod destination_method);
 
+short unsigned create_source_register_word(char *reg);
+
+short unsigned create_destination_register_word(char *reg);
+
+short unsigned create_combined_register_word(char *source_reg, char *destination_reg);
+
+short unsigned create_combined_register_word(char *source_reg, char *destination_reg);
+
+short unsigned create_immediate_address_word(short num);
+
+short unsigned create_direct_address_word(short unsigned symbol_value, SymbolType symbol_type);
+
 #endif

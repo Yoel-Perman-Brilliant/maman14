@@ -6,9 +6,16 @@
 #include "../headers/files.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "../headers/operators.h"
 
 void handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements);
+
+void handle_two_operand_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
+                                    Requirements *requirements);
+
+void handle_one_operand_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
+                                    Requirements *requirements);
 
 void check_and_handle_entry(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                             Requirements *requirements);
@@ -28,6 +35,7 @@ int second_pass(char file_name[], Requirements *requirements) {
         free(parsed_file_name);
         return 1;
     }
+    requirements->ic = 0;
     /* for each line */
     while (!feof(parsed_file)) {
         /* a pointer version of line_read that can have a pointer reference it */
@@ -93,5 +101,20 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
         /* @TODO check for defining something as .entry twice */
         symbol->type = ENTRY;
         requirements->entry_found = 1;
+    }
+}
+
+void handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
+                        Requirements *requirements) {
+    if (set_contains(requirements->faulty_instructions, line_count)) return;
+    char *rest;
+    char *operator_name = find_token(line, BLANKS, &rest);
+    Operator op = get_operator(operator_name);
+    requirements->ic++;
+    if (has_source(op)) {
+        handle_two_operand_instruction(line, line_count, parsed_file_name, error_found, requirements);
+    }
+    else if (has_destination(op)) {
+        handle_one_operand_instruction(line, line_count, parsed_file_name, error_found, requirements);
     }
 }
