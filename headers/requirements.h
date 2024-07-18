@@ -35,6 +35,9 @@ typedef struct {
      * the memory image.
      */
     int ic;
+    
+    unsigned extern_found : 1;
+    unsigned entry_found : 1;
 } Requirements; 
 
 /**

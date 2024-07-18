@@ -70,8 +70,6 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
 int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                                Requirements *requirements);
 
-void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found);
-
 void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                    Requirements *requirements);
 
@@ -384,7 +382,7 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
     /* the first field of the line (which is passed without the label) */
     char *directive = find_token(line, BLANKS, &rest);
     /* checks that it is a directive */
-    if (directive[0] != DIRECTIVE_START) return 0;
+    if (!is_directive(directive)) return 0;
     /* if it's .data */
     if (equal(directive, DATA_DIRECTIVE)) {
         /* inserts the label to the symbol table if there is one */
@@ -427,7 +425,8 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
  * Analyzes and handles a .extern directive while finding errors.
  * Assumes .extern may only get one parameter.
  * 
- * Does so by inserting the field after .extern to the symbol table if it's legal.
+ * Does so by inserting the field after .extern to the symbol table if it's legal, and then updating the extern_found
+ * value in the requirements to 1 in order to know that a .ext file needs to be created.
  * 
  * @param rest             the part of the line after .extern
  * @param label_name       the name of line's label if there is one, or NULL if there isn't
@@ -470,43 +469,11 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
     }
     /* inserts the symbol to the symbol table */
     insert_symbol(symbol, EXTERNAL, UNDEFINED, requirements, error_found, line_count, parsed_file_name);
+    /* updates the requirements to know that there is a symbol characterized as extern, and such a .ext file needs to
+     * be created */
+    requirements->extern_found = 1;
 }
 
-/**
- * Finds the label of a line with a given pointer to it and changes the pointer's value to not include the label.
- * 
- * Does so by finding the first field of the line and setting the value of the the pointer to the label to it,
- * then setting the value of the pointer to the line to the part after the first field.
- * 
- * @param line             a pointer to the line being read
- * @param label_name       a pointer to a string whose value should be the label if there is one, or NULL if there isn't
- * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found      a pointer to the requirements for the file
- */
-void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found) {
-    /* the part of the line after the label */
-    char *rest;
-    /* the first field of the line */
-    char *first_field = find_token(*line, BLANKS, &rest);
-    /* if the first field is a label */
-    if (is_label(first_field)) {
-        /* removes the colon from the label to find the symbol */
-        label_to_symbol(first_field);
-        /* verifies that the label is legal */
-        if (!legal_label_name(first_field)) {
-            printf("Input Error: Label in line %d of file %s has an illegal name\n",
-                   line_count, parsed_file_name);
-            *error_found = 1;
-        }
-        /* sets the value of the label_name pointer to the symbol */
-        *label_name = first_field;
-        /* sets the value of the line pointer to the part after the label */
-        *line = rest;
-    }
-    /* if the first field is not a label, sets the value of the label_name pointer to NULL */
-    else *label_name = NULL;
-}
 
 /**
  * Handles an instruction line while finding errors and inserting the line's label (if it exists) into the symbol table.

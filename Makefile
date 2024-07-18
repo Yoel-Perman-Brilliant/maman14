@@ -23,7 +23,8 @@ object/conversions.o: src/conversions.c headers/conversions.h headers/operators.
 	gcc -c $(FLAGS) src/conversions.c -o object/conversions.o
 
 object/first_pass.o: src/first_pass.c headers/first_pass.h headers/files.h headers/requirements.h \
- 					 headers/util/string_ops.h headers/conversions.h headers/operators.h headers/util/general_util.h
+ 					 headers/util/string_ops.h headers/conversions.h headers/operators.h headers/util/general_util.h \
+ 					 headers/fields.h
 	gcc -c $(FLAGS) src/first_pass.c -o object/first_pass.o
 
 object/files.o: src/files.c headers/files.h headers/exit_codes.h

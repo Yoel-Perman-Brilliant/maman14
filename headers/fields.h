@@ -17,6 +17,7 @@
 #define STRING_DIRECTIVE ".string"
 #define EXTERN_DIRECTIVE ".extern"
 #define ENTRY_DIRECTIVE ".entry"
+#define BLANKS " \t"
 
 /**
  * Checks if a given field is the name of a register.
@@ -57,5 +58,9 @@ int is_label(char *field);
  * @param label the label to be transformed
  */
 void label_to_symbol(char *label);
+
+int is_directive(char *field);
+
+void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found);
 
 #endif
