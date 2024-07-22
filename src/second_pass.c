@@ -68,13 +68,29 @@ int second_pass(char file_name[], Requirements *requirements) {
     return error_found;
 }
 
+/**
+ * Checks if a given directive line is a .entry directive, and if so, handles it.
+ * Does so by finding the directive itself (the first field of the line) and checking if it is .entry.
+ * If it is, finds the argument (and makes sure there is exactly one), makes sure it is a defined, non-external symbol,
+ * and if it is, finds it in the symbol table and changes its type to ENTRY.
+ * 
+ * @param line             the line being read (excluding the label, if there is one)
+ * @param label_name       the name of the line's label, or null if there isn't one
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @param requirements     a pointer to the requirements for the file
+ */
 void check_and_handle_entry(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                             Requirements *requirements) {
+    /* the part of the line after .entry */
     char *rest;
     char *directive = find_token(line, BLANKS, &rest);
+    /* makes sure the directive is .entry */
     if (equal(directive, ENTRY_DIRECTIVE)) {
-        /* the symbol given as argument for .extern */
+        /* the name of the symbol given as argument for .extern */
         char *argument;
+        /* the content of the symbol being given as an argument */
         SymbolContent *symbol;
         /* if the line has a label, issues a warning */
         if (label_name != NULL) {
@@ -97,13 +113,16 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             *error_found = 1;
             return;
         }
+        /* makes sure the argument symbol is defined */
         if (!table_contains(requirements->symbol_table, argument)) {
             printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is"
                    "undefined in that file\n", argument, line_count, parsed_file_name);
             *error_found = 1;
             return;
         }
+        /* finds the reference to the symbol in the symbol table */
         symbol = table_get_symbol(requirements->symbol_table, argument);
+        /* makes sure the symbol is not external */
         if (symbol->type == EXTERNAL) {
             printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is"
                    "already defined in that file as external\n", argument, line_count, parsed_file_name);
@@ -111,6 +130,8 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             return;
         }
         /* @TODO check for defining something as .entry twice */
+        /* changes the symbol's type to ENTRY and updates the requirements to know that a .entry directive has been
+         * used */
         symbol->type = ENTRY;
         requirements->entry_found = 1;
     }
