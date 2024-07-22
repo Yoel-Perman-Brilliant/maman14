@@ -186,15 +186,15 @@ void second_pass_handle_one_operand_instruction(char *rest, int line_count, char
 int validate_immediate_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found) {
     int value;
     if (!is_integer(operand + 1)) {
-        printf("Input Error: Operand \"%s\" given in the immediate address method in line %d of file %s is not an"
-               "integer\n", operand + 1, line_count, parsed_file_name);
+        printf("Input Error: In operand \"%s\" given in the immediate address method in line %d of file %s, "
+               "%s is not an integer\n", operand, line_count, parsed_file_name, operand + 1);
         *error_found = 1;
         return 0;
     }
     value = to_integer(operand + 1);
     if (value > IMMEDIATE_VALUE_MAX || value < IMMEDIATE_VALUE_MIN) {
-        printf("Input Error: Operand \"%s\" given in the immediate address method in line %d of file %s is not"
-               " in the allowed range\n", operand + 1, line_count, parsed_file_name);
+        printf("Input Error: In operand \"%s\" given in the immediate address method in line %d of file %s, "
+               "%d is not in the allowed range\n", operand, line_count, parsed_file_name, value);
         *error_found = 1;
         return 0;
     }
@@ -215,8 +215,8 @@ int validate_direct_address_operand(char *operand, int line_count, char *parsed_
 int validate_indirect_register_address_operand(char *operand, int line_count, char *parsed_file_name,
                                                int *error_found) {
     if (!is_register(operand + 1)) {
-        printf("Input Error: Operand \"%s\" given in the indirect register address method in line %d of file %s is not"
-               " a valid register\n", operand, line_count, parsed_file_name);
+        printf("Input Error: In operand \"%s\" given in the indirect register address method in line %d of file %s,"
+               " %s is not valid register\n", operand, line_count, parsed_file_name, operand + 1);
         *error_found = 1;
         return 0;
     }
