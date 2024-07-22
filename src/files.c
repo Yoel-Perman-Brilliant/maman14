@@ -10,6 +10,9 @@
 
 #define INPUT_EXTENSION ".as"
 #define PARSED_EXTENSION ".am"
+#define OBJECT_EXTENSION ".ob"
+#define EXTERN_EXTENSION ".ext"
+#define ENTRY_EXTENSION ".ent"
 
 char *get_file_name_with_extension(char file_name[], char extension[]) {
     char *name_with_extension = calloc(strlen(file_name) + strlen(extension) + 1, 1);
@@ -101,4 +104,49 @@ FILE *get_parsed_file_read(char file_name[]) {
     }
     free(parsed_file_name);
     return parsed_file;
+}
+
+FILE *get_object_file(char file_name[]) {
+    FILE *object_file;
+    char *object_file_name = get_file_name_with_extension(file_name, OBJECT_EXTENSION);
+    /* removes any already existing file with the same name */
+    remove(object_file_name);
+    /* since no file with the name exists, creates a new file */
+    object_file = fopen(object_file_name, "a");
+    if (object_file == NULL) {
+        printf("Error: Can't create file %s\n", object_file_name);
+        return NULL;
+    }
+    free(object_file_name);
+    return object_file;
+}
+
+FILE *get_extern_file(char file_name[]) {
+    FILE *extern_file;
+    char *extern_file_name = get_file_name_with_extension(file_name, EXTERN_EXTENSION);
+    /* removes any already existing file with the same name */
+    remove(extern_file_name);
+    /* since no file with the name exists, creates a new file */
+    extern_file = fopen(extern_file_name, "a");
+    if (extern_file == NULL) {
+        printf("Error: Can't create file %s\n", extern_file_name);
+        return NULL;
+    }
+    free(extern_file_name);
+    return extern_file;
+}
+
+FILE *get_entry_file(char file_name[]) {
+    FILE *entry_file;
+    char *entry_file_name = get_file_name_with_extension(file_name, ENTRY_EXTENSION);
+    /* removes any already existing file with the same name */
+    remove(entry_file_name);
+    /* since no file with the name exists, creates a new file */
+    entry_file = fopen(entry_file_name, "a");
+    if (entry_file == NULL) {
+        printf("Error: Can't create file %s\n", entry_file_name);
+        return NULL;
+    }
+    free(entry_file_name);
+    return entry_file;
 }

@@ -13,10 +13,7 @@
 #include "../headers/fields.h"
 #include "../headers/operators.h"
 #include "../headers/structures/set.h"
-
-int is_external(SymbolContent symbolContent) {
-    return symbolContent.type == EXTERNAL;
-}
+#include "../headers/output_creator.h"
 
 int main() {
     int i;
@@ -24,7 +21,10 @@ int main() {
     pre_assemble("bodingo");
     first_pass("bodingo", requirements);
     second_pass("bodingo", requirements);
-    printf("\033[1;33mINSTRUCTIONS:\n\033[0m");
+    create_files("bodingo", requirements);
+    printf("119: ");
+    print_binary(requirements->instruction_array[119]);
+    /*printf("\033[1;33mINSTRUCTIONS:\n\033[0m");
     for (i = 98; i < 150; i++) {
         printf("i: %d ", i);
         print_binary((requirements->instruction_array)[i]);
@@ -33,7 +33,7 @@ int main() {
     for (i = 0; i < 20; i++) {
         printf("i: %d ", i);
         print_binary((requirements->data_array)[i]);
-    }
+    }*/
     table_print_symbols(requirements->symbol_table);
     /*printf("\033[1;33mFAULTY INSTRUCTIONS:\n\033[0m");
     set_print(requirements->faulty_instructions);*/

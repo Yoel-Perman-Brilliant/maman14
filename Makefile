@@ -1,7 +1,8 @@
 FLAGS = -Wall -ansi -pedantic -g
 ALL_OBJECT_FILES = object/hash_table.o object/linked_list.o object/string_ops.o object/temp_main.o object/fields.o \
 		 		   object/pre_assembler.o object/general_util.o object/requirements.o object/files.o \
-		 		   object/conversions.o object/first_pass.o object/operators.o object/set.o object/second_pass.o
+		 		   object/conversions.o object/first_pass.o object/operators.o object/set.o object/second_pass.o \
+		 		   object/output_creator.o
 
 test: $(ALL_OBJECT_FILES)
 	gcc $(FLAGS) $(ALL_OBJECT_FILES) -o test
@@ -14,7 +15,7 @@ object/temp_main.o: src/temp_main.c headers/util/string_ops.h headers/structures
 					headers/pre_assembler.h headers/structures/hash_table.h headers/requirements.h \
 					headers/conversions.h headers/util/general_util.h headers/util/string_ops.h \
 					headers/first_pass.h headers/fields.h headers/operators.h headers/structures/set.h \
-					headers/second_pass.h
+					headers/second_pass.h headers/output_creator.h
 	gcc -c $(FLAGS) src/temp_main.c -o object/temp_main.o
 
 object/operators.o: src/operators.c headers/operators.h headers/util/string_ops.h headers/fields.h
@@ -34,9 +35,13 @@ object/second_pass.o: src/second_pass.c headers/second_pass.h headers/util/strin
 					  headers/requirements.h headers/structures/hash_table.h headers/structures/set.h \
 					  headers/operators.h headers/conversions.h headers/files.h headers/util/general_util.h \
 					  headers/symbols.h
-	gcc -c $(FLAGD) src/second_pass.c -o object/second_pass.o
+	gcc -c $(FLAGS) src/second_pass.c -o object/second_pass.o
 
-object/files.o: src/files.c headers/files.h headers/exit_codes.h
+object/output_creator.o: src/output_creator.c headers/output_creator.h headers/requirements.h headers/files.h \
+						 headers/structures/linked_list.h headers/structures/hash_table.h
+	gcc -c $(FLAGS) src/output_creator.c -o object/output_creator.o
+
+object/files.o: src/files.c headers/files.h headers/exit_codes.h headers/requirements.h
 	gcc -c $(FlAGS) src/files.c -o object/files.o
 
 object/requirements.o: src/requirements.c headers/requirements.h headers/exit_codes.h headers/structures/set.h \

@@ -5,6 +5,7 @@
 #define MAMAN14_FILES_H
 
 #include "stdio.h"
+#include "requirements.h"
 
 /**
  * Gets a file name without an extension and returns the name of the input file with the .as extension.
@@ -48,5 +49,11 @@ FILE *get_parsed_file_append(char file_name[]);
  * @return a pointer to the new file, or NULL if the file could not be created
  */
 FILE *get_parsed_file_read(char file_name[]);
+
+FILE *get_object_file(char file_name[]);
+
+FILE *get_extern_file(char file_name[]);
+
+FILE *get_entry_file(char file_name[]);
 
 #endif

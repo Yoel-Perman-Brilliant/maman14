@@ -46,6 +46,8 @@ typedef struct LinkedList {
  */
 LinkedList *create_list();
 
+int list_empty(LinkedList *list);
+
 /**
  * Checks if a linked-list contains an item represented by a given name.
  * 

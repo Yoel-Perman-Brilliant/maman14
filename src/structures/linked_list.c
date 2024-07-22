@@ -26,6 +26,11 @@ LinkedList *create_list() {
     return list;
 }
 
+int list_empty(LinkedList *list) {
+    return list->head == NULL;
+}
+
+
 /**
  * Checks if a linked-list contains an item represented by a given name.
  * Does so by going over every node on the list and checking if its name is is equal to the given name.
