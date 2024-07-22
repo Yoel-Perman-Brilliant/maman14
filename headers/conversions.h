@@ -64,6 +64,6 @@ short unsigned create_combined_register_word(char *source_reg, char *destination
 
 short unsigned create_immediate_address_word(short num);
 
-short unsigned create_direct_address_word(short unsigned symbol_value, SymbolType symbol_type);
+short unsigned create_direct_address_word(int symbol_value, SymbolType symbol_type);
 
 #endif

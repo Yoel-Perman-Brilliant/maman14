@@ -13,8 +13,8 @@
 #define OPCODE_SHIFT 11
 #define SOURCE_METHOD_SHIFT 7
 #define DESTINATION_METHOD_SHIFT 3
-#define SOURCE_REGISTER_NUMBER_SHIFT 3
-#define DESTINATION_REGISTER_NUMBER_SHIFT 7
+#define SOURCE_REGISTER_NUMBER_SHIFT 6
+#define DESTINATION_REGISTER_NUMBER_SHIFT 3
 #define FIRST_WORD_ARE_STRING "100" 
 #define REGISTER_WORD_ARE_STRING "100"
 #define IMMEDIATE_VALUE_WORD_ARE_STRING "100"
@@ -117,7 +117,7 @@ short unsigned create_immediate_address_word(short num) {
     return num_bits | are;
 }
 
-short unsigned create_direct_address_word(short unsigned symbol_value, SymbolType symbol_type) {
+short unsigned create_direct_address_word(int symbol_value, SymbolType symbol_type) {
     short unsigned value_bits = symbol_value << DIRECT_ADDRESS_WORD_VALUE_SHIFT;
     short unsigned are;
     if (symbol_type == EXTERNAL) {

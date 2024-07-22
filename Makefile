@@ -17,7 +17,7 @@ object/temp_main.o: src/temp_main.c headers/util/string_ops.h headers/structures
 					headers/second_pass.h
 	gcc -c $(FLAGS) src/temp_main.c -o object/temp_main.o
 
-object/operators.o: src/operators.c headers/operators.h headers/util/string_ops.h
+object/operators.o: src/operators.c headers/operators.h headers/util/string_ops.h headers/fields.h
 		gcc -c $(FLAGS) src/operators.c -o object/operators.o
 
 object/conversions.o: src/conversions.c headers/conversions.h headers/operators.h headers/util/string_ops.h \

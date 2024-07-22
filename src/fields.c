@@ -53,7 +53,7 @@ int is_known_directive(char *field) {
  * @return 1 if the field has the name of a register, 0 otherwise
  */
 int is_register(char *field) {
-    char *registers[] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "PSW"};
+    char *registers[] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7"};
     int i;
     for (i = 0; i < sizeof(registers) / sizeof (char *); i++) {
         if (equal(registers[i], field)) return 1;
@@ -172,5 +172,22 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
     }
         /* if the first field is not a label, sets the value of the label_name pointer to NULL */
     else *label_name = NULL;
+}
+
+/**
+ * Gets the address method of a given operand.
+ * 
+ * Does so by checking if it starts with a pound - if it does, it must be immediate address. If it starts with an
+ * asterisk, it must be indirect register address. If it's a register, then it is direct register. Otherwise, assumes
+ * it's a symbol and therefore it is direct address.
+ * 
+ * @param operand the operand to check
+ * @return the address method of operand
+ */
+AddressMethod get_address_method(char *operand) {
+    if (operand[0] == IMMEDIATE_ADDRESS_START) return IMMEDIATE_ADDRESS;
+    if (operand[0] == INDIRECT_REGISTER_ADDRESS_START) return INDIRECT_REGISTER_ADDRESS;
+    if (is_register(operand)) return DIRECT_REGISTER_ADDRESS;
+    return DIRECT_ADDRESS;
 }
 

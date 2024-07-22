@@ -7,18 +7,30 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "../headers/operators.h"
+#include "../headers/conversions.h"
 
-void handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
-                        Requirements *requirements);
+#define OPERAND_SEPARATOR ","
 
-void handle_two_operand_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
+void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements);
 
-void handle_one_operand_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
-                                    Requirements *requirements);
+void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+                                                Requirements *requirements);
 
-void check_and_handle_entry(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+                                                Requirements *requirements);
+
+void check_and_handle_entry(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                             Requirements *requirements);
+
+int validate_operand(char *operand, AddressMethod address_method, int line_count, char *parsed_file_name,
+                     int *error_found, Requirements *requirements);
+
+short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
+                                          int is_source);
+
+short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
+                                            AddressMethod source_method, AddressMethod destination_method);
 
 int second_pass(char file_name[], Requirements *requirements) {
     char *parsed_file_name = get_parsed_file_name(file_name);
@@ -35,7 +47,7 @@ int second_pass(char file_name[], Requirements *requirements) {
         free(parsed_file_name);
         return 1;
     }
-    requirements->ic = 0;
+    requirements->ic = IC_START;
     /* for each line */
     while (!feof(parsed_file)) {
         /* a pointer version of line_read that can have a pointer reference it */
@@ -48,7 +60,7 @@ int second_pass(char file_name[], Requirements *requirements) {
         /* checks that the part after the label is not blank */
         if (is_line_blank(line)) continue;
         if (!is_directive(line)) {
-            handle_instruction(line, line_count, parsed_file_name, &error_found, requirements);
+            second_pass_handle_instruction(line, line_count, parsed_file_name, &error_found, requirements);
         } else check_and_handle_entry(line, label, line_count, parsed_file_name, &error_found, requirements);
     }
     fclose(parsed_file);
@@ -104,17 +116,152 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
     }
 }
 
-void handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
-                        Requirements *requirements) {
+void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
+                                    Requirements *requirements) {
     if (set_contains(requirements->faulty_instructions, line_count)) return;
     char *rest;
     char *operator_name = find_token(line, BLANKS, &rest);
     Operator op = get_operator(operator_name);
+    free(operator_name);
     requirements->ic++;
     if (has_source(op)) {
-        handle_two_operand_instruction(line, line_count, parsed_file_name, error_found, requirements);
+        second_pass_handle_two_operand_instruction(rest, line_count, parsed_file_name, error_found, requirements);
+    } else if (has_destination(op)) {
+        second_pass_handle_one_operand_instruction(rest, line_count, parsed_file_name, error_found, requirements);
     }
-    else if (has_destination(op)) {
-        handle_one_operand_instruction(line, line_count, parsed_file_name, error_found, requirements);
+}
+
+void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+                                    Requirements *requirements) {
+    char *source_operand;
+    char *trimmed_source_operand;
+    char *destination_operand;
+    char *trimmed_destination_operand;
+    AddressMethod source_method;
+    AddressMethod destination_method;
+    source_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    destination_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    trimmed_source_operand = trim(source_operand);
+    trimmed_destination_operand = trim(destination_operand);
+    free_all(2, source_operand, destination_operand);
+    source_method = get_address_method(trimmed_source_operand);
+    destination_method = get_address_method(trimmed_destination_operand);
+    if (!validate_operand(trimmed_source_operand, source_method, line_count, parsed_file_name,
+                          error_found, requirements)
+        || !validate_operand(trimmed_destination_operand, destination_method, line_count, 
+                             parsed_file_name, error_found, requirements)) {
+        return;
     }
+    if (should_combine_additional_words(source_method, destination_method)) {
+        short unsigned word = create_combined_operand_word(trimmed_source_operand,
+                                                           trimmed_destination_operand,
+                                                           source_method, destination_method);
+        memory_insert_instruction(requirements, word, line_count, parsed_file_name);
+    }
+    else {
+        short unsigned source_word = create_single_operand_word(trimmed_source_operand, source_method,
+                                                               requirements, 1);
+        short unsigned destination_word = create_single_operand_word(trimmed_destination_operand, destination_method,
+                                                                    requirements, 0);
+        memory_insert_instruction(requirements, source_word, line_count, parsed_file_name);
+        memory_insert_instruction(requirements, destination_word, line_count, parsed_file_name);
+    }
+    free_all(2, trimmed_source_operand, trimmed_destination_operand);
+}
+
+void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+                                    Requirements *requirements) {
+    char *destination_operand = find_token(rest, BLANKS, &rest);
+    AddressMethod destination_method = get_address_method(destination_operand);
+    if (!validate_operand(destination_operand, destination_method, line_count, parsed_file_name, error_found,
+                          requirements)) {
+        return;
+    }
+    short unsigned destination_word = create_single_operand_word(destination_operand,
+                                                                 destination_method, requirements,0);
+    memory_insert_instruction(requirements, destination_word, line_count, parsed_file_name);
+    free(destination_operand);
+}
+
+int validate_immediate_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found) {
+    int value;
+    if (!is_integer(operand + 1)) {
+        printf("Input Error: Operand \"%s\" given in the immediate address method in line %d of file %s is not an"
+               "integer\n", operand + 1, line_count, parsed_file_name);
+        *error_found = 1;
+        return 0;
+    }
+    value = to_integer(operand + 1);
+    if (value > IMMEDIATE_VALUE_MAX || value < IMMEDIATE_VALUE_MIN) {
+        printf("Input Error: Operand \"%s\" given in the immediate address method in line %d of file %s is not"
+               " in the allowed range\n", operand + 1, line_count, parsed_file_name);
+        *error_found = 1;
+        return 0;
+    }
+    return 1;
+}
+
+int validate_direct_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found,
+                                    Requirements *requirements) {
+    if (!table_contains(requirements->symbol_table, operand)) {
+        printf("Input Error: Operand \"%s\" given in the direct address method in line %d of file %s is not"
+               " a defined symbol\n", operand, line_count, parsed_file_name);
+        *error_found = 1;
+        return 0;
+    }
+    return 1;
+}
+
+int validate_indirect_register_address_operand(char im*operand, int line_count, char *parsed_file_name,
+                                               int *error_found) {
+    if (!is_register(operand + 1)) {
+        printf("Input Error: Operand \"%s\" given in the indirect register address method in line %d of file %s is not"
+               " a valid register\n", operand, line_count, parsed_file_name);
+        *error_found = 1;
+        return 0;
+    }
+    return 1;
+}
+
+int validate_operand(char *operand, AddressMethod address_method, int line_count, char *parsed_file_name,
+                     int *error_found, Requirements *requirements) {
+    if (address_method == IMMEDIATE_ADDRESS) {
+        return validate_immediate_address_operand(operand, line_count, parsed_file_name, error_found);
+    }
+    if (address_method == INDIRECT_REGISTER_ADDRESS) {
+        return validate_indirect_register_address_operand(operand, line_count, parsed_file_name, error_found);
+    }
+    if (address_method == DIRECT_ADDRESS) {
+        return validate_direct_address_operand(operand, line_count, parsed_file_name, error_found, requirements);
+    }
+    return 1;
+}
+
+char *get_reg(char *operand, AddressMethod addressMethod) {
+    if (addressMethod == DIRECT_REGISTER_ADDRESS) return operand;
+    return operand + 1;
+}
+
+short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
+                                          int is_source) {
+    if (address_method == IMMEDIATE_ADDRESS) return create_immediate_address_word(to_integer(operand + 1));
+    if (address_method == DIRECT_ADDRESS) {
+        SymbolContent symbol = *table_get_symbol(requirements->symbol_table, operand);
+        return create_direct_address_word(symbol.value, symbol.type);
+    }
+    if (address_method == INDIRECT_REGISTER_ADDRESS && is_source) {
+        return create_source_register_word(operand + 1);
+    }
+    if (address_method == INDIRECT_REGISTER_ADDRESS) {
+        return create_destination_register_word(operand + 1);
+    }
+    if (is_source) return create_source_register_word(operand);
+    return create_destination_register_word(operand);
+}
+
+short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
+                                            AddressMethod source_method, AddressMethod destination_method) {
+    if (source_method == INDIRECT_REGISTER_ADDRESS) source_operand++;
+    if (destination_method == INDIRECT_REGISTER_ADDRESS) destination_operand++;
+    return create_combined_register_word(source_operand, destination_operand);
 }

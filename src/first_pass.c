@@ -48,16 +48,6 @@
  */
 #define MIN_WORD_SIZE (short)(-(pow(2, WORD_SIZE_BITS - 1)))
 
-/**
- * The first character of an operand in the immediate address method.
- */
-#define IMMEDIATE_ADDRESS_START '#'
-
-/**
- * The first character of an operand in the indirect register address method.
- */
-#define INDIRECT_REGISTER_ADDRESS_START '*'
-
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
 
@@ -75,15 +65,13 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
 
 void insert_string(char *rest, int line_count, char *parsed_file_name, int *error_found, Requirements *requirements);
 
-AddressMethod get_address_method(char *operand);
-
-void handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+void first_pass_handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements);
 
-void handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements);
 
-void handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+void first_pass_handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements);
 
 void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
@@ -157,7 +145,7 @@ int first_pass(char file_name[], Requirements *requirements) {
             continue;
         }
         /* otherwise the line must be an instruction (if it is valid) */
-        handle_instruction(line, label, line_count, parsed_file_name, &error_found, requirements);
+        first_pass_handle_instruction(line, label, line_count, parsed_file_name, &error_found, requirements);
     }
     /* increases the value of every data symbol by IC */
     table_add_to_all_that_apply(requirements->symbol_table, requirements->ic, is_data_symbol);
@@ -495,7 +483,7 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+void first_pass_handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements) {
     /* the part of the line after the operator */
     char *rest;
@@ -517,9 +505,9 @@ void handle_instruction(char *line, char *label_name, int line_count, char *pars
     op = get_operator(operator_name);
     /* handles the instruction based on the expected operand */
     if (has_source(op)) {
-        handle_two_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
+        first_pass_handle_two_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
     } else if (has_destination(op)) {
-        handle_one_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
+        first_pass_handle_one_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
     } else {
         handle_zero_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
     }
@@ -543,7 +531,7 @@ void handle_instruction(char *line, char *label_name, int line_count, char *pars
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements) {
     char *source_operand;
     char *destination_operand;
@@ -674,7 +662,7 @@ void handle_two_operand_instruction(Operator op, char *rest, int line_count, cha
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+void first_pass_handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements) {
     /* the destination operand is the next field after the operator */
     char *destination_operand = find_token(rest, BLANKS, &rest);
@@ -766,23 +754,6 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
     /* inserts the word into the memory while updating the value of error_found to 1 if there
      * are any errors in the process */
     *error_found |= memory_insert_instruction(requirements, first_word, line_count, parsed_file_name);
-}
-
-/**
- * Gets the address method of a given operand.
- * 
- * Does so by checking if it starts with a pound - if it does, it must be immediate address. If it starts with an
- * asterisk, it must be indirect register address. If it's a register, then it is direct register. Otherwise, assumes
- * it's a symbol and therefore it is direct address.
- * 
- * @param operand the operand to check
- * @return the address method of operand
- */
-AddressMethod get_address_method(char *operand) {
-    if (operand[0] == IMMEDIATE_ADDRESS_START) return IMMEDIATE_ADDRESS;
-    if (operand[0] == INDIRECT_REGISTER_ADDRESS_START) return INDIRECT_REGISTER_ADDRESS;
-    if (is_register(operand)) return DIRECT_REGISTER_ADDRESS;
-    return DIRECT_ADDRESS;
 }
 
 /**

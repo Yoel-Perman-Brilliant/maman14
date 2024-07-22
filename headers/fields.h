@@ -20,6 +20,28 @@
 #define BLANKS " \t"
 
 /**
+ * The first character of an operand in the immediate address method.
+ */
+#define IMMEDIATE_ADDRESS_START '#'
+
+/**
+ * The first character of an operand in the indirect register address method.
+ */
+#define INDIRECT_REGISTER_ADDRESS_START '*'
+
+
+
+/**
+ * Represents the possible address methods, with each constant's value being as defined in the task.
+ * Also includes a "no operand" address method, which is used as the address method of a non-existent operand
+ * when given as a parameter to certain functions.
+ */
+typedef enum {
+    IMMEDIATE_ADDRESS = 0, DIRECT_ADDRESS = 1, INDIRECT_REGISTER_ADDRESS = 2, DIRECT_REGISTER_ADDRESS = 3,
+    NO_OPERAND = 4
+} AddressMethod;
+
+/**
  * Checks if a given field is the name of a register.
  * 
  * @param field the field to be checked
@@ -62,5 +84,7 @@ void label_to_symbol(char *label);
 int is_directive(char *field);
 
 void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found);
+
+AddressMethod get_address_method(char *operand);
 
 #endif

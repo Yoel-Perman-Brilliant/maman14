@@ -9,15 +9,7 @@
 #define NUMBER_OF_OPERATORS 16
 #define ILLEGAL_OPERATOR_NAME "illegal"
 
-/**
- * Represents the possible address methods, with each constant's value being as defined in the task.
- * Also includes a "no operand" address method, which is used as the address method of a non-existent operand
- * when given as a parameter to certain functions.
- */
-typedef enum {
-    IMMEDIATE_ADDRESS = 0, DIRECT_ADDRESS = 1, INDIRECT_REGISTER_ADDRESS = 2, DIRECT_REGISTER_ADDRESS = 3,
-    NO_OPERAND = 4
-} AddressMethod;
+#include "fields.h"
 
 /**
  * Represents an operator, which has a name, a list of legal source address methods and a a list of legal
