@@ -115,7 +115,7 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
         }
         /* makes sure the argument symbol is defined */
         if (!table_contains(requirements->symbol_table, argument)) {
-            printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is"
+            printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is "
                    "undefined in that file\n", argument, line_count, parsed_file_name);
             *error_found = 1;
             return;
@@ -139,10 +139,12 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
 
 void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements) {
-    if (set_contains(requirements->faulty_instructions, line_count)) return;
     char *rest;
-    char *operator_name = find_token(line, BLANKS, &rest);
-    Operator op = get_operator(operator_name);
+    char *operator_name;
+    Operator op;
+    if (set_contains(requirements->faulty_instructions, line_count)) return;
+    operator_name = find_token(line, BLANKS, &rest);
+    op = get_operator(operator_name);
     free(operator_name);
     requirements->ic++;
     if (has_source(op)) {
@@ -193,12 +195,13 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
 void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements) {
     char *destination_operand = find_token(rest, BLANKS, &rest);
+    short unsigned destination_word;
     AddressMethod destination_method = get_address_method(destination_operand);
     if (!validate_operand(destination_operand, destination_method, line_count, parsed_file_name, error_found,
                           requirements)) {
         return;
     }
-    short unsigned destination_word = create_single_operand_word(destination_operand,
+    destination_word = create_single_operand_word(destination_operand,
                                                                  destination_method, requirements,0);
     memory_insert_instruction(requirements, destination_word, line_count, parsed_file_name);
     free(destination_operand);
