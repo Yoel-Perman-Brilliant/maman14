@@ -212,7 +212,7 @@ int validate_direct_address_operand(char *operand, int line_count, char *parsed_
     return 1;
 }
 
-int validate_indirect_register_address_operand(char im*operand, int line_count, char *parsed_file_name,
+int validate_indirect_register_address_operand(char *operand, int line_count, char *parsed_file_name,
                                                int *error_found) {
     if (!is_register(operand + 1)) {
         printf("Input Error: Operand \"%s\" given in the indirect register address method in line %d of file %s is not"
