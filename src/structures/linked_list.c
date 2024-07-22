@@ -175,10 +175,11 @@ void list_add_line_number(LinkedList *list, LineNumber line_number) {
  * 
  * @param list a pointer to the list that should be freed
  */
-void free_list(LinkedList *list) {
+void free_list(LinkedList *list, int is_symbol) {
     Node *node = list->head;
     Node *next;
     while (node != NULL) {
+        if (is_symbol) free_list(node->content.symbol.appearances, 0);
         next = node->next;
         free(node);
         node = next;

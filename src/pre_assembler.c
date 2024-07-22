@@ -356,6 +356,6 @@ int pre_assemble(char file_name[]) {
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
     free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
-    free_table(macro_table);
+    free_table(macro_table, 0);
     return error_found;
 }

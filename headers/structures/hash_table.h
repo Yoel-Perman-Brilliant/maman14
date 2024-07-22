@@ -80,7 +80,7 @@ void table_add_symbol(HashTable *table, char *name, SymbolContent symbol_content
  * 
  * @param table the table to be freed
  */
-void free_table(HashTable *table);
+void free_table(HashTable *table, int is_symbol);
 
 /**
  * Adds a given integer to the value of every symbol in a hash-table that meets a given condition.

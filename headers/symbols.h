@@ -17,13 +17,16 @@ typedef enum SymbolType {
     EXTERNAL, ENTRY, REGULAR
 } SymbolType;
 
+typedef struct LinkedList AppearancesList;
+
 /**
- * Represents a symbol's content - its value, location and type.
+ * Represents a symbol's content - its value, location, type, and list of appearances (only used for external symbols).
  */
 typedef struct SymbolContent {
     int value;
     SymbolLocation location;
     SymbolType type;
+    AppearancesList *appearances;
 } SymbolContent;
 
 

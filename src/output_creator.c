@@ -32,7 +32,7 @@ void write_object_file(char file_name[], Requirements *requirements) {
     FILE *file = get_object_file(file_name);
     int i;
     if (file == NULL) return;
-    fprintf(file, "   %d %d\n", requirements->ic - IC_START , requirements->dc);
+    fprintf(file, "   %d %d\n", requirements->ic - IC_START, requirements->dc);
     for (i = IC_START; i < requirements->ic; i++) {
         fprintf(file, "%04d %05o\n", i, requirements->instruction_array[i]);
     }
@@ -47,7 +47,11 @@ void write_extern_file(char file_name[], LinkedList *extern_list) {
     if (file == NULL) return;
     node = extern_list->head;
     while (node != NULL) {
-        fprintf(file, "%s %d\n", node->name, node->content.symbol.value);
+        Node *appearance = node->content.symbol.appearances->head;
+        while (appearance != NULL) {
+            fprintf(file, "%s %d\n", node->name, appearance->content.line_number);
+            appearance = appearance->next;
+        }
         node = node->next;
     }
 }

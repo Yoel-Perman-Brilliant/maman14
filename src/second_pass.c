@@ -32,6 +32,8 @@ short unsigned create_single_operand_word(char *operand, AddressMethod address_m
 short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
                                             AddressMethod source_method, AddressMethod destination_method);
 
+void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements);
+
 int second_pass(char file_name[], Requirements *requirements) {
     char *parsed_file_name = get_parsed_file_name(file_name);
     FILE *parsed_file = get_parsed_file_read(file_name);
@@ -185,7 +187,13 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
                                                                 requirements, 1);
         short unsigned destination_word = create_single_operand_word(trimmed_destination_operand, destination_method,
                                                                      requirements, 0);
+        if (source_method == DIRECT_ADDRESS) {
+            check_and_handle_external_symbol(trimmed_source_operand, requirements);
+        }
         memory_insert_instruction(requirements, source_word, line_count, parsed_file_name);
+        if (destination_method == DIRECT_ADDRESS) {
+            check_and_handle_external_symbol(trimmed_destination_operand, requirements);
+        }
         memory_insert_instruction(requirements, destination_word, line_count, parsed_file_name);
     }
     free_all(2, trimmed_source_operand, trimmed_destination_operand);
@@ -199,6 +207,9 @@ void second_pass_handle_one_operand_instruction(char *rest, int line_count, char
     if (!validate_operand(destination_operand, destination_method, line_count, parsed_file_name, error_found,
                           requirements)) {
         return;
+    }
+    if (destination_method == DIRECT_ADDRESS) {
+        check_and_handle_external_symbol(destination_operand, requirements);
     }
     destination_word = create_single_operand_word(destination_operand,
                                                   destination_method, requirements, 0);
@@ -287,4 +298,11 @@ short unsigned create_combined_operand_word(char *source_operand, char *destinat
     if (source_method == INDIRECT_REGISTER_ADDRESS) source_operand++;
     if (destination_method == INDIRECT_REGISTER_ADDRESS) destination_operand++;
     return create_combined_register_word(source_operand, destination_operand);
+}
+
+void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements) {
+    SymbolContent *symbol_content = table_get_symbol(requirements->symbol_table, symbol_name);
+    if (symbol_content->type == EXTERNAL) {
+        list_add_line_number(symbol_content->appearances, requirements->ic);
+    }
 }

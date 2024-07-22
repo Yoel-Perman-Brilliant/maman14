@@ -123,7 +123,7 @@ void list_add_line_number(LinkedList *list, LineNumber line_number);
  * 
  * @param list a pointer to the list that should be freed
  */
-void free_list(LinkedList *list);
+void free_list(LinkedList *list, int is_symbol);
 
 /**
  * Adds a given integer to the value of every symbol in a hash-linked-list that meets a given condition.

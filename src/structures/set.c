@@ -19,7 +19,7 @@ Set *create_set() {
 void free_set(Set *set) {
     int i;
     for (i = 0; i < SET_SIZE; i++) {
-        free_list(set->lists[i]);
+        free_list(set->lists[i], 0);
     }
     free(set);
 }

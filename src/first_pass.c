@@ -341,6 +341,7 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
     if (location == CODE) content.value = requirements->ic;
     else if (location == DATA) content.value = requirements->dc;
     else content.value = 0;
+    content.appearances = create_list();
     /* adds the symbol to the symbol table */
     table_add_symbol(requirements->symbol_table, symbol, content);
 }

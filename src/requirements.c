@@ -45,7 +45,7 @@ Requirements *create_requirements() {
  * @param requirements a pointer to the requirements to be freed
  */
 void free_requirements(Requirements *requirements) {
-    free_table(requirements->symbol_table);
+    free_table(requirements->symbol_table, 1);
     free_set(requirements->faulty_instructions);
     free(requirements->data_array);
     free(requirements->instruction_array);

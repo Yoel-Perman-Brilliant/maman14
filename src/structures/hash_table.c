@@ -139,10 +139,10 @@ void table_add_symbol(HashTable *table, char *name, SymbolContent symbol_content
  * 
  * @param table the table to be freed
  */
-void free_table(HashTable *table) {
+void free_table(HashTable *table, int is_symbol) {
     int i;
     for (i = 0; i < HASH_TABLE_SIZE; i++) {
-        free_list(table->lists[i]);
+        free_list(table->lists[i], is_symbol);
     }
     free(table);
 }
