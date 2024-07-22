@@ -111,7 +111,7 @@ short unsigned create_combined_register_word(char *source_reg, char *destination
 }
 
 short unsigned create_immediate_address_word(short num) {
-    short unsigned num_bits = (unsigned short)(num > 0 ? num : (pow(2, WORD_SIZE_BITS)) + num)
+    short unsigned num_bits = (unsigned short)(num > 0 ? num : (pow(2, IMMEDIATE_VALUE_SIZE_BITS)) + num)
             << IMMEDIATE_VALUE_NUM_SHIFT;
     short unsigned are = binary_string_to_number(REGISTER_WORD_ARE_STRING);
     return num_bits | are;

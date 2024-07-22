@@ -155,7 +155,7 @@ void second_pass_handle_instruction(char *line, int line_count, char *parsed_fil
 }
 
 void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
-                                    Requirements *requirements) {
+                                                Requirements *requirements) {
     char *source_operand;
     char *trimmed_source_operand;
     char *destination_operand;
@@ -171,7 +171,7 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
     destination_method = get_address_method(trimmed_destination_operand);
     if (!validate_operand(trimmed_source_operand, source_method, line_count, parsed_file_name,
                           error_found, requirements)
-        || !validate_operand(trimmed_destination_operand, destination_method, line_count, 
+        || !validate_operand(trimmed_destination_operand, destination_method, line_count,
                              parsed_file_name, error_found, requirements)) {
         return;
     }
@@ -180,12 +180,11 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
                                                            trimmed_destination_operand,
                                                            source_method, destination_method);
         memory_insert_instruction(requirements, word, line_count, parsed_file_name);
-    }
-    else {
+    } else {
         short unsigned source_word = create_single_operand_word(trimmed_source_operand, source_method,
-                                                               requirements, 1);
+                                                                requirements, 1);
         short unsigned destination_word = create_single_operand_word(trimmed_destination_operand, destination_method,
-                                                                    requirements, 0);
+                                                                     requirements, 0);
         memory_insert_instruction(requirements, source_word, line_count, parsed_file_name);
         memory_insert_instruction(requirements, destination_word, line_count, parsed_file_name);
     }
@@ -193,7 +192,7 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
 }
 
 void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
-                                    Requirements *requirements) {
+                                                Requirements *requirements) {
     char *destination_operand = find_token(rest, BLANKS, &rest);
     short unsigned destination_word;
     AddressMethod destination_method = get_address_method(destination_operand);
@@ -202,7 +201,7 @@ void second_pass_handle_one_operand_instruction(char *rest, int line_count, char
         return;
     }
     destination_word = create_single_operand_word(destination_operand,
-                                                                 destination_method, requirements,0);
+                                                  destination_method, requirements, 0);
     memory_insert_instruction(requirements, destination_word, line_count, parsed_file_name);
     free(destination_operand);
 }
