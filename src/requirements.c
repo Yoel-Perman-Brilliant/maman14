@@ -34,6 +34,7 @@ Requirements *create_requirements() {
     }
     requirements->ic = IC_START;
     requirements->dc = 0;
+    requirements->extern_found = 0;
     return requirements;
 }
 

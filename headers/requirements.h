@@ -36,6 +36,8 @@ typedef struct {
      */
     int ic;
     
+    int extern_found;
+    
 } Requirements; 
 
 /**

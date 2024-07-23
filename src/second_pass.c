@@ -302,5 +302,6 @@ void check_and_handle_external_symbol(char *symbol_name, Requirements *requireme
     SymbolContent *symbol_content = table_get_symbol(requirements->symbol_table, symbol_name);
     if (symbol_content->type == EXTERNAL) {
         list_add_line_number(symbol_content->appearances, requirements->ic);
+        requirements->extern_found = 1;
     }
 }

@@ -25,7 +25,7 @@ int create_files(char file_name[], Requirements *requirements) {
     error_found |= write_object_file(file_name, requirements);
     table_add_matching_to_list(requirements->symbol_table, extern_list, is_extern);
     table_add_matching_to_list(requirements->symbol_table, entry_list, is_entry);
-    if (!list_empty(extern_list)) error_found |= write_extern_file(file_name, extern_list);
+    if (requirements->extern_found) error_found |= write_extern_file(file_name, extern_list);
     if (!list_empty(entry_list)) error_found |= write_entry_file(file_name, entry_list);
     return error_found;
 }

@@ -324,10 +324,10 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
     SymbolContent content;
     /* makes sure that the symbol is not already defined in the file */
     if (table_contains(requirements->symbol_table, symbol)) {
-        if (type == EXTERNAL) {
+        if (type == EXTERNAL && table_get_symbol(requirements->symbol_table, symbol)->type != EXTERNAL) {
             printf("Input Error: Symbol \"%s\" given as a parameter for .extern in line %d of file %s is "
                    "already defined in the file\n", symbol, line_count, parsed_file_name);
-        } else {
+        } else if (type != EXTERNAL) {
             printf("Input Error: Label %s in line %d of file %s is already defined\n",
                    symbol, line_count, parsed_file_name);
         }

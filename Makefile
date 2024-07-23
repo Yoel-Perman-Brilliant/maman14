@@ -4,7 +4,7 @@ ALL_OBJECT_FILES = object/hash_table.o object/linked_list.o object/string_ops.o 
 		 		   object/conversions.o object/first_pass.o object/operators.o object/set.o object/second_pass.o \
 		 		   object/output_creator.o
 
-test: $(ALL_OBJECT_FILES)
+assembler: $(ALL_OBJECT_FILES)
 	gcc $(FLAGS) $(ALL_OBJECT_FILES) -o assembler
 
 object/pre_assembler.o: src/pre_assembler.c headers/pre_assembler.h headers/structures/hash_table.h \
