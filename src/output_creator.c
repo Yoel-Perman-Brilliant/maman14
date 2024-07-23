@@ -12,26 +12,28 @@ int is_extern(SymbolContent symbol);
 
 int is_entry(SymbolContent symbol);
 
-void write_object_file(char file_name[], Requirements *requirements);
+int write_object_file(char file_name[], Requirements *requirements);
 
-void write_extern_file(char file_name[], LinkedList *extern_list);
+int write_extern_file(char file_name[], LinkedList *extern_list);
 
-void write_entry_file(char file_name[], LinkedList *entry_list);
+int write_entry_file(char file_name[], LinkedList *entry_list);
 
-void create_files(char file_name[], Requirements *requirements) {
+int create_files(char file_name[], Requirements *requirements) {
+    int error_found = 0;
     LinkedList *extern_list = create_list();
     LinkedList *entry_list = create_list();
-    write_object_file(file_name, requirements);
+    error_found |= write_object_file(file_name, requirements);
     table_add_matching_to_list(requirements->symbol_table, extern_list, is_extern);
     table_add_matching_to_list(requirements->symbol_table, entry_list, is_entry);
-    if (!list_empty(extern_list)) write_extern_file(file_name, extern_list);
-    if (!list_empty(entry_list)) write_entry_file(file_name, entry_list);
+    if (!list_empty(extern_list)) error_found |= write_extern_file(file_name, extern_list);
+    if (!list_empty(entry_list)) error_found |= write_entry_file(file_name, entry_list);
+    return error_found;
 }
 
-void write_object_file(char file_name[], Requirements *requirements) {
+int write_object_file(char file_name[], Requirements *requirements) {
     FILE *file = get_object_file(file_name);
     int i;
-    if (file == NULL) return;
+    if (file == NULL) return 1;
     fprintf(file, "   %d %d\n", requirements->ic - IC_START, requirements->dc);
     for (i = IC_START; i < requirements->ic; i++) {
         fprintf(file, "%04d %05o\n", i, requirements->instruction_array[i]);
@@ -39,12 +41,14 @@ void write_object_file(char file_name[], Requirements *requirements) {
     for (i = 0; i < requirements->dc; i++) {
         fprintf(file, "%04d %05o\n", i + requirements->ic, requirements->data_array[i]);
     }
+    fclose(file);
+    return 0;
 }
 
-void write_extern_file(char file_name[], LinkedList *extern_list) {
+int write_extern_file(char file_name[], LinkedList *extern_list) {
     FILE *file = get_extern_file(file_name);
     Node *node;
-    if (file == NULL) return;
+    if (file == NULL) return 1;
     node = extern_list->head;
     while (node != NULL) {
         Node *appearance = node->content.symbol.appearances->head;
@@ -54,17 +58,21 @@ void write_extern_file(char file_name[], LinkedList *extern_list) {
         }
         node = node->next;
     }
+    fclose(file);
+    return 0;
 }
 
-void write_entry_file(char file_name[], LinkedList *entry_list) {
+int write_entry_file(char file_name[], LinkedList *entry_list) {
     FILE *file = get_entry_file(file_name);
     Node *node;
-    if (file == NULL) return;
+    if (file == NULL) return 1;
     node = entry_list->head;
     while (node != NULL) {
         fprintf(file, "%s %d\n", node->name, node->content.symbol.value);
         node = node->next;
     }
+    fclose(file);
+    return 0;
 }
 
 int is_extern(SymbolContent symbol) {

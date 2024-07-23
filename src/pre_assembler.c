@@ -167,7 +167,7 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
     /* the line being read */
     char line[MAX_LINE_LENGTH + 1];
     /* the macro's content */
-    MacroContent macro_content = (MacroContent) malloc(0);
+    MacroContent macro_content = (MacroContent) calloc(1, 1);
     if (macro_content == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
         exit(MEMORY_ALLOCATION_FAILURE);
@@ -205,7 +205,7 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
                                        input_file_name, macro_content)) {
             break;
         }
-            /* if a macro end is not found, updates the macro's content */
+        /* if a macro end is not found, updates the macro's content */
         else {
             /* reallocates the macro content to a new string that has enough spaces for the next line */
             macro_content = realloc(macro_content, strlen(macro_content) + strlen(line) + 1);
@@ -213,9 +213,11 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
                 fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
                 exit(MEMORY_ALLOCATION_FAILURE);
             }
+            printf("line: %s\n", line);
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);
             strcat(macro_content, "\n");
+            printf("macro content: %s\n", macro_content);
         }
         /* reads the next line */
         (*line_count)++;
@@ -356,6 +358,15 @@ int pre_assemble(char file_name[]) {
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
     free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
+    printf("---Macros:--- \n");
+    int i;
+    for (i = 0; i < 101; i++) {
+        Node *node = macro_table->lists[i]->head;
+        while (node != NULL) {
+            printf("name: %s, value: %s\n", node->name, node->content.macro);
+            node = node->next;
+        }
+    }
     free_table(macro_table, 0);
     return error_found;
 }

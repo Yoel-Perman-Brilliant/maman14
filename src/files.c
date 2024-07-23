@@ -4,6 +4,7 @@
  
 #include "../headers/files.h"
 #include "../headers/exit_codes.h"
+#include "../headers/util/general_util.h"
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
@@ -76,8 +77,6 @@ FILE *get_input_file(char file_name[]) {
 FILE *get_parsed_file_append(char file_name[]) {
     FILE *parsed_file;
     char *parsed_file_name = get_parsed_file_name(file_name);
-    /* removes any already existing file with the same name */
-    remove(parsed_file_name);
     /* since no file with the name exists, creates a new file */
     parsed_file = fopen(parsed_file_name, "a");
     if (parsed_file == NULL) {
@@ -109,8 +108,6 @@ FILE *get_parsed_file_read(char file_name[]) {
 FILE *get_object_file(char file_name[]) {
     FILE *object_file;
     char *object_file_name = get_file_name_with_extension(file_name, OBJECT_EXTENSION);
-    /* removes any already existing file with the same name */
-    remove(object_file_name);
     /* since no file with the name exists, creates a new file */
     object_file = fopen(object_file_name, "a");
     if (object_file == NULL) {
@@ -124,8 +121,6 @@ FILE *get_object_file(char file_name[]) {
 FILE *get_extern_file(char file_name[]) {
     FILE *extern_file;
     char *extern_file_name = get_file_name_with_extension(file_name, EXTERN_EXTENSION);
-    /* removes any already existing file with the same name */
-    remove(extern_file_name);
     /* since no file with the name exists, creates a new file */
     extern_file = fopen(extern_file_name, "a");
     if (extern_file == NULL) {
@@ -139,8 +134,6 @@ FILE *get_extern_file(char file_name[]) {
 FILE *get_entry_file(char file_name[]) {
     FILE *entry_file;
     char *entry_file_name = get_file_name_with_extension(file_name, ENTRY_EXTENSION);
-    /* removes any already existing file with the same name */
-    remove(entry_file_name);
     /* since no file with the name exists, creates a new file */
     entry_file = fopen(entry_file_name, "a");
     if (entry_file == NULL) {
@@ -149,4 +142,16 @@ FILE *get_entry_file(char file_name[]) {
     }
     free(entry_file_name);
     return entry_file;
+}
+
+void remove_output_files(char file_name[]) {
+    char *parsed_file_name = get_parsed_file_name(file_name);
+    char *object_file_name = get_file_name_with_extension(file_name, OBJECT_EXTENSION);
+    char *extern_file_name = get_file_name_with_extension(file_name, EXTERN_EXTENSION);
+    char *entry_file_name = get_file_name_with_extension(file_name, ENTRY_EXTENSION);
+    remove(parsed_file_name);
+    remove(object_file_name);
+    remove(extern_file_name);
+    remove(entry_file_name);
+    free_all(4, parsed_file_name, object_file_name, extern_file_name, entry_file_name);
 }

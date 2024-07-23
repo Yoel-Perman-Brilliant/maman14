@@ -56,4 +56,6 @@ FILE *get_extern_file(char file_name[]);
 
 FILE *get_entry_file(char file_name[]);
 
+void remove_output_files(char file_name[]);
+
 #endif
