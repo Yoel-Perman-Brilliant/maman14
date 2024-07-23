@@ -450,18 +450,8 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
         *error_found = 1;
         return;
     }
-    /* makes sure the symbol has a legal name */
-    if (!legal_label_name(symbol)) {
-        printf("Input Error: Symbol given as argument to .extern in line %d of file %s has an illegal name\n",
-               line_count, parsed_file_name);
-        *error_found = 1;
-        return;
-    }
     /* inserts the symbol to the symbol table */
     insert_symbol(symbol, EXTERNAL, UNDEFINED, requirements, error_found, line_count, parsed_file_name);
-    /* updates the requirements to know that there is a symbol characterized as extern, and such a .ext file needs to
-     * be created */
-    requirements->extern_found = 1;
 }
 
 

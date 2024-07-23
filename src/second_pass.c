@@ -132,10 +132,8 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             return;
         }
         /* @TODO check for defining something as .entry twice */
-        /* changes the symbol's type to ENTRY and updates the requirements to know that a .entry directive has been
-         * used */
+        /* changes the symbol's type to ENTRY */
         symbol->type = ENTRY;
-        requirements->entry_found = 1;
     }
 }
 
