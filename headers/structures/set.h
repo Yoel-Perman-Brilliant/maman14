@@ -12,9 +12,9 @@ Set *create_set();
 
 void free_set(Set *set);
 
-int set_contains(Set *set, LineNumber line_number);
+int set_contains(Set *set, int num);
 
-int set_add(Set *set, LineNumber line_number);
+int set_add(Set *set, int num);
 
 void set_print(Set *set);
 

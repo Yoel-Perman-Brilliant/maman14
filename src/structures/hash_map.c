@@ -23,7 +23,7 @@ unsigned map_hash(char *string) {
     for (hash_val = 0; *string != '\0'; string++) {
         hash_val = *string + HASH_MULTIPLIER * hash_val;
     }
-    return hash_val % HASH_TABLE_SIZE;
+    return hash_val % MAP_HASH_TABLE_SIZE;
 }
 
 /**
@@ -39,7 +39,7 @@ HashMap *create_map() {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating map");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
-    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+    for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
         map->lists[i] = create_list();
     }
     return map;
@@ -140,7 +140,7 @@ void map_add_symbol(HashMap *map, char *name, SymbolContent symbol_content) {
  */
 void free_map(HashMap *map, int is_symbol) {
     int i;
-    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+    for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
         free_list(map->lists[i], is_symbol);
     }
     free(map);
@@ -158,21 +158,21 @@ void free_map(HashMap *map, int is_symbol) {
  */
 void map_add_to_all_that_apply(HashMap *map, int to_add, int (*condition)(SymbolContent symbol)) {
     int i;
-    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+    for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
         list_add_to_all_that_apply(map->lists[i], to_add, condition);
     }
 }
 
 void map_print_symbols(HashMap *map) {
     int i;
-    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+    for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
         list_print_symbols(map->lists[i]);
     }
 }
 
 void map_add_matching_to_list(HashMap *map, LinkedList *list, int (*condition)(SymbolContent symbol)) {
     int i;
-    for (i = 0; i < HASH_TABLE_SIZE; i++) {
+    for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
         list_add_matching_to_list(map->lists[i], list, condition);
     }
 }

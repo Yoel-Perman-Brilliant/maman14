@@ -301,7 +301,7 @@ short unsigned create_combined_operand_word(char *source_operand, char *destinat
 void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements) {
     SymbolContent *symbol_content = map_get_symbol(requirements->symbol_table, symbol_name);
     if (symbol_content->type == EXTERNAL) {
-        list_add_line_number(symbol_content->appearances, requirements->ic);
+        list_add_int(symbol_content->appearances, requirements->ic);
         requirements->extern_found = 1;
     }
 }

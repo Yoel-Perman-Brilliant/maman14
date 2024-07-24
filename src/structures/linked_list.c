@@ -50,10 +50,10 @@ int list_contains(LinkedList *list, char *name) {
     return 0;
 }
 
-int list_contains_line_number(LinkedList *list, LineNumber line_number) {
+int list_contains_int(LinkedList *list, int num) {
     Node *node = list->head;
     while (node != NULL) {
-        if (node->content.line_number == line_number) {
+        if (node->content.num == num) {
             return 1;
         }
         node = node->next;
@@ -161,9 +161,9 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
     list_add(list, name, content);
 }
 
-void list_add_line_number(LinkedList *list, LineNumber line_number) {
+void list_add_int(LinkedList *list, int num) {
     Content content;
-    content.line_number = line_number;
+    content.num = num;
     list_add(list, NULL, content);
 }
 
@@ -227,7 +227,7 @@ void list_print_symbols(LinkedList *list) {
 void list_print_numbers(LinkedList *list) {
     Node *node = list->head;
     while (node != NULL) {
-        printf("%d\n", node->content.line_number);
+        printf("%d\n", node->content.num);
         node = node->next;
     }
 }

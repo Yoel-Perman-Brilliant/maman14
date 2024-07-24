@@ -1,6 +1,7 @@
 /**
- * Includes a hash-map data structure, which consists of linked-lists, whose nodes can hold either a string or
- * an integer value, each associated with a certain name.
+ * Includes a hash-map data structure, which maps a string (name) to its content - either a macro or a symbol.
+ * It is based on a hash-table which consists of linked-lists, whose nodes can hold either a macro content or a symbol content,
+ * each associated with a certain name.
  * In addition, includes prototype for functions that allow for interacting with hash-maps.
  */
 #ifndef MAMAN14_HASH_MAP_H
@@ -10,16 +11,17 @@
 #include "stdarg.h"
 
 /**
- * The number of slots in the map.
+ * The number of slots in the hash-table which the map is based on.
  */
-#define HASH_TABLE_SIZE 101
+#define MAP_HASH_TABLE_SIZE 101
 
 /**
- * A hash-map data structure, represented by an array of linked-lists whose nodes can hold either a string or an
- * integer value, which each value having a corresponding name.
+ * A hash-map data structure, which maps a string (name) to its content - either a macro or a symbol.
+ * It is based on a hash-table which consists of linked-lists, whose nodes can hold either a macro content or a symbol
+ * content, each associated with a certain name.
  */
 typedef struct {
-    LinkedList *lists[HASH_TABLE_SIZE];
+    LinkedList *lists[MAP_HASH_TABLE_SIZE];
 } HashMap;
 
  /**

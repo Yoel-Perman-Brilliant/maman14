@@ -24,17 +24,17 @@ void free_set(Set *set) {
     free(set);
 }
 
-int set_hash(LineNumber line_number) {
-    return line_number % SET_SIZE;
+int set_hash(int num) {
+    return num % SET_SIZE;
 }
 
-int set_contains(Set *set, LineNumber line_number) {
-    return list_contains_line_number(set->lists[set_hash(line_number)], line_number);
+int set_contains(Set *set, int num) {
+    return list_contains_int(set->lists[set_hash(num)], num);
 }
 
-int set_add(Set *set, LineNumber line_number) {
-    if (set_contains(set, line_number)) return 0;
-    list_add_line_number(set->lists[set_hash(line_number)], line_number);
+int set_add(Set *set, int num) {
+    if (set_contains(set, num)) return 0;
+    list_add_int(set->lists[set_hash(num)], num);
     return 1;
 }
 

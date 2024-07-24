@@ -53,7 +53,7 @@ int write_extern_file(char file_name[], LinkedList *extern_list) {
     while (node != NULL) {
         Node *appearance = node->content.symbol.appearances->head;
         while (appearance != NULL) {
-            fprintf(file, "%s %d\n", node->name, appearance->content.line_number);
+            fprintf(file, "%s %d\n", node->name, appearance->content.num);
             appearance = appearance->next;
         }
         node = node->next;

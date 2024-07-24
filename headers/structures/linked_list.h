@@ -15,12 +15,10 @@
  */
 typedef char *MacroContent;
 
-typedef int LineNumber;
-
 typedef union {
     MacroContent macro;
     SymbolContent symbol;
-    LineNumber line_number;
+    int num;
 } Content;
 
 /**
@@ -57,7 +55,7 @@ int list_empty(LinkedList *list);
  */
 int list_contains(LinkedList *list, char *name);
 
-int list_contains_line_number(LinkedList *list, LineNumber line_number);
+int list_contains_int(LinkedList *list, int num);
 
 /**
  * Looks for a name in a linked-list and retrieves the content associated with that name.
@@ -116,7 +114,7 @@ void list_add_macro(LinkedList *list, char *name, MacroContent macro_content);
  */
 void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content);
 
-void list_add_line_number(LinkedList *list, LineNumber line_number);
+void list_add_int(LinkedList *list, int num);
 
 /**
  * Frees a linked-list and all of its contents from the memory.
