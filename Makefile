@@ -8,7 +8,8 @@ assembler: $(ALL_OBJECT_FILES)
 	gcc $(FLAGS) $(ALL_OBJECT_FILES) -o assembler
 
 object/pre_assembler.o: src/pre_assembler.c headers/pre_assembler.h headers/structures/hash_map.h \
-						headers/util/string_ops.h headers/util/general_util.h headers/files.h headers/exit_codes.h
+						headers/util/string_ops.h headers/util/general_util.h headers/files.h headers/exit_codes.h \
+						headers/structures/linked_list.h
 	gcc -c $(FLAGS)  src/pre_assembler.c -o object/pre_assembler.o
 
 object/assembler.o: src/assembler.c headers/files.h headers/pre_assembler.h headers/requirements.h \
@@ -42,7 +43,7 @@ object/files.o: src/files.c headers/files.h headers/exit_codes.h headers/require
 	gcc -c $(FlAGS) src/files.c -o object/files.o
 
 object/requirements.o: src/requirements.c headers/requirements.h headers/exit_codes.h headers/structures/set.h \
-					   headers/structures/hash_map.h
+					   headers/structures/hash_map.h headers/structures/linked_list.h
 	gcc -c $(FlAGS) src/requirements.c -o object/requirements.o
 
 object/fields.o: src/fields.c headers/fields.h headers/util/string_ops.h

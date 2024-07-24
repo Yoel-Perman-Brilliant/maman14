@@ -288,7 +288,7 @@ int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *in
  */
 int pre_assemble(char file_name[]) {
     /* a hash-map where macro names are mapped to their contents */
-    HashMap *macro_table = create_map();
+    HashMap *macro_table = create_map(MACRO);
     /* a pointer to the input .as file */
     FILE *input_file;
     /* a pointer to the parsed .am file */
@@ -356,6 +356,6 @@ int pre_assemble(char file_name[]) {
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
     free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
-    free_map(macro_table, 0);
+    free_map(macro_table);
     return error_found;
 }

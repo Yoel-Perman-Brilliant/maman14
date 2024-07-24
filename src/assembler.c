@@ -13,20 +13,29 @@ int assemble(char file_name[]) {
     
     failure = pre_assemble(file_name);
     if (!failure) printf("%s: Pre-assembly completed successfully\n", file_name);
-    else return 1;
+    else {
+        free_requirements(requirements);
+        return 1;
+    }
     
     failure = first_pass(file_name, requirements);
     if (!failure) printf("%s: First pass completed successfully\n", file_name);
     failure |= second_pass(file_name, requirements);
     if (!failure) printf("%s: Second pass completed successfully\n", file_name);
-    else return 1;
+    else {
+        free_requirements(requirements);
+        return 1;
+    }
     
     failure = create_files(file_name, requirements);
     if (!failure) printf("%s: Output files creation completed successfully\n", file_name);
-    else return 1;
+    else {
+        free_requirements(requirements);
+        return 1;
+    }
     
     free_requirements(requirements);
-    return failure;
+    return 0;
 }
 
 int main(int argc, char **argv) {
@@ -38,6 +47,7 @@ int main(int argc, char **argv) {
     }
     for (i = 1; i < argc; i++) {
         failure |= assemble(argv[i]);
+        printf("\n");
     }
     if (failure) return ASSEMBLY_FAILURE;
     return SUCCESS;

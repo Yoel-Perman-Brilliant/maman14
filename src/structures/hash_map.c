@@ -32,7 +32,7 @@ unsigned map_hash(char *string) {
  * 
  * @return a pointer to the new map.
  */
-HashMap *create_map() {
+HashMap *create_map(ContentType content_type) {
     HashMap *map = malloc(sizeof(HashMap));
     int i;
     if (map == NULL) {
@@ -40,7 +40,7 @@ HashMap *create_map() {
         exit(MEMORY_ALLOCATION_FAILURE);
     }
     for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
-        map->lists[i] = create_list();
+        map->lists[i] = create_list(content_type);
     }
     return map;
 }
@@ -138,10 +138,10 @@ void map_add_symbol(HashMap *map, char *name, SymbolContent symbol_content) {
  * 
  * @param map the map to be freed
  */
-void free_map(HashMap *map, int is_symbol) {
+void free_map(HashMap *map) {
     int i;
     for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
-        free_list(map->lists[i], is_symbol);
+        deep_free_list(map->lists[i]);
     }
     free(map);
 }

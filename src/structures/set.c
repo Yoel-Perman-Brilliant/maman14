@@ -11,7 +11,7 @@ Set *create_set() {
         exit(MEMORY_ALLOCATION_FAILURE);
     }
     for (i = 0; i < SET_SIZE; i++) {
-        set->lists[i] = create_list();
+        set->lists[i] = create_list(INTEGER);
     }
     return set;
 }
@@ -19,7 +19,7 @@ Set *create_set() {
 void free_set(Set *set) {
     int i;
     for (i = 0; i < SET_SIZE; i++) {
-        free_list(set->lists[i], 0);
+        deep_free_list(set->lists[i]);
     }
     free(set);
 }

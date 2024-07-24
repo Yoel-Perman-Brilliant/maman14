@@ -1,6 +1,8 @@
 /**
- * Includes a linked-list data structure, which consists of nodes that can hold either a string or
- * an integer value, each associated with a certain name.
+ * Includes a linked-list data structure, which consists of nodes that can hold either a macro content, a symbol content
+ * or an integer, each associated with a certain name.
+ * Items containing integers are treated as having no name, since the integer itself represents the item at every
+ * use case in the project.
  * In addition, includes prototype for functions that allow for interacting with linked-lists.
  */
 #ifndef MAMAN14_LINKED_LIST_H
@@ -15,11 +17,18 @@
  */
 typedef char *MacroContent;
 
+/**
+ * Represents the content of an item in a linked list - either a macro content, a symbol content or an integer.
+ */
 typedef union {
     MacroContent macro;
     SymbolContent symbol;
     int num;
 } Content;
+
+typedef enum {
+    INTEGER, SYMBOL, MACRO
+} ContentType;
 
 /**
  * Represents an item in a linked-list. Includes its content, a name associated with the content and a pointer to 
@@ -36,14 +45,22 @@ typedef struct Node {
  */
 typedef struct LinkedList {
     Node *head;
+    ContentType content_type;
 } LinkedList;
 
 /**
  * Creates a new, empty linked-list.
+ * 
  * @return a pointer to the new list.
  */
-LinkedList *create_list();
+LinkedList *create_list(ContentType content_type);
 
+/**
+ * Checks if a linked-list is empty.
+ * 
+ * @param list a pointer to the list that should be checked
+ * @return 1 if the list is empty, 0 otherwise
+ */
 int list_empty(LinkedList *list);
 
 /**
@@ -55,6 +72,13 @@ int list_empty(LinkedList *list);
  */
 int list_contains(LinkedList *list, char *name);
 
+/**
+ * Checks if a linked-list contains given integer (as content).
+ * 
+ * @param list a pointer to the linked-list to be checked
+ * @param num the integer to be found
+ * @return 1 if the list includes num, 0 otherwise
+ */
 int list_contains_int(LinkedList *list, int num);
 
 /**
@@ -114,14 +138,24 @@ void list_add_macro(LinkedList *list, char *name, MacroContent macro_content);
  */
 void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content);
 
+/**
+ * Adds an integer to a linked-list.
+ * 
+ * @param list          a pointer to the list that the integer should be added to
+ * @param num           the integer that should be added
+ */
 void list_add_int(LinkedList *list, int num);
 
 /**
  * Frees a linked-list and all of its contents from the memory.
+ * Assumes that all of the list's contents are of the same type.
  * 
  * @param list a pointer to the list that should be freed
+ * @param is_symbol a value representing whether the list containts
  */
-void free_list(LinkedList *list, int is_symbol);
+void deep_free_list(LinkedList *list);
+
+void shallow_free_list(LinkedList *list);
 
 /**
  * Adds a given integer to the value of every symbol in a hash-linked-list that meets a given condition.

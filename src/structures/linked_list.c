@@ -16,13 +16,14 @@
  * 
  * @return a pointer to the new list.
  */
-LinkedList *create_list() {
+LinkedList *create_list(ContentType content_type) {
     LinkedList *list = malloc(sizeof(LinkedList));
     if (list == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating list");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
     list->head = NULL;
+    list->content_type = content_type;
     return list;
 }
 
@@ -175,11 +176,29 @@ void list_add_int(LinkedList *list, int num) {
  * 
  * @param list a pointer to the list that should be freed
  */
-void free_list(LinkedList *list, int is_symbol) {
+void deep_free_list(LinkedList *list) {
     Node *node = list->head;
     Node *next;
     while (node != NULL) {
-        if (is_symbol) free_list(node->content.symbol.appearances, 0);
+        if (list->content_type == SYMBOL) {
+            deep_free_list(node->content.symbol.appearances);
+            free(node->name);
+        }
+        if (list->content_type == MACRO) {
+            free(node->content.macro);
+            free(node->name);
+        }
+        next = node->next;
+        free(node);
+        node = next;
+    }
+    free(list);
+}
+
+void shallow_free_list(LinkedList *list) {
+    Node *node = list->head;
+    Node *next;
+    while (node != NULL) {
         next = node->next;
         free(node);
         node = next;

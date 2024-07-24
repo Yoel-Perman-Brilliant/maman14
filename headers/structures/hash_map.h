@@ -28,7 +28,7 @@ typedef struct {
   * Creates a new, empty hash-map.
   * @return a pointer to the new map.
   */
-HashMap *create_map();
+HashMap *create_map(ContentType content_type);
 
 /**
  * Checks if a hash-map contains an item represented by a given name.
@@ -82,7 +82,7 @@ void map_add_symbol(HashMap *map, char *name, SymbolContent symbol_content);
  * 
  * @param map the map to be freed
  */
-void free_map(HashMap *map, int is_symbol);
+void free_map(HashMap *map);
 
 /**
  * Adds a given integer to the value of every symbol in a hash-map that meets a given condition.

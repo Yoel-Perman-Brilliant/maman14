@@ -20,13 +20,15 @@ int write_entry_file(char file_name[], LinkedList *entry_list);
 
 int create_files(char file_name[], Requirements *requirements) {
     int error_found = 0;
-    LinkedList *extern_list = create_list();
-    LinkedList *entry_list = create_list();
+    LinkedList *extern_list = create_list(SYMBOL);
+    LinkedList *entry_list = create_list(SYMBOL);
     error_found |= write_object_file(file_name, requirements);
     map_add_matching_to_list(requirements->symbol_table, extern_list, is_extern);
     map_add_matching_to_list(requirements->symbol_table, entry_list, is_entry);
     if (requirements->extern_found) error_found |= write_extern_file(file_name, extern_list);
     if (!list_empty(entry_list)) error_found |= write_entry_file(file_name, entry_list);
+    shallow_free_list(extern_list);
+    shallow_free_list(entry_list);
     return error_found;
 }
 
