@@ -7,7 +7,7 @@ Set *create_set() {
     Set *set = (Set *)malloc(sizeof(Set));
     int i;
     if (set == NULL) {
-        printf("Memory Error: Memory allocation failure when creating table");
+        printf("Memory Error: Memory allocation failure when creating set\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
     for (i = 0; i < SET_SIZE; i++) {

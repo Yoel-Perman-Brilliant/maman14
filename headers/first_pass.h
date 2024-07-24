@@ -11,7 +11,7 @@
 #ifndef MAMAN14_FIRST_PASS_H
 #define MAMAN14_FIRST_PASS_H
 
-#include "structures/hash_table.h"
+#include "structures/hash_map.h"
 #include "requirements.h"
 
 /**

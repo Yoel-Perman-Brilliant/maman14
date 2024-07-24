@@ -20,7 +20,7 @@ Requirements *create_requirements() {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating requirements\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
-    requirements->symbol_table = create_table();
+    requirements->symbol_table = create_map();
     requirements->data_array = calloc(MEMORY_SIZE, sizeof(short));
     if (requirements->data_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating data array\n");
@@ -44,7 +44,7 @@ Requirements *create_requirements() {
  * @param requirements a pointer to the requirements to be freed
  */
 void free_requirements(Requirements *requirements) {
-    free_table(requirements->symbol_table, 1);
+    free_map(requirements->symbol_table, 1);
     free_set(requirements->faulty_instructions);
     free(requirements->data_array);
     free(requirements->instruction_array);

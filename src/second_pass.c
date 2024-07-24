@@ -116,14 +116,14 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             return;
         }
         /* makes sure the argument symbol is defined */
-        if (!table_contains(requirements->symbol_table, argument)) {
+        if (!map_contains(requirements->symbol_table, argument)) {
             printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is "
                    "undefined in that file\n", argument, line_count, parsed_file_name);
             *error_found = 1;
             return;
         }
         /* finds the reference to the symbol in the symbol table */
-        symbol = table_get_symbol(requirements->symbol_table, argument);
+        symbol = map_get_symbol(requirements->symbol_table, argument);
         /* makes sure the symbol is not external */
         if (symbol->type == EXTERNAL) {
             printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is"
@@ -235,7 +235,7 @@ int validate_immediate_address_operand(char *operand, int line_count, char *pars
 
 int validate_direct_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements) {
-    if (!table_contains(requirements->symbol_table, operand)) {
+    if (!map_contains(requirements->symbol_table, operand)) {
         printf("Input Error: Operand \"%s\" given in the direct address method in line %d of file %s is not"
                " a defined symbol\n", operand, line_count, parsed_file_name);
         *error_found = 1;
@@ -278,7 +278,7 @@ short unsigned create_single_operand_word(char *operand, AddressMethod address_m
                                           int is_source) {
     if (address_method == IMMEDIATE_ADDRESS) return create_immediate_address_word(to_integer(operand + 1));
     if (address_method == DIRECT_ADDRESS) {
-        SymbolContent symbol = *table_get_symbol(requirements->symbol_table, operand);
+        SymbolContent symbol = *map_get_symbol(requirements->symbol_table, operand);
         return create_direct_address_word(symbol.value, symbol.type);
     }
     if (address_method == INDIRECT_REGISTER_ADDRESS && is_source) {
@@ -299,7 +299,7 @@ short unsigned create_combined_operand_word(char *source_operand, char *destinat
 }
 
 void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements) {
-    SymbolContent *symbol_content = table_get_symbol(requirements->symbol_table, symbol_name);
+    SymbolContent *symbol_content = map_get_symbol(requirements->symbol_table, symbol_name);
     if (symbol_content->type == EXTERNAL) {
         list_add_line_number(symbol_content->appearances, requirements->ic);
         requirements->extern_found = 1;

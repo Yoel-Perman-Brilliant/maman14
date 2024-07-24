@@ -1,7 +1,7 @@
 /**
  * This file is responsible for the pre-assembly process. The pre-assembler takes an input file (a .as file) and parses
- * all of its macros using a hash-tables that includes each macro's name and content. The table is updated as the file
- * is being read.
+ * all of its macros using a hash-map that includes each macro's name and content (the macro table). The table is 
+ * updated as the file is being read.
  * The main function in the file is pre-assemble, which takes in a file name without the .as extension and parses it
  * into a new .am file with the same name. If a .am file with this name already exists, deletes it and 
  * creates a new file. If any errors are found, the .am file is not created, but the program keeps analyzing the 
@@ -54,8 +54,8 @@ void get_fields(char *line, char **first_field, char **second_field, char **thir
  * @param macro_table a pointer to the macro table
  * @param parsed_file a pointer to the parsed file that the macro content should be written to.
  */
-void handle_macro_usage(char *macro, HashTable *macro_table, FILE *parsed_file) {
-    MacroContent macro_content = *table_get_macro(macro_table, macro);
+void handle_macro_usage(char *macro, HashMap *macro_table, FILE *parsed_file) {
+    MacroContent macro_content = *map_get_macro(macro_table, macro);
     fprintf(parsed_file, "%s", macro_content);
 }
 
@@ -73,11 +73,11 @@ void handle_macro_usage(char *macro, HashTable *macro_table, FILE *parsed_file) 
  * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro usage was found, 0 otherwise
  */
-int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char *second_field,
+int check_and_handle_macro_usage(HashMap *macro_table, char *first_field, char *second_field,
                                  FILE *parsed_file, int line_count, char *input_file_name, int *error_found) {
     /* if the first field is a known macro name, writes its content into the parsed file. only does so if no error
      * was found */
-    if (table_contains(macro_table, first_field) && !(*error_found)) {
+    if (map_contains(macro_table, first_field) && !(*error_found)) {
         if (!is_line_blank(second_field)) {
             printf("Input Error: Extra characters after macro usage in line %d of file %s\n",
                    line_count, input_file_name);
@@ -88,7 +88,7 @@ int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char
         return 1;
     }
         /* if a label appears before the macro usage, reports an errors and updates the error_found pointer */
-    else if (is_label(first_field) && table_contains(macro_table, second_field)) {
+    else if (is_label(first_field) && map_contains(macro_table, second_field)) {
         printf("Input Error: Label used before macro usage in line %d of file %s\n", line_count, input_file_name);
         *error_found = 1;
         return 1;
@@ -111,7 +111,7 @@ int check_and_handle_macro_usage(HashTable *macro_table, char *first_field, char
  * @param macro_content   the content of the macro being defined
  * @return 1 if the macro end has been found or an error has occurred, 0 otherwise
  */
-int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *line, int *error_found, int line_count,
+int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *line, int *error_found, int line_count,
                                char *input_file_name, MacroContent macro_content) {
     /* the first, second and third fields of the line */
     char *first_field;
@@ -132,7 +132,7 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
             return 1;
         }
         /* adds the macro whose definition just ended to the macro table */
-        table_add_macro(macro_table, macro_name, macro_content);
+        map_add_macro(macro_table, macro_name, macro_content);
         return 1;
     }
         /* checks if the macro end includes a label, reports an error if yes */
@@ -162,7 +162,7 @@ int check_and_handle_macro_end(HashTable *macro_table, char *macro_name, char *l
  *                        input file (used for error reporting)
  * @param error_found a pointer to an integer value that should hold whether an error has occurred
  */
-void handle_macro_definition(HashTable *macro_table, char *macro_name, char *post_macro_name, char *input_file_name,
+void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_macro_name, char *input_file_name,
                              FILE *input_file, int *line_count, int *error_found) {
     /* the line being read */
     char line[MAX_LINE_LENGTH + 1];
@@ -173,7 +173,7 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
         exit(MEMORY_ALLOCATION_FAILURE);
     }
     /* makes sure no macro with the same name has already been defined */
-    if (table_contains(macro_table, macro_name)) {
+    if (map_contains(macro_table, macro_name)) {
         printf("Input error: Macro defined in line %d in file %s has already been defined\n", *line_count,
                input_file_name);
         *error_found = 1;
@@ -238,7 +238,7 @@ void handle_macro_definition(HashTable *macro_table, char *macro_name, char *pos
  * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro definition was found, 0 otherwise
  */
-int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *input_file_name, FILE *input_file,
+int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *input_file_name, FILE *input_file,
                                       int *line_count, int *error_found) {
     /* the first, second and third fields of the line */
     char *first_field;
@@ -287,8 +287,8 @@ int check_and_handle_macro_definition(HashTable *macro_table, char *line, char *
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */
 int pre_assemble(char file_name[]) {
-    /* a hash-table where macro names are mapped to their contents */
-    HashTable *macro_table = create_table();
+    /* a hash-map where macro names are mapped to their contents */
+    HashMap *macro_table = create_map();
     /* a pointer to the input .as file */
     FILE *input_file;
     /* a pointer to the parsed .am file */
@@ -356,6 +356,6 @@ int pre_assemble(char file_name[]) {
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
     free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
-    free_table(macro_table, 0);
+    free_map(macro_table, 0);
     return error_found;
 }

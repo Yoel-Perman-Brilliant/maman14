@@ -6,7 +6,7 @@
 #ifndef MAMAN14_REQUIREMENTS_H
 #define MAMAN14_REQUIREMENTS_H
 
-#include "structures/hash_table.h"
+#include "structures/hash_map.h"
 #include "structures/set.h"
 
 #define MEMORY_SIZE 4096
@@ -16,7 +16,7 @@
  * The requirement data structure. Exactly one of which must be created for the assembly of each file.
  */
 typedef struct {
-    HashTable *symbol_table;
+    HashMap *symbol_table;
     Set *faulty_instructions;
     /**
      * The file's data portion of the memory image.

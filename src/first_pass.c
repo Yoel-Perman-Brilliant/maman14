@@ -148,7 +148,7 @@ int first_pass(char file_name[], Requirements *requirements) {
         first_pass_handle_instruction(line, label, line_count, parsed_file_name, &error_found, requirements);
     }
     /* increases the value of every data symbol by IC */
-    table_add_to_all_that_apply(requirements->symbol_table, requirements->ic, is_data_symbol);
+    map_add_to_all_that_apply(requirements->symbol_table, requirements->ic, is_data_symbol);
     fclose(parsed_file);
     free(parsed_file_name);
     /* if no error was found, error_found has not been changed, therefore returns 0. otherwise its value is 1 */
@@ -323,8 +323,8 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
     /* the content of the symbol to be added */
     SymbolContent content;
     /* makes sure that the symbol is not already defined in the file */
-    if (table_contains(requirements->symbol_table, symbol)) {
-        if (type == EXTERNAL && table_get_symbol(requirements->symbol_table, symbol)->type != EXTERNAL) {
+    if (map_contains(requirements->symbol_table, symbol)) {
+        if (type == EXTERNAL && map_get_symbol(requirements->symbol_table, symbol)->type != EXTERNAL) {
             printf("Input Error: Symbol \"%s\" given as a parameter for .extern in line %d of file %s is "
                    "already defined in the file\n", symbol, line_count, parsed_file_name);
         } else if (type != EXTERNAL) {
@@ -343,7 +343,7 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
     else content.value = 0;
     content.appearances = create_list();
     /* adds the symbol to the symbol table */
-    table_add_symbol(requirements->symbol_table, symbol, content);
+    map_add_symbol(requirements->symbol_table, symbol, content);
 }
 
 /**

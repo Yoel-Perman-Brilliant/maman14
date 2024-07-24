@@ -11,7 +11,7 @@
 #ifndef MAMAN14_PRE_ASSAMBLER_H
 #define MAMAN14_PRE_ASSAMBLER_H
 
-#include "structures/hash_table.h"
+#include "structures/hash_map.h"
 
 /**
  * Reads an input file and parses all of its macros. Creates a new parsed file with the same name and a .am extension.
@@ -23,7 +23,6 @@
  * ending cannot have labels.
  * 
  * @param file_name   the name of the input file without the .as extension
- * @param macro_table a pointer to the macro table.
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */
 int pre_assemble(char file_name[]);

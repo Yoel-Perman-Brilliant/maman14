@@ -1,7 +1,7 @@
 #include "../headers/requirements.h"
 #include "../headers/files.h"
 #include "../headers/structures/linked_list.h"
-#include "../headers/structures/hash_table.h"
+#include "../headers/structures/hash_map.h"
 #include "../headers/output_creator.h"
 
 #define COUNTER_WIDTH 4
@@ -23,8 +23,8 @@ int create_files(char file_name[], Requirements *requirements) {
     LinkedList *extern_list = create_list();
     LinkedList *entry_list = create_list();
     error_found |= write_object_file(file_name, requirements);
-    table_add_matching_to_list(requirements->symbol_table, extern_list, is_extern);
-    table_add_matching_to_list(requirements->symbol_table, entry_list, is_entry);
+    map_add_matching_to_list(requirements->symbol_table, extern_list, is_extern);
+    map_add_matching_to_list(requirements->symbol_table, entry_list, is_entry);
     if (requirements->extern_found) error_found |= write_extern_file(file_name, extern_list);
     if (!list_empty(entry_list)) error_found |= write_entry_file(file_name, entry_list);
     return error_found;
