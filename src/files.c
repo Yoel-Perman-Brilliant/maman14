@@ -59,6 +59,7 @@ FILE *get_input_file(char file_name[]) {
     input_file = fopen(input_file_name, "r");
     if (input_file == NULL) {
         printf("Error: Can't open file %s\n", input_file_name);
+        free(input_file_name);
         return NULL;
     }
     free(input_file_name);
@@ -81,6 +82,7 @@ FILE *get_parsed_file_append(char file_name[]) {
     parsed_file = fopen(parsed_file_name, "a");
     if (parsed_file == NULL) {
         printf("Error: Can't create file %s\n", parsed_file_name);
+        free(parsed_file_name);
         return NULL;
     }
     free(parsed_file_name);
@@ -99,6 +101,7 @@ FILE *get_parsed_file_read(char file_name[]) {
     parsed_file = fopen(parsed_file_name, "r");
     if (parsed_file == NULL) {
         printf("Error: Can't open file %s\n", parsed_file_name);
+        free(parsed_file_name);
         return NULL;
     }
     free(parsed_file_name);
@@ -112,6 +115,7 @@ FILE *get_object_file(char file_name[]) {
     object_file = fopen(object_file_name, "a");
     if (object_file == NULL) {
         printf("Error: Can't create file %s\n", object_file_name);
+        free(object_file_name);
         return NULL;
     }
     free(object_file_name);
@@ -125,6 +129,7 @@ FILE *get_extern_file(char file_name[]) {
     extern_file = fopen(extern_file_name, "a");
     if (extern_file == NULL) {
         printf("Error: Can't create file %s\n", extern_file_name);
+        free(extern_file_name);
         return NULL;
     }
     free(extern_file_name);
@@ -138,6 +143,7 @@ FILE *get_entry_file(char file_name[]) {
     entry_file = fopen(entry_file_name, "a");
     if (entry_file == NULL) {
         printf("Error: Can't create file %s\n", entry_file_name);
+        free(entry_file_name);
         return NULL;
     }
     free(entry_file_name);

@@ -110,6 +110,7 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             printf("Input Error: No argument given to .entry directive in line %d of file %s\n",
                    line_count, parsed_file_name);
             *error_found = 1;
+            free_all(3, argument, directive, label_name);
             return;
         }
         /* makes sure the part of the line after the argument is empty */
@@ -117,6 +118,7 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             printf("Input Error: Extra characters after the argument for .entry directive in line %d of file %s\n",
                    line_count, parsed_file_name);
             *error_found = 1;
+            free_all(3, argument, directive, label_name);
             return;
         }
         /* makes sure the argument symbol is defined */
@@ -124,6 +126,7 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is "
                    "undefined in that file\n", argument, line_count, parsed_file_name);
             *error_found = 1;
+            free_all(3, argument, directive, label_name);
             return;
         }
         /* finds the reference to the symbol in the symbol table */
@@ -134,6 +137,7 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is"
                    "already defined in that file as external\n", argument, line_count, parsed_file_name);
             *error_found = 1;
+            free_all(2, directive, label_name);
             return;
         }
         /* changes the symbol's type to ENTRY */

@@ -210,14 +210,14 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_
         /* if a macro end is not found, updates the macro's content */
         else {
             /* reallocates the macro content to a new string that has enough spaces for the next line */
-            macro_content = realloc(macro_content, strlen(macro_content) + strlen(line) + 1);
+            macro_content = (MacroContent)realloc(macro_content, strlen(macro_content) + strlen(line) + 2);
             if (macro_content == NULL) {
                 fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
                 exit(MEMORY_ALLOCATION_FAILURE);
             }
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);
-            strcat(macro_content, "\n");
+            strcat(macro_content, "\n\0");
         }
         /* reads the next line */
         (*line_count)++;
@@ -290,7 +290,7 @@ int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *in
  */
 int pre_assemble(char file_name[]) {
     /* a hash-map where macro names are mapped to their contents */
-    HashMap *macro_table = create_map(MACRO);
+    HashMap *macro_table;
     /* a pointer to the input .as file */
     FILE *input_file;
     /* a pointer to the parsed .am file */
@@ -321,6 +321,7 @@ int pre_assemble(char file_name[]) {
         free(input_file_name);
         return 1;
     }
+    macro_table = create_map(MACRO);
 
     /* gets the name of the parsed file and a pointer to the file, the parsed file is null then an error is reported and
      * the error_found flag is set to 1 */

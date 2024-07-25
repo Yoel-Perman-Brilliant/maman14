@@ -2,8 +2,8 @@
  * Includes a hash-map data structure, which maps a string (name) to its content - either a macro or a symbol.
  * It is based on a hash-table which consists of linked-lists, whose nodes can hold either a macro content or
  * a symbol content, each associated with a certain name.
- * A hash-map should have a defined content type for all of its values in order to guarantee a consitent freeing.
- * In addition, includes prototype for functions that allow for interacting with hash-maps.
+ * A hash-map should have a defined content type for all of its values in order to guarantee consistent freeing.
+ * In addition, includes prototypes for functions that allow for interacting with hash-maps.
  */
 #ifndef MAMAN14_HASH_MAP_H
 #define MAMAN14_HASH_MAP_H
@@ -12,7 +12,7 @@
 #include "stdarg.h"
 
 /**
- * The number of slots in the hash-table which the map is based on.
+ * The number of slots in the hash-table that the map is based on.
  */
 #define MAP_HASH_TABLE_SIZE 101
 
@@ -29,7 +29,7 @@ typedef struct {
   * Creates a new, empty hash-map.
   * 
   * @param content_type the type of the map's values
-  * @return a pointer to the new map.
+  * @return a pointer to the new map
   */
 HashMap *create_map(ContentType content_type);
 

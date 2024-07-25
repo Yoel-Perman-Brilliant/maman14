@@ -215,6 +215,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
             printf("Input Error: Missing comma in .data directive in line %d of file %s\n",
                    line_count, parsed_file_name);
             *error_found = 1;
+            free(trimmed_arg);
             return;
         }
         /* verifies that the argument is an integer */
@@ -222,6 +223,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
             printf("Input Error: argument \"%s\" of .data directive in line %d of file %s is not an integer\n",
                    trimmed_arg, line_count, parsed_file_name);
             *error_found = 1;
+            free(trimmed_arg);
             return;
         }
         value = to_integer(trimmed_arg);
@@ -230,6 +232,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
             printf("Input Error: argument \"%d\" of .data directive in line %d of file %s is not "
                    "within the machine's memory cell bounds\n", value, line_count, parsed_file_name);
             *error_found = 1;
+            free(trimmed_arg);
             return;
         }
         value = DATA_NUM_TO_WORD(value);
@@ -501,6 +504,7 @@ void first_pass_handle_instruction(char *line, char *label_name, int line_count,
         printf("Input Error: Illegal instruction name \"%s\" in line %d of file %s\n",
                operator_name, line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
+        free(operator_name);
         return;
     }
     op = get_operator(operator_name);
@@ -584,6 +588,7 @@ void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
     /* if the trimmed source operand includes blank spaces, then it must be made of two operands without a 
@@ -593,6 +598,7 @@ void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
     /* makes sure there is a destination operand */
@@ -601,6 +607,7 @@ void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
     /* if the trimmed destination operand includes blank spaces, then it must be made of two operands without a comma
@@ -612,6 +619,7 @@ void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
     /* the address methods of the operands */
@@ -623,6 +631,7 @@ void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
     /* makes sure the destination operand's address method is legal */
@@ -631,6 +640,7 @@ void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
     free_all(2, trimmed_source_operand, trimmed_destination_operand);
