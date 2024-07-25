@@ -236,6 +236,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
         /* inserts the data to the memory image while updating the value of error_found to 1 if an error is found
          * in the inserting process */
         *error_found |= memory_insert_data(requirements, value, line_count, parsed_file_name);
+        free(trimmed_arg);
         /* the next argument */
         arg = find_token(rest, DATA_SEPARATOR, &rest);
         trimmed_arg = trim(arg);
@@ -372,7 +373,10 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
     /* the first field of the line (which is passed without the label) */
     char *directive = find_token(line, BLANKS, &rest);
     /* checks that it is a directive */
-    if (!is_directive(directive)) return 0;
+    if (!is_directive(directive)) {
+        free(directive);
+        return 0;
+    }
     /* if it's .data */
     if (equal(directive, DATA_DIRECTIVE)) {
         /* inserts the label to the symbol table if there is one */
@@ -381,6 +385,7 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
                           line_count, parsed_file_name);
         }
         insert_data_numbers(rest, parsed_file_name, line_count, requirements, error_found);
+        free(directive);
         return 1;
     }
     /* if it's .string */
@@ -391,15 +396,18 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
                           line_count, parsed_file_name);
         }
         insert_string(rest, line_count, parsed_file_name, error_found, requirements);
+        free(directive);
         return 1;
     }
     /* if it's .extern */
     else if (equal(directive, EXTERN_DIRECTIVE)) {
         handle_extern(rest, label_name, line_count, parsed_file_name, error_found, requirements);
+        free(directive);
         return 1;
     }
     /* if it's .entry */
     else if (equal(directive, ENTRY_DIRECTIVE)) {
+        free(directive);
         return 1;
     }
     /* any other directive is illegal */
@@ -407,6 +415,7 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
         printf("Input Error: Illegal directive \"%s\" in line %d of file %s\n",
                directive, line_count, parsed_file_name);
         *error_found = 1;
+        free(directive);
         return 1;
     }
 }
@@ -452,6 +461,7 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
     }
     /* inserts the symbol to the symbol table */
     insert_symbol(symbol, EXTERNAL, UNDEFINED, requirements, error_found, line_count, parsed_file_name);
+    free(label_name);
 }
 
 

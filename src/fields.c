@@ -170,8 +170,11 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
         /* sets the value of the line pointer to the part after the label */
         *line = rest;
     }
-        /* if the first field is not a label, sets the value of the label_name pointer to NULL */
-    else *label_name = NULL;
+    /* if the first field is not a label, sets the value of the label_name pointer to NULL */
+    else {
+        free(first_field);
+        *label_name = NULL;
+    }
 }
 
 /**

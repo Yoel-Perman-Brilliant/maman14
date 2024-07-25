@@ -60,8 +60,12 @@ int second_pass(char file_name[], Requirements *requirements) {
         if (is_line_blank(line) || exists(line, COMMENT_START)) continue;
         find_label(&line, &label, line_count, parsed_file_name, &error_found);
         /* checks that the part after the label is not blank */
-        if (is_line_blank(line)) continue;
+        if (is_line_blank(line)) {
+            free(label);
+            continue;
+        }
         if (!is_directive(line)) {
+            free(label);
             second_pass_handle_instruction(line, line_count, parsed_file_name, &error_found, requirements);
         } else check_and_handle_entry(line, label, line_count, parsed_file_name, &error_found, requirements);
     }
@@ -124,6 +128,7 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
         }
         /* finds the reference to the symbol in the symbol table */
         symbol = map_get_symbol(requirements->symbol_table, argument);
+        free(argument);
         /* makes sure the symbol is not external */
         if (symbol->type == EXTERNAL) {
             printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is"
@@ -131,10 +136,11 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
             *error_found = 1;
             return;
         }
-        /* @TODO check for defining something as .entry twice */
         /* changes the symbol's type to ENTRY */
         symbol->type = ENTRY;
     }
+    free(directive);
+    free(label_name);
 }
 
 void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
@@ -173,6 +179,7 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
                           error_found, requirements)
         || !validate_operand(trimmed_destination_operand, destination_method, line_count,
                              parsed_file_name, error_found, requirements)) {
+        free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
     if (should_combine_additional_words(source_method, destination_method)) {
@@ -204,6 +211,7 @@ void second_pass_handle_one_operand_instruction(char *rest, int line_count, char
     AddressMethod destination_method = get_address_method(destination_operand);
     if (!validate_operand(destination_operand, destination_method, line_count, parsed_file_name, error_found,
                           requirements)) {
+        free(destination_operand);
         return;
     }
     if (destination_method == DIRECT_ADDRESS) {

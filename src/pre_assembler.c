@@ -133,9 +133,10 @@ int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *lin
         }
         /* adds the macro whose definition just ended to the macro table */
         map_add_macro(macro_table, macro_name, macro_content);
+        free_all(3, first_field, second_field, third_field);
         return 1;
     }
-        /* checks if the macro end includes a label, reports an error if yes */
+    /* checks if the macro end includes a label, reports an error if yes */
     else if (is_label(first_field) && equal(second_field, MACRO_END)) {
         printf("Input error: Line %d in file %s includes a label before macro end declaration\n",
                line_count, input_file_name);
@@ -143,7 +144,7 @@ int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *lin
         free_all(3, first_field, second_field, third_field);
         return 1;
     }
-    free_all(2, first_field, third_field);
+    free_all(3, first_field, second_field, third_field);
     return 0;
 }
 
@@ -195,6 +196,7 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_
                *line_count, input_file_name);
         *error_found = 1;
     }
+    free(post_macro_name);
 
     /* reads the lines from the input one by one until a macro end is found */
     (*line_count)++;
@@ -339,23 +341,26 @@ int pre_assemble(char file_name[]) {
          * next line */
         if (check_and_handle_macro_usage(macro_table, first_field, second_field, parsed_file,
                                          line_count, input_file_name, &error_found)) {
+            free_all(3, first_field, second_field, third_field);
             continue;
         }
         /* if a macro definition is detected, it is inserted to the macro table, and the loop moves to the
          * line after the macro's end */
         if (check_and_handle_macro_definition(macro_table, line, file_name,
                                               input_file, &line_count, &error_found)) {
+            free_all(3, first_field, second_field, third_field);
             continue;
         }
         /* if no special case is detected and no error has occurred so far, copies the line to the parsed file */
         if (!error_found) fprintf(parsed_file, "%s\n", line);
+        free_all(3, first_field, second_field, third_field);
     }
     /* closes the files */
     fclose(input_file);
     fclose(parsed_file);
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
-    free_all(5, first_field, second_field, third_field, input_file_name, parsed_file_name);
+    free_all(2, input_file_name, parsed_file_name);
     free_map(macro_table);
     return error_found;
 }
