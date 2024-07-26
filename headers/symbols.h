@@ -17,6 +17,11 @@ typedef enum SymbolType {
     EXTERNAL, ENTRY, REGULAR
 } SymbolType;
 
+/**
+ * Represents a list of an external symbol's appearances in a file.
+ * 
+ * The additional typedef is used to avoid issues of types being not yet defined when used in structs.
+ */
 typedef struct LinkedList AppearancesList;
 
 /**
@@ -26,8 +31,8 @@ typedef struct SymbolContent {
     int value;
     SymbolLocation location;
     SymbolType type;
+    /* a list of indexes of memory words in which the symbol appears - only used for external symbols */
     AppearancesList *appearances;
 } SymbolContent;
-
 
 #endif 

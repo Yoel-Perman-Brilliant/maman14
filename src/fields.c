@@ -148,13 +148,14 @@ int is_directive(char *field) {
  * @param label_name       a pointer to a string whose value should be the label if there is one, or NULL if there isn't
  * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
- * @param error_found      a pointer to the requirements for the file
  */
-void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found) {
+int find_label(char **line, char **label_name, int line_count, char *parsed_file_name) {
     /* the part of the line after the label */
     char *rest;
     /* the first field of the line */
     char *first_field = find_token(*line, BLANKS, &rest);
+    /* whether an error has occurred */
+    int error_found = 0;
     /* if the first field is a label */
     if (is_label(first_field)) {
         /* removes the colon from the label to find the symbol */
@@ -163,7 +164,7 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
         if (!legal_label_name(first_field)) {
             printf("Input Error: Label in line %d of file %s has an illegal name\n",
                    line_count, parsed_file_name);
-            *error_found = 1;
+            error_found = 1;
         }
         /* sets the value of the label_name pointer to the symbol */
         *label_name = first_field;
@@ -175,6 +176,7 @@ void find_label(char **line, char **label_name, int line_count, char *parsed_fil
         free(first_field);
         *label_name = NULL;
     }
+    return error_found;
 }
 
 /**

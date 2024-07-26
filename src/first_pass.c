@@ -136,7 +136,7 @@ int first_pass(char file_name[], Requirements *requirements) {
         /* default value in case there is no label */
         label = NULL;
         /* finds the label and changes line to be the part after the label */
-        find_label(&line, &label, line_count, parsed_file_name, &error_found);
+        error_found |= find_label(&line, &label, line_count, parsed_file_name);
         /* makes sure that the line is not a blank line with a label */
         if (label != NULL && blank_after_label(line, line_count, parsed_file_name, &error_found)) continue;
         /* checks if the line is a directive and handles it if it is */

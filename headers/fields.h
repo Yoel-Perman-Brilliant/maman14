@@ -1,22 +1,24 @@
 /**
  * Includes macros and prototypes for functions that have to do with identifying, verifying and handling various fields
  * in the input, except for operators (see operators.h).
+ * All functions that get a string as a parameter assume that it is not null and ends with a terminating 0.
  */
 
 #ifndef MAMAN14_LEGAL_NAMES_H
 #define MAMAN14_LEGAL_NAMES_H
 
+/* the keyword stating the start of a macro definition */
 #define MACRO_DEFINITION "macr"
+/* the keyword stating the end of a macro definition */
 #define MACRO_END "endmacr"
 #define COMMENT_START ';'
-/**
- * The first field of a line (excluding the label) is considered a directive if it starts with a period.
- */
+/* the first field of a line (excluding the label) is considered a directive if it starts with a period */
 #define DIRECTIVE_START '.'
 #define DATA_DIRECTIVE ".data"
 #define STRING_DIRECTIVE ".string"
 #define EXTERN_DIRECTIVE ".extern"
 #define ENTRY_DIRECTIVE ".entry"
+/* a string consisting of whitespace characters that can appear before the end of a line */
 #define BLANKS " \t"
 
 /**
@@ -29,10 +31,8 @@
  */
 #define INDIRECT_REGISTER_ADDRESS_START '*'
 
-
-
 /**
- * Represents the possible address methods, with each constant's value being as defined in the task.
+ * Represents the possible address methods for operands, with each constant's value being as defined in the task.
  * Also includes a "no operand" address method, which is used as the address method of a non-existent operand
  * when given as a parameter to certain functions.
  */
@@ -81,9 +81,24 @@ int is_label(char *field);
  */
 void label_to_symbol(char *label);
 
+/**
+ * Checks if a given field is a legal directive. 
+ * 
+ * @param field the field to be checked
+ * @return 1 if the field is a legal directive, 0 otherwise
+ */
 int is_directive(char *field);
 
-void find_label(char **line, char **label_name, int line_count, char *parsed_file_name, int *error_found);
+/**
+ * Finds the label of a line with a given pointer to it and changes the pointer's value to not include the label.
+ * 
+ * 
+ * @param line             a pointer to the line being read
+ * @param label_name       a pointer to a string whose value should be the label if there is one, or NULL if there isn't
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ */
+int find_label(char **line, char **label_name, int line_count, char *parsed_file_name);
 
 AddressMethod get_address_method(char *operand);
 
