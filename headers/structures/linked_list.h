@@ -4,6 +4,7 @@
  * Items containing integers are treated as having no name, since the integer itself represents the item at every
  * use case in the project.
  * In addition, includes prototype for functions that allow for interacting with linked-lists.
+ * All functions assumes that the given pointer to a list is not null.
  */
 #ifndef MAMAN14_LINKED_LIST_H
 #define MAMAN14_LINKED_LIST_H
@@ -151,10 +152,14 @@ void list_add_int(LinkedList *list, int num);
  * Assumes that all of the list's contents are of the same type.
  * 
  * @param list a pointer to the list that should be freed
- * @param is_symbol a value representing whether the list containts
  */
 void deep_free_list(LinkedList *list);
 
+/**
+ * Frees a linked-list and its nodes from the memory, without the nodes' contents.
+ * 
+ * @param list a pointer to the list that should be freed
+ */
 void shallow_free_list(LinkedList *list);
 
 /**
@@ -168,6 +173,16 @@ void shallow_free_list(LinkedList *list);
  */
 void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(SymbolContent symbol));
 
+/**
+ * Adds every symbol in a given linked-list that meets a given condition to another given linked-list.
+ * Importantly, copies the symbols are added, rather then references to the same symbols.
+ * Assumes every item on the first list is a symbol.
+ * 
+ * @param list1     the list whose symbols should be added to the other list
+ * @param list2     the list that the symbols should be added to
+ * @param condition a pointer to a function that accepts a symbol and returns 1 if it meets the wanted condition and 0
+ *                  otherwise
+ */
 void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condition)(SymbolContent symbol));
 
 void list_print_symbols(LinkedList *list);

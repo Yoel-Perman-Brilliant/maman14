@@ -10,7 +10,7 @@ Set *create_set() {
         printf("Memory Error: Memory allocation failure when creating set\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
-    for (i = 0; i < SET_SIZE; i++) {
+    for (i = 0; i < SET_HASH_TABLE_SIZE; i++) {
         set->lists[i] = create_list(INTEGER);
     }
     return set;
@@ -18,14 +18,14 @@ Set *create_set() {
 
 void free_set(Set *set) {
     int i;
-    for (i = 0; i < SET_SIZE; i++) {
+    for (i = 0; i < SET_HASH_TABLE_SIZE; i++) {
         deep_free_list(set->lists[i]);
     }
     free(set);
 }
 
 int set_hash(int num) {
-    return num % SET_SIZE;
+    return num % SET_HASH_TABLE_SIZE;
 }
 
 int set_contains(Set *set, int num) {
@@ -40,7 +40,7 @@ int set_add(Set *set, int num) {
 
 void set_print(Set *set) {
     int i;
-    for (i = 0; i < SET_SIZE; i++) {
+    for (i = 0; i < SET_HASH_TABLE_SIZE; i++) {
         list_print_numbers(set->lists[i]);
     }
 }

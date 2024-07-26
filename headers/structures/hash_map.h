@@ -4,6 +4,7 @@
  * a symbol content, each associated with a certain name.
  * A hash-map should have a defined content type for all of its values in order to guarantee consistent freeing.
  * In addition, includes prototypes for functions that allow for interacting with hash-maps.
+ * All functions assumes that the given pointer to a map is not null.
  */
 #ifndef MAMAN14_HASH_MAP_H
 #define MAMAN14_HASH_MAP_H
@@ -98,6 +99,16 @@ void free_map(HashMap *map);
  */
 void map_add_to_all_that_apply(HashMap *map, int to_add, int (*condition)(SymbolContent symbol));
 
+/**
+ * Adds every symbol in a hash-map that meets a given condition to a given linked-list.
+ * Importantly, copies the symbols are added, rather then references to the same symbols.
+ * Assumes every item in the map is a symbol and that the pointer to the list is not null.
+ * 
+ * @param map       the map whose symbols should be added to the list
+ * @param list      the list that the symbols should be added to
+ * @param condition a pointer to a function that accepts a symbol and returns 1 if it meets the wanted condition and 0
+ *                  otherwise
+ */
 void map_add_matching_to_list(HashMap *map, LinkedList *list, int (*condition)(SymbolContent symbol));
 
 void map_print_symbols(HashMap *map);
