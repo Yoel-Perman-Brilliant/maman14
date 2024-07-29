@@ -16,6 +16,7 @@
  * destination address methods. The opcode is defined externally as the index of the operator in the operators array.
  */
 typedef struct {
+    
     char *name;
     
     /**

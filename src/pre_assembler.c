@@ -87,7 +87,7 @@ int check_and_handle_macro_usage(HashMap *macro_table, char *first_field, char *
         handle_macro_usage(first_field, macro_table, parsed_file);
         return 1;
     }
-        /* if a label appears before the macro usage, reports an errors and updates the error_found pointer */
+    /* if a label appears before the macro usage, reports an errors and updates the error_found pointer */
     else if (is_label(first_field) && map_contains(macro_table, second_field)) {
         printf("Input Error: Label used before macro usage in line %d of file %s\n", line_count, input_file_name);
         *error_found = 1;
@@ -184,13 +184,13 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_
         printf("Input error: Macro defined in line %d in file %s has no name\n", *line_count, input_file_name);
         *error_found = 1;
     }
-        /* makes sure the macro name is legal */
+    /* makes sure the macro name is legal */
     else if (!legal_macro_name(macro_name)) {
         printf("Input error: Macro defined in line %d in file %s has an illegal name\n",
                *line_count, input_file_name);
         *error_found = 1;
     }
-        /* makes sure there are no extra characters after the macro name */
+    /* makes sure there are no extra characters after the macro name */
     else if (!is_line_blank(post_macro_name)) {
         printf("Input error: Line %d in file %s includes extra characters after macro name\n",
                *line_count, input_file_name);

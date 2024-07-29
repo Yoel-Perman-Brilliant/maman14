@@ -1,3 +1,6 @@
+/**
+ * Includes definitions which represent symbols and their characteristics.
+ */
 #ifndef MAMAN14_SYMBOLS_H
 #define MAMAN14_SYMBOLS_H
 
