@@ -10,7 +10,7 @@
 #define HASH_MULTIPLIER 31
 
 /**
- * Generates a hash value for a given string, that represents the index of the list that a value that has the given
+ * Generates a hash value for a given string, that represents the index of the list that a value which has the given
  * string as its name should be entered into.
  * Does so by multiplying each character in the string by a power of 31 (with the power increasing by 1 for each
  * character), and then taking the modulo 101 of the value so it can exists as a slot in the map.

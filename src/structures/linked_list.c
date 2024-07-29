@@ -13,7 +13,9 @@
 /**
  * Creates a new, empty linked-list.
  * Does so by allocating the required memory on the heap, then setting the list's head to a null pointer.
+ * Also sets the content_type field to the given type.
  * 
+ * @param content_type the type that the list's items' content should be
  * @return a pointer to the new list.
  */
 LinkedList *create_list(ContentType content_type) {
@@ -27,10 +29,16 @@ LinkedList *create_list(ContentType content_type) {
     return list;
 }
 
+/**
+ * Checks if a linked-list is empty.
+ * Do so by checking if the head is null.
+ * 
+ * @param list a pointer to the list that should be checked
+ * @return 1 if the list is empty, 0 otherwise
+ */
 int list_empty(LinkedList *list) {
     return list->head == NULL;
 }
-
 
 /**
  * Checks if a linked-list contains an item represented by a given name.
@@ -51,6 +59,15 @@ int list_contains(LinkedList *list, char *name) {
     return 0;
 }
 
+/**
+ * Checks if a linked-list contains given integer (as content).
+ * Does so by going over every node on the list and checking if its content's integer value if equal to
+ * the given integer.
+ * 
+ * @param list a pointer to the linked-list to be checked
+ * @param num the integer to be found
+ * @return 1 if the list includes num, 0 otherwise
+ */
 int list_contains_int(LinkedList *list, int num) {
     Node *node = list->head;
     while (node != NULL) {
@@ -162,6 +179,14 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
     list_add(list, name, content);
 }
 
+/**
+ * Adds an integer to a linked-list.
+ * Does so by creating a new Content struct with its num field being the given integer and its name being NULL (since it
+ * is irrelevant), and adding it to the list using list_Add.
+ * 
+ * @param list          a pointer to the list that the integer should be added to
+ * @param num           the integer that should be added
+ */
 void list_add_int(LinkedList *list, int num) {
     Content content;
     content.num = num;
@@ -169,9 +194,9 @@ void list_add_int(LinkedList *list, int num) {
 }
 
 /**
- * Frees a linked-list and all of its contents from the memory.
- * Does so by going over every node in the list, getting the next node and freeing the current one, then doing the same
- * with the next node.
+ * Frees a linked-list and all of its  items' names and contents from the memory.
+ * Does so by going over every node in the list, getting the next node and freeing the current one and its contents,
+ * then doing the same with the next node.
  * Finally frees the list pointer.
  * 
  * @param list a pointer to the list that should be freed
@@ -180,10 +205,12 @@ void deep_free_list(LinkedList *list) {
     Node *node = list->head;
     Node *next;
     while (node != NULL) {
+        /* if the content is a symbol, its name and list of appearances are allocated on the heap and should be freed */
         if (list->content_type == SYMBOL) {
             deep_free_list(node->content.symbol.appearances);
             free(node->name);
         }
+        /* if the content is a macro, its name and content are allocated on the heap and should be freed */
         if (list->content_type == MACRO) {
             free(node->content.macro);
             free(node->name);
@@ -195,6 +222,14 @@ void deep_free_list(LinkedList *list) {
     free(list);
 }
 
+/**
+ * Frees a linked-list and its nodes from the memory, without freeing the nodes' names contents.
+ * Does so by going over every node in the list, getting the next node and freeing the current one,
+ * then doing the same with the next node.
+ * Finally frees the list pointer.
+ * 
+ * @param list a pointer to the list that should be freed
+ */
 void shallow_free_list(LinkedList *list) {
     Node *node = list->head;
     Node *next;
@@ -208,8 +243,8 @@ void shallow_free_list(LinkedList *list) {
 
 /**
  * Adds a given integer to the value of every symbol in a hash-linked-list that meets a given condition.
- * Does so by going over every item, and if applying the condition to its symbol content yields 1, adding the given
- * integer to its value.
+ * Does so by going over every item on the list, and if applying the condition to its symbol content yields 1,
+ * adding the given integer to its value.
  * Assumes that that the content of every item in the list is a symbol.
  * 
  * @param list      a pointer to the list whose items' values should be changed
@@ -226,6 +261,19 @@ void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(S
     }
 }
 
+/**
+ * Adds every symbol in a given linked-list that meets a given condition to another given linked-list.
+ * Importantly, copies of the symbols are added, rather then references to the same symbols, and copies of the pointers
+ * representing the names are added.
+ * Does so by going over every item on the first list, and if applying the condition to its symbol content yields 1,
+ * adding its name and a copy of its content and the pointer representing the name to the second list.
+ * Assumes every item on the first list is a symbol.
+ * 
+ * @param list1     the list whose symbols should be added to the other list
+ * @param list2     the list that the symbols should be added to
+ * @param condition a pointer to a function that accepts a symbol and returns 1 if it meets the wanted condition and 0
+ *                  otherwise
+ */
 void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condition)(SymbolContent symbol)) {
     Node *node = list1->head;
     while (node != NULL) {

@@ -52,6 +52,7 @@ typedef struct LinkedList {
 /**
  * Creates a new, empty linked-list.
  * 
+ * @param content_type the type that the list's items' content should be
  * @return a pointer to the new list.
  */
 LinkedList *create_list(ContentType content_type);
@@ -148,7 +149,7 @@ void list_add_symbol(LinkedList *list, char *name, SymbolContent symbol_content)
 void list_add_int(LinkedList *list, int num);
 
 /**
- * Frees a linked-list and all of its contents from the memory.
+ * Frees a linked-list and all of its items' names and contents from the memory.
  * Assumes that all of the list's contents are of the same type.
  * 
  * @param list a pointer to the list that should be freed
@@ -156,7 +157,7 @@ void list_add_int(LinkedList *list, int num);
 void deep_free_list(LinkedList *list);
 
 /**
- * Frees a linked-list and its nodes from the memory, without the nodes' contents.
+ * Frees a linked-list and its nodes from the memory, without freeing the nodes' names and contents.
  * 
  * @param list a pointer to the list that should be freed
  */
@@ -175,7 +176,8 @@ void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(S
 
 /**
  * Adds every symbol in a given linked-list that meets a given condition to another given linked-list.
- * Importantly, copies the symbols are added, rather then references to the same symbols.
+ * Importantly, copies of the symbols are added, rather then references to the same symbols, and copies of the pointers
+ * representing the names are added.
  * Assumes every item on the first list is a symbol.
  * 
  * @param list1     the list whose symbols should be added to the other list
