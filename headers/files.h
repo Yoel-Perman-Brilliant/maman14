@@ -50,12 +50,34 @@ FILE *get_parsed_file_append(char file_name[]);
  */
 FILE *get_parsed_file_read(char file_name[]);
 
+/**
+ * Returns a pointer to the object file based on the extensionless file name.
+ * 
+ * @param file_name the name of the input file without the extension
+ * @return a pointer to the new file, or NULL if the file could not be created
+ */
 FILE *get_object_file(char file_name[]);
 
+/**
+ * Returns a pointer to the extern symbols file (.ext) based on the extensionless file name.
+ * 
+ * @param file_name the name of the input file without the extension
+ * @return a pointer to the new file, or NULL if the file could not be created
+ */
 FILE *get_extern_file(char file_name[]);
 
+/**
+ * Returns a pointer to the entry symbols file (.ent) based on the extensionless file name.
+ * 
+ * @param file_name the name of the input file without the extension
+ * @return a pointer to the new file, or NULL if the file could not be created
+ */
 FILE *get_entry_file(char file_name[]);
 
+/**
+ * Removes all output files (object, extern and entry) corresponding to a given extensionless file name.
+ * @param file_name the name of the input file without the extension
+ */
 void remove_output_files(char file_name[]);
 
 #endif
