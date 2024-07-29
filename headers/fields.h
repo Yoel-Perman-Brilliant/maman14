@@ -94,10 +94,8 @@ int is_directive(char *field);
  * 
  * @param line             a pointer to the line being read
  * @param label_name       a pointer to a string whose value should be the label if there is one, or NULL if there isn't
- * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
- * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  */
-int find_label(char **line, char **label_name, int line_count, char *parsed_file_name);
+void find_label(char **line, char **label_name);
 
 /**
  * Finds the address method of a given operand.

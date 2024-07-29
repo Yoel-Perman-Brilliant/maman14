@@ -83,6 +83,8 @@ int blank_after_label(char *line, int line_count, char *parsed_file_name, int *e
 
 int is_data_symbol(SymbolContent symbol);
 
+int is_label_legal(char *label);
+
 
 /**
  * Executes the first pass of the assembler over a parsed, macro-less file.
@@ -136,7 +138,7 @@ int first_pass(char file_name[], Requirements *requirements) {
         /* default value in case there is no label */
         label = NULL;
         /* finds the label and changes line to be the part after the label */
-        error_found |= find_label(&line, &label, line_count, parsed_file_name);
+        find_label(&line, &label);
         /* makes sure that the line is not a blank line with a label */
         if (label != NULL && blank_after_label(line, line_count, parsed_file_name, &error_found)) continue;
         /* checks if the line is a directive and handles it if it is */
@@ -326,6 +328,13 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
                    int *error_found, int line_count, char *parsed_file_name) {
     /* the content of the symbol to be added */
     SymbolContent content;
+    /* makes sure the symbol's name is legal */
+    if (!legal_label_name(symbol)) {
+        printf("Input Error: Label in line %d of file %s has an illegal name\n",
+               line_count, parsed_file_name);
+        *error_found = 1;
+        return;
+    }
     /* makes sure that the symbol is not already defined in the file */
     if (map_contains(requirements->symbol_table, symbol)) {
         if (type == EXTERNAL && map_get_symbol(requirements->symbol_table, symbol)->type != EXTERNAL) {
@@ -503,6 +512,7 @@ void first_pass_handle_instruction(char *line, char *label_name, int line_count,
     if (!is_operator(operator_name)) {
         printf("Input Error: Illegal instruction name \"%s\" in line %d of file %s\n",
                operator_name, line_count, parsed_file_name);
+        *error_found = 1;
         set_add(requirements->faulty_instructions, line_count);
         free(operator_name);
         return;

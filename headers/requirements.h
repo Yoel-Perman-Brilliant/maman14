@@ -17,6 +17,7 @@
  */
 typedef struct {
     HashMap *symbol_table;
+    
     Set *faulty_instructions;
     /**
      * The file's data portion of the memory image.

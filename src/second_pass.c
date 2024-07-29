@@ -58,7 +58,7 @@ int second_pass(char file_name[], Requirements *requirements) {
         read_line(parsed_file, parsed_file_name, line_count, line_read);
         line = line_read;
         if (is_line_blank(line) || exists(line, COMMENT_START)) continue;
-        error_found |= find_label(&line, &label, line_count, parsed_file_name);
+        find_label(&line, &label);
         /* checks that the part after the label is not blank */
         if (is_line_blank(line)) {
             free(label);
