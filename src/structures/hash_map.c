@@ -134,9 +134,10 @@ void map_add_symbol(HashMap *map, char *name, SymbolContent symbol_content) {
 
 /**
  * Frees a hash-map and all of its contents from the memory.
- * Does so by freeing the list in every slot and their contents, and then freeing the pointer to the map.
+ * Does so by freeing the list in every slot and their items' names and contents, and then 
+ * freeing the pointer to the map.
  * 
- * @param map the map to be freed
+ * @param map a pointer to the map that should be freed
  */
 void free_map(HashMap *map) {
     int i;

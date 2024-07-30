@@ -31,7 +31,7 @@ Set *create_set();
 /**
  * Frees a set and all of its contents from the memory.
  * 
- * @param set the set to be freed
+ * @param set a pointer to the set that should be freed
  */
 void free_set(Set *set);
 

@@ -84,7 +84,7 @@ void map_add_symbol(HashMap *map, char *name, SymbolContent symbol_content);
 /**
  * Frees a hash-map and all of its contents from the memory.
  * 
- * @param map the map to be freed
+ * @param map a pointer to the map that should be freed
  */
 void free_map(HashMap *map);
 
