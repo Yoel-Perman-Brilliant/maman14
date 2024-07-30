@@ -68,7 +68,8 @@ int set_contains(Set *set, int num) {
 
 /**
  * Adds an integer to a given set.
- * Does so by adding it to the list at the index of the integer's hash-value.
+ * Does so by first checking if the set already contains the item, and if it doesn't, adding it to the list at the
+ * index of the integer's hash-value.
  * 
  * @param set a pointer to the set that the number should be added to
  * @param num the integer to be added
