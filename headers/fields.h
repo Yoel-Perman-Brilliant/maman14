@@ -7,19 +7,57 @@
 #ifndef MAMAN14_LEGAL_NAMES_H
 #define MAMAN14_LEGAL_NAMES_H
 
-/* the keyword stating the start of a macro definition */
+/**
+ * the keyword stating the start of a macro definition
+ */
 #define MACRO_DEFINITION "macr"
-/* the keyword stating the end of a macro definition */
+/**
+ * the keyword stating the end of a macro definition 
+ */
 #define MACRO_END "endmacr"
+
 #define COMMENT_START ';'
-/* the first field of a line (excluding the label) is considered a directive if it starts with a period */
+
+/**
+ * the first field of a line (excluding the label) is considered a directive if it starts with a period 
+ */
 #define DIRECTIVE_START '.'
+
+/** The four legal directives **/
 #define DATA_DIRECTIVE ".data"
 #define STRING_DIRECTIVE ".string"
 #define EXTERN_DIRECTIVE ".extern"
 #define ENTRY_DIRECTIVE ".entry"
-/* a string consisting of whitespace characters that can appear before the end of a line */
+
+/**
+ * Separates between .data arguments.
+ */
+#define DATA_SEPARATOR ","
+
+/**
+ * Separates between operands in instructions.
+ */
+#define OPERAND_SEPARATOR ","
+
+/**
+ * A string consisting of whitespace characters that can appear in a line.
+ */
 #define BLANKS " \t"
+
+/**
+ * The start and end of .string arguments.
+ */
+#define STRING_START_AND_END '"'
+
+/**
+ * The maximum value that a word in the memory can hold.
+ */
+#define MAX_WORD_SIZE (short)(pow(2, WORD_SIZE_BITS - 1) - 1)
+
+/**
+ * The minimum value that a word in the memory can hold.
+ */
+#define MIN_WORD_SIZE (short)(-(pow(2, WORD_SIZE_BITS - 1)))
 
 /**
  * The first character of an operand in the immediate address method.
