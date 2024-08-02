@@ -115,7 +115,7 @@ int first_pass(char file_name[], Requirements *requirements) {
     int line_count = 0;
     /* the line being read */
     char line_read[MAX_LINE_LENGTH + 1];
-    /* the lin's label */
+    /* the line's label */
     char *label;
     /* makes sure the parsed file is not null, if it does then an error is found */
     if (!parsed_file) {
