@@ -176,12 +176,6 @@ int is_integer(char string[]) {
     return 1;
 }
 
-int to_integer(char string[]) {
-    if (string[0] == '+') return atoi(string + 1);
-    if (string[0] == '-') return -atoi(string + 1);
-    return atoi(string);
-}
-
 char first_non_blank(char string[]) {
     int i;
     for (i = 0; string[i] != '\0';) {

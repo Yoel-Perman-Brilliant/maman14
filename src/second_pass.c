@@ -235,7 +235,7 @@ int validate_immediate_address_operand(char *operand, int line_count, char *pars
         *error_found = 1;
         return 0;
     }
-    value = to_integer(operand + 1);
+    value = atoi(operand + 1);
     if (value > IMMEDIATE_VALUE_MAX || value < IMMEDIATE_VALUE_MIN) {
         printf("Input Error: In operand \"%s\" given in the immediate address method in line %d of file %s, "
                "%d is not in the allowed range\n", operand, line_count, parsed_file_name, value);
@@ -288,7 +288,7 @@ char *get_reg(char *operand, AddressMethod addressMethod) {
 
 short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
                                           int is_source) {
-    if (address_method == IMMEDIATE_ADDRESS) return create_immediate_address_word(to_integer(operand + 1));
+    if (address_method == IMMEDIATE_ADDRESS) return create_immediate_address_word(atoi(operand + 1));
     if (address_method == DIRECT_ADDRESS) {
         SymbolContent symbol = *map_get_symbol(requirements->symbol_table, operand);
         return create_direct_address_word(symbol.value, symbol.type);

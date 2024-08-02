@@ -70,14 +70,6 @@ char *trim(char string[]);
 int is_integer(char string[]);
 
 /**
- * Returns the integer value of a string, assumes it is known to represent an integer (that may start with one + or -).
- * 
- * @param string the string to be converted to int
- * @return the integer value of string
- */
-int to_integer(char string[]);
-
-/**
  * Returns the first non-whitespace character of a given string.
  * 
  * @param string the string whose first non-whitespace character should be retrieved
