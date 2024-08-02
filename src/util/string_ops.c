@@ -159,16 +159,20 @@ char *trim(char string[]) {
 /**
  * Checks if a given string represents an integer (that may start with one + or -).
  * Assumes the string is not empty.
- * D
+ * Does so by first making sure that either the first character is a digit or that it is a sign and it is not the only
+ * character, and then checks that every character after the first one is a digit.
  * 
  * @param string the string to be checked - not empty
  * @return 1 if string represents an integer, 0 otherwise
  */
 int is_integer(char string[]) {
+    /* the index of the character that needs to be a digit */
     int i = 1;
+    /* makes sure that the first character is a digit, or that it is a sign and the there is another character after it */
     if (!(isdigit(string[0]) || (string[0] == '+' && string[1] != '\0') || (string[0] == '-' && string[1] != '\0'))) {
         return 0;
-    } 
+    }
+    /* makes sure every character starting from the second one is a digit */
     while (string[i] != '\0') {
         if (!isdigit(string[i])) return 0;
         i++;
@@ -176,28 +180,43 @@ int is_integer(char string[]) {
     return 1;
 }
 
+/**
+ * Returns the first non-whitespace character of a given string.
+ * Does so by going over every character in the string starting from the first one, and as soon as a character is not
+ * a whitespace, returns it.
+ * 
+ * @param string the string whose first non-whitespace character should be retrieved
+ * @return the first non-whitespace character of string, or 0 non such character exists.
+ */
 char first_non_blank(char string[]) {
     int i;
-    for (i = 0; string[i] != '\0';) {
+    for (i = 0; string[i] != '\0'; i++) {
         if (!isspace(string[i])) return string[i];
-        i++;
     }
     return 0;
 }
 
+/**
+ * Returns the last non-whitespace character of a given string.
+ * Does so by going over every character in the string starting from the last one, and as soon as a character is not
+ * a whitespace, returns it.
+ * 
+ * @param string the string whose last non-whitespace character should be retrieved
+ * @return the last non-whitespace character of string, or 0 non such character exists.
+ */
 char last_non_blank(char string[]) {
     int i;
-    for (i = strlen(string) - 1; i >= 0;) {
+    for (i = strlen(string) - 1; i >= 0; i--) {
         if (!isspace(string[i])) {
             return string[i];
         }
-        i--;
     }
     return 0;
 }
 
 /**
  * Finds the number of blank spaces (spaces or tabs) in a given string.
+ * Does so by keeping a counter and incrementing it for every whitespace character.
  * 
  * @param string the string whose number of blank spaces should be found
  * @return the number of blank spaces in the string 
@@ -213,8 +232,9 @@ int number_of_blanks(char string[]) {
 }
 
 /**
- * Returns a string that is the same as a given string, without any blank spaces. Does so by creating a new character
- * array and copying to it each character from the given string that is not a whitespace.
+ * Returns a string that is the same as a given string, without any blank spaces.
+ * Does so by creating a new character  array and copying to it each character from the 
+ * given string that is not a whitespace.
  * 
  * @param string a string whose spaces should be removed
  * @return the given string without blank spaces
@@ -248,25 +268,58 @@ char *remove_all_blanks(char string[]) {
     return output;
 }
 
+/**
+ * Checks whether a vien string includes multiple occurrences of a given character while ignoring whitespaces.
+ * For example, a call to the function with the string " hello x   x world" will return true, because the only
+ * characters between the two occurrences of x are whitespaces.
+ * Assumes the character is not a whitespace.
+ * 
+ * Does so by going over every pair of following appearances of the character, and if there is any non-whitespace
+ * characters between them, checking the next pair. Otherwise, the pair is seen as consecutive and 1 is returned. If no
+ * such pair is found, returns 0.
+ * 
+ * @param string the string to be checked
+ * @param c      the character to be checked
+ * @return 1 if c appears multiple consecutive times in string while ignoring whitespaces, 0 otherwise.
+ */
 int includes_consecutive(char string[], char c) {
+    /* the first character of the pair, initialized to be the c's first appearance */
     char *app1 = strchr(string, c);
+    /* the second character of the pair */
     char *app2;
+    /* if app1 is null then c doesn't appear at all */
     if (app1 == NULL) return 0;
+    /* app2 is the first appearance of c after app1 */
     app2 = strchr(app1 + 1, c);
+    /* goes over pairs as long as there is a second appearance of c */
     while (app2 != NULL) {
+        /* moves a pointer over every character between the appearances to check for a non-whitespace character */
         char *p;
         for (p = app1 + 1; p < app2; p++) {
+            /* if a non-whitespace character is found, stops checking */
             if (!isspace(*p)) {
                 break;
             }
         }
+        /* if the pointer reaches the second appearance, then no whitespace character was found */
         if (p == app2) return 1;
+        /* moves to the next pair, whose first character is the last pair's second character */
         app1 = app2;
         app2 = strchr(app2 + 1, c);
     }
     return 0;
 }
 
+/**
+ * Converts a string whose characters are 0s and 1s to a non-negative number whose binary representation is depicted 
+ * in the string.
+ * Assumes the string consists only of 1s and 0s and is not empty.
+ * Does so by shifting the number of the left for every character in the string, and the character is '1', ORs the 
+ * number with 1 to set its rightmost bit (so far) to 1.
+ * 
+ * @param string the string to be converted
+ * @return the numeric value of the string
+ */
 unsigned binary_string_to_number(char string[]) {
     unsigned num = 0;
     int i;

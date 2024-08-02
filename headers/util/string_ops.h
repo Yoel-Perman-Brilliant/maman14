@@ -108,7 +108,7 @@ int number_of_blanks(char string[]);
  * Assumes the character is not a whitespace.
  * 
  * @param string the string to be checked
- * @param c the character to be checked
+ * @param c      the character to be checked
  * @return 1 if c appears multiple consecutive times in string while ignoring whitespaces, 0 otherwise.
  */
 int includes_consecutive(char string[], char c);
@@ -116,8 +116,8 @@ int includes_consecutive(char string[], char c);
 /**
  * Converts a string whose characters are 0s and 1s to a non-negative number whose binary representation is depicted 
  * in the string.
- * 
  * Assumes the string consists only of 1s and 0s.
+ * 
  * @param string the string to be converted
  * @return the numeric value of the string
  */
