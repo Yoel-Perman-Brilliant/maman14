@@ -75,7 +75,8 @@ FILE *get_extern_file(char file_name[]);
 FILE *get_entry_file(char file_name[]);
 
 /**
- * Removes all output files (object, extern and entry) corresponding to a given extensionless file name.
+ * Removes all output files (parsed, object, extern and entry) corresponding to a given extensionless file name.
+ * 
  * @param file_name the name of the input file without the extension
  */
 void remove_output_files(char file_name[]);
