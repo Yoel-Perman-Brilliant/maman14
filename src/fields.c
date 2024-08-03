@@ -7,7 +7,6 @@
 #include "../headers/util/string_ops.h"
 #include "ctype.h"
 #include "string.h"
-#include "stdio.h"
 
 #define MAX_MACRO_AND_LABEL_LENGTH 31
 #define LABEL_END ':'

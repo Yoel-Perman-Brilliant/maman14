@@ -21,7 +21,6 @@
 #include "string.h"
 #include "../headers/pre_assembler.h"
 #include "../headers/util/string_ops.h"
-#include "../headers/fields.h"
 #include "../headers/util/general_util.h"
 #include "../headers/files.h"
 #include "../headers/exit_codes.h"

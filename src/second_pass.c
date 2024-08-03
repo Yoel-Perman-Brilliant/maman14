@@ -1,3 +1,10 @@
+/**
+ * Includes the function second_pass, which is responsible for encoding the operands of instructions,
+ * updating symbols in the symbol table that are declared as .entry, and updating the list of appearances of external
+ * symbols as operands. By the end of the second pass, the requirements of the file should be completely filled with
+ * the information necessary to create the output files.
+ * Also includes helper functions for second_pass.
+ */
 #include "../headers/second_pass.h"
 #include "../headers/util/string_ops.h"
 #include "../headers/util/general_util.h"
@@ -6,6 +13,9 @@
 #include "stdlib.h"
 #include "../headers/operators.h"
 #include "../headers/conversions.h"
+
+/** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
+/** FOR DOCUMENTATION, SEE DEFINITIONS **/
 
 void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements);
@@ -30,6 +40,20 @@ short unsigned create_combined_operand_word(char *source_operand, char *destinat
 
 void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements);
 
+
+/**
+ * Executes the second pass over the parsed .am file, which is responsible for encoding the operands of instructions,
+ * updating symbols in the symbol table that are declared as .entry, and updating the list of appearances of external
+ * symbols as operands.
+ * 
+ * Does so by going over every line, and if it is not blank or has a comment, checks if it is a directive. If it is not,
+ * then it is an instruction and it is handled. Otherwise, checks if it is a .entry directive and handles it if it is
+ * (all other directives have already been handled in the first pass).
+ * 
+ * @param file_name the extensionless file name
+ * @param requirements a pointer to the requirements of the file
+ * @return 1 if an error has occurred, 0 otherwise
+ */
 int second_pass(char file_name[], Requirements *requirements) {
     char *parsed_file_name = get_parsed_file_name(file_name);
     FILE *parsed_file = get_parsed_file_read(file_name);
@@ -38,13 +62,14 @@ int second_pass(char file_name[], Requirements *requirements) {
     int line_count = 0;
     /* the line being read */
     char line_read[MAX_LINE_LENGTH + 1];
-    /* the lin's label */
+    /* the line's label */
     char *label;
     /* makes sure the parsed file is not null, if it does then an error is found */
     if (!parsed_file) {
         free(parsed_file_name);
         return 1;
     }
+    /* since the instructions are gone over again, resets the instruction counter */
     requirements->ic = IC_START;
     /* for each line */
     while (!feof(parsed_file)) {
@@ -53,6 +78,9 @@ int second_pass(char file_name[], Requirements *requirements) {
         line_count++;
         read_line(parsed_file, parsed_file_name, line_count, line_read);
         line = line_read;
+        /* if the line is blank or a has a comment, skips to the next line.
+         * Even if the comment starts mid-line, this has already been reported in the first pass, and the line
+         * does not need to be encoded in the second pass */
         if (is_line_blank(line) || exists(line, COMMENT_START)) continue;
         find_label(&line, &label);
         /* checks that the part after the label is not blank */
@@ -60,10 +88,15 @@ int second_pass(char file_name[], Requirements *requirements) {
             free(label);
             continue;
         }
+        /* if the line is not a directive, it's an instruction */
         if (!is_directive(line)) {
             free(label);
             second_pass_handle_instruction(line, line_count, parsed_file_name, &error_found, requirements);
-        } else check_and_handle_entry(line, label, line_count, parsed_file_name, &error_found, requirements);
+            
+        }
+        /* otherwise, checks if the line is a .entry directive and handles it if necessary.All other directives
+         * have already been handled in the first pass */
+        else check_and_handle_entry(line, label, line_count, parsed_file_name, &error_found, requirements);
     }
     fclose(parsed_file);
     free(parsed_file_name);
@@ -143,38 +176,88 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
     free(label_name);
 }
 
+/**
+ * Verifies and encodes an instruction's operands and enters them into the memory image.
+ * 
+ * Does so by first making sure that the line doesn't contain any errors that were found and reported during the first
+ * pass, by checking if it is in the faulty instructions set. If no such errors were found, finds the operator, and
+ * based on what operator it is, handles the instruction either as a one-operator or two-operator instruction. If it is
+ * a zero-operand instruction, there are no operators to encode.
+ * 
+ * @param line             the line being read (excluding the label, if there is one)
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @param requirements     a pointer to the requirements for the file
+ */
 void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements) {
+    /* the part of the line after the operator */
     char *rest;
     char *operator_name;
     Operator op;
+    /* if the line was found to be faulty in the first pass, the operators can't be encoded */
     if (set_contains(requirements->faulty_instructions, line_count)) return;
     operator_name = find_token(line, BLANKS, &rest);
     op = get_operator(operator_name);
     free(operator_name);
+    /* increments the instruction count, so ic now refers to the slot in the memory where the first operand should go */ 
     requirements->ic++;
+    
+    /* Since the instruction was found to have no syntax errors, the number of operands in teh instruction is as it
+     * should be based on the operator. */
+    
+    /* if the instruction has two operands */
     if (has_source(op)) {
         second_pass_handle_two_operand_instruction(rest, line_count, parsed_file_name, error_found, requirements);
-    } else if (has_destination(op)) {
+    } 
+    /* if the instruction has one operand */
+    else if (has_destination(op)) {
         second_pass_handle_one_operand_instruction(rest, line_count, parsed_file_name, error_found, requirements);
     }
 }
 
+/**
+ * Verifies and encodes the operands of a two-operand instruction and inserts them into the memory image.
+ * 
+ * Does so by splitting the part of the line after the operator based on commas to find the operands, finding their
+ * address methods, verifying the operand's legality, deciding whether they should be combined into a single word,
+ * and finally encoding them. Also, if wither of the operands is found to be an external symbol, its slot in the memory
+ * is added to the symbol's appearances list.
+ * 
+ * 
+ * @param line             the part of the line after the operator
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @param requirements     a pointer to the requirements for the file
+ */
 void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
                                                 Requirements *requirements) {
+    /* the field that represents the source operand */
     char *source_operand;
+    /* the field that represents the source operand, without heading or trailing whitespaces */
     char *trimmed_source_operand;
+    /* the field that represents the destination operand */
     char *destination_operand;
+    /* the field that represents the destination operand, without heading or trailing whitespaces */
     char *trimmed_destination_operand;
+    
+    /* the address method for the source operand */
     AddressMethod source_method;
+    /* the address method for the destination operand */
     AddressMethod destination_method;
+    
     source_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
     destination_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
     trimmed_source_operand = trim(source_operand);
     trimmed_destination_operand = trim(destination_operand);
     free_all(2, source_operand, destination_operand);
+    
     source_method = get_address_method(trimmed_source_operand);
     destination_method = get_address_method(trimmed_destination_operand);
+    
+    /* makes sure that the operands are legal, with respect to their address methods */
     if (!validate_operand(trimmed_source_operand, source_method, line_count, parsed_file_name,
                           error_found, requirements)
         || !validate_operand(trimmed_destination_operand, destination_method, line_count,
@@ -182,20 +265,28 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
         free_all(2, trimmed_source_operand, trimmed_destination_operand);
         return;
     }
+    /* if the operands should be combined into a single word, creates that word and inserts it to the memory */ 
     if (should_combine_additional_words(source_method, destination_method)) {
         short unsigned word = create_combined_operand_word(trimmed_source_operand,
                                                            trimmed_destination_operand,
                                                            source_method, destination_method);
         memory_insert_instruction(requirements, word, line_count, parsed_file_name);
-    } else {
-        short unsigned source_word = create_single_operand_word(trimmed_source_operand, source_method,
-                                                                requirements, 1);
-        short unsigned destination_word = create_single_operand_word(trimmed_destination_operand, destination_method,
-                                                                     requirements, 0);
+    } 
+    /* if the operands should not be combined into a single word */
+    else {
+        short unsigned source_word = create_single_operand_word(trimmed_source_operand,
+                                                                source_method, requirements,
+                                                                1);
+        short unsigned destination_word = create_single_operand_word(trimmed_destination_operand, 
+                                                                     destination_method, requirements,
+                                                                     0);
+        /* if the source operand is a symbol, checks if it is external */
         if (source_method == DIRECT_ADDRESS) {
             check_and_handle_external_symbol(trimmed_source_operand, requirements);
         }
         memory_insert_instruction(requirements, source_word, line_count, parsed_file_name);
+        
+        /* if the destination operand is a symbol, checks if it is external */
         if (destination_method == DIRECT_ADDRESS) {
             check_and_handle_external_symbol(trimmed_destination_operand, requirements);
         }
@@ -204,27 +295,61 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
     free_all(2, trimmed_source_operand, trimmed_destination_operand);
 }
 
+/**
+ * Verifies and encodes the operand of a one-operand instruction and inserts it into the memory image.
+ * 
+ * Does so by finding the field after the operator, verifying it, checking if it is an external symbol and adding
+ * the slot in the memory to its appearances list if necessary, and finally encoding the operand and adding to the
+ * memory image.
+ * 
+ * @param line             the part of the line after the operator
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @param requirements     a pointer to the requirements for the file
+ */
 void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
                                                 Requirements *requirements) {
+    /* the only field after the operator is the destination operand */
     char *destination_operand = find_token(rest, BLANKS, &rest);
+    /* the word in the memory representing the destination operand */
     short unsigned destination_word;
+    /* the destination operand's address method */
     AddressMethod destination_method = get_address_method(destination_operand);
+    
+    /* makes sure that the operand is legal, with respect to its address method */
     if (!validate_operand(destination_operand, destination_method, line_count, parsed_file_name, error_found,
                           requirements)) {
         free(destination_operand);
         return;
     }
+    /* if the operand is a symbol, checks if it is external and handles it appropriately */
     if (destination_method == DIRECT_ADDRESS) {
         check_and_handle_external_symbol(destination_operand, requirements);
     }
+    /* creates the memory word for the operands and inserts it to the memory */
     destination_word = create_single_operand_word(destination_operand,
                                                   destination_method, requirements, 0);
     memory_insert_instruction(requirements, destination_word, line_count, parsed_file_name);
     free(destination_operand);
 }
 
+/**
+ * Checks if a given operand given in the immediate address method is legal.
+ * 
+ * Does so by checking sure that the part after the pound is an integer, and that it within the bounds for a
+ * signed 12 bit integer in the 2's complement method.
+ * 
+ * @param operand          the operand to be checked
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @return 1 if the operand is legal, 0 otherwise
+ */
 int validate_immediate_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found) {
+    /* the value represented by the operand */
     int value;
+    /* makes sure the part of the operand after the starting pound is an integer */
     if (!is_integer(operand + 1)) {
         printf("Input Error: In operand \"%s\" given in the immediate address method in line %d of file %s, "
                "%s is not an integer\n", operand, line_count, parsed_file_name, operand + 1);
@@ -232,6 +357,7 @@ int validate_immediate_address_operand(char *operand, int line_count, char *pars
         return 0;
     }
     value = atoi(operand + 1);
+    /* makes sure the operand's value is within the bounds for signed 12 bit integer in the 2's complement method */
     if (value > IMMEDIATE_VALUE_MAX || value < IMMEDIATE_VALUE_MIN) {
         printf("Input Error: In operand \"%s\" given in the immediate address method in line %d of file %s, "
                "%d is not in the allowed range\n", operand, line_count, parsed_file_name, value);
@@ -241,8 +367,21 @@ int validate_immediate_address_operand(char *operand, int line_count, char *pars
     return 1;
 }
 
+/**
+ * Checks if a given operand given in the direct address method is legal.
+ * 
+ * Does so by checking if it is in fact a defined symbol.
+ * 
+ * @param operand          the operand to be checked
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @param requirements     a pointer to the requirements of the file
+ * @return 1 if the operand is legal, 0 otherwise
+ */
 int validate_direct_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements) {
+    /* makes sure the operand is a defined symbol */
     if (!map_contains(requirements->symbol_table, operand)) {
         printf("Input Error: Operand \"%s\" given in the direct address method in line %d of file %s is not"
                " a defined symbol\n", operand, line_count, parsed_file_name);
@@ -252,6 +391,17 @@ int validate_direct_address_operand(char *operand, int line_count, char *parsed_
     return 1;
 }
 
+/**
+ * Checks if a given operand given in the indirect register address method is legal.
+ * 
+ * Does so by checking if the part after the starting asterisk is a legal register.
+ * 
+ * @param operand          the operand to be checked
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @return 1 if the operand is legal, 0 otherwise
+ */
 int validate_indirect_register_address_operand(char *operand, int line_count, char *parsed_file_name,
                                                int *error_found) {
     if (!is_register(operand + 1)) {
@@ -263,6 +413,17 @@ int validate_indirect_register_address_operand(char *operand, int line_count, ch
     return 1;
 }
 
+/**
+ * Makes sure that a given operand is legal in respect to its address method.
+ * 
+ * @param operand          the operand to be checked
+ * @param address_method   the operand's address method
+ * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
+ * @param error_found      a pointer to a value that represents whether an error has been found
+ * @param requirements     a pointer to the requirements of the file
+ * @return 1 if the operand is legal, 0 otherwise
+ */
 int validate_operand(char *operand, AddressMethod address_method, int line_count, char *parsed_file_name,
                      int *error_found, Requirements *requirements) {
     if (address_method == IMMEDIATE_ADDRESS) {
@@ -274,11 +435,23 @@ int validate_operand(char *operand, AddressMethod address_method, int line_count
     if (address_method == DIRECT_ADDRESS) {
         return validate_direct_address_operand(operand, line_count, parsed_file_name, error_found, requirements);
     }
+    /* an operand is considered to be in the direct register address if and only if it is one of eight defined
+     * keywords (the registers), which means it necessarily legal */
     return 1;
 }
 
-char *get_reg(char *operand, AddressMethod addressMethod) {
-    if (addressMethod == DIRECT_REGISTER_ADDRESS) return operand;
+/**
+ * Gets the register part of an operand (given in either the direct or indirect register address method)
+ * 
+ * @param operand the operand
+ * @param address_method the operand's address method (either direct or indirect register address)
+ * @return the register part of the operand
+ */
+char *get_reg(char *operand, AddressMethod address_method) {
+    /* if the address method is direct register address, then the register part is the entire operand */
+    if (address_method == DIRECT_REGISTER_ADDRESS) return operand;
+    /* otherwise, the address method is indirect register address, which means the register part is the part after the
+     * starting asterisk */
     return operand + 1;
 }
 

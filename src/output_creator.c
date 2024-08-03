@@ -1,12 +1,11 @@
+/**
+ * Includes the function create_files, which is responsible for creating the output files (.ob, .ext and .ent)
+ * for an assembly file based on its filled requirements, as well as helper functions for create_files.
+ */
+
 #include "../headers/requirements.h"
 #include "../headers/files.h"
-#include "../headers/structures/linked_list.h"
-#include "../headers/structures/hash_map.h"
 #include "../headers/output_creator.h"
-
-#define COUNTER_WIDTH 4
-#define VALUE_WITH 5
-#define NUMBER_OF_INSTRUCTIONS_PADDING 3
 
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
