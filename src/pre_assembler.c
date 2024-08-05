@@ -28,24 +28,6 @@
 #define BLANKS " \t"
 
 /**
- * Reads the first, second and thirds fields of a given line, as well as the rest of the line,
- * into given pointers to strings. Separates fields by whitespace characters.
- * Does so by using the find_token method to find the first token of the string (seperated by whitespaces), then does
- * the same twice more, each time with the rest of the string (the part after the token that was just found).
- * 
- * @param line         the line whose fields should be found
- * @param first_field  a pointer to a string that should hold the first field of the line
- * @param second_field a pointer to a string that should hold the second field of the line
- * @param third_field  a pointer to a string that should hold the third field of the line
- * @param rest         a pointer to a string that should hold the rest of the line (the part after the third field)
- */
-void get_fields(char *line, char **first_field, char **second_field, char **third_field, char **rest) {
-    *first_field = find_token(line, BLANKS, rest);
-    *second_field = find_token(*rest, BLANKS, rest);
-    *third_field = find_token(*rest, BLANKS, rest);
-}
-
-/**
  * Writes a macro's content into a file (should be the parsed file).
  * Assumes that the macro exists in the macro table.
  * 
@@ -72,27 +54,37 @@ void handle_macro_usage(char *macro, HashMap *macro_table, FILE *parsed_file) {
  * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro usage was found, 0 otherwise
  */
-int check_and_handle_macro_usage(HashMap *macro_table, char *first_field, char *second_field,
+int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *label,
                                  FILE *parsed_file, int line_count, char *input_file_name, int *error_found) {
-    /* if the first field is a known macro name, writes its content into the parsed file. only does so if no error
-     * was found */
-    if (map_contains(macro_table, first_field) && !(*error_found)) {
-        if (!is_line_blank(second_field)) {
-            printf("Input Error: Extra characters after macro usage in line %d of file %s\n",
-                   line_count, input_file_name);
-            *error_found = 1;
-            return 1;
-        }
+    /* the part of the line after the first field (excluding a potential label) */
+    char *rest;
+    /* the first field of the line (excluding a potential label), which is checked to be a macro usage */
+    char *first_field = find_token(line, BLANKS, &rest);
+    /* checks if the first field is a known macro, if it isn't, returns 0, otherwise the first field is 
+     * known to be a macro usage */
+    if (!map_contains(macro_table, first_field)) {
+        free(first_field);
+        return 0;
+    }
+    /* checks if there is a label before the macro usage */
+    if (label != NULL) {
+        printf("Input Error: Label used before macro usage in line %d of file %s\n", line_count, input_file_name);
+        *error_found = 1;
+    }
+    /* makes sure the macro usage is the only field in the line */
+    if (!is_line_blank(rest)) {
+        printf("Input Error: Extra characters after macro usage in line %d of file %s\n",
+               line_count, input_file_name);
+        *error_found = 1;
+    }
+    /* if no error was found, copies the macro content to the parsed file */
+    if (!(*error_found)) {
         handle_macro_usage(first_field, macro_table, parsed_file);
         return 1;
     }
-    /* if a label appears before the macro usage, reports an errors and updates the error_found pointer */
-    else if (is_label(first_field) && map_contains(macro_table, second_field)) {
-        printf("Input Error: Label used before macro usage in line %d of file %s\n", line_count, input_file_name);
-        *error_found = 1;
-        return 1;
-    }
-    return 0;
+    /* a macro was found but was not copied due to a previous error */
+    free(first_field);
+    return 1;
 }
 
 /**
@@ -110,42 +102,40 @@ int check_and_handle_macro_usage(HashMap *macro_table, char *first_field, char *
  * @param macro_content   the content of the macro being defined
  * @return 1 if the macro end has been found or an error has occurred, 0 otherwise
  */
-int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *line, int *error_found, int line_count,
-                               char *input_file_name, MacroContent macro_content) {
-    /* the first, second and third fields of the line */
+int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *line, int *error_found,
+                               int line_count, char *input_file_name, MacroContent macro_content) {
+    /* a potential label of the line */
+    char *label;
+    /* the first field of the line which is checked to be a macro end declaration */
     char *first_field;
-    char *second_field;
-    char *third_field;
-    /* the part of the line after the third field */
+    /* the part of the line after the first field */
     char *rest;
-    /* reads the fields into the variables */
-    get_fields(line, &first_field, &second_field, &third_field, &rest);
+    find_label(&line, &label);
+    first_field = find_token(line, BLANKS, &rest);
     /* checks if the macro end keyword has been found */
-    if (equal(first_field, MACRO_END)) {
-        /* makes sure there are no extra characters after the macro end keyword */
-        if (!is_line_blank(second_field)) {
-            printf("Input error: Line %d in file %s includes extra characters after macro end declaration\n",
-                   line_count, input_file_name);
-            *error_found = 1;
-            free_all(3, first_field, second_field, third_field);
-            return 1;
-        }
-        /* adds the macro whose definition just ended to the macro table */
-        map_add_macro(macro_table, macro_name, macro_content);
-        free_all(3, first_field, second_field, third_field);
-        return 1;
+    if (!equal(first_field, MACRO_END)) {
+        free(first_field);
+        free(label);
+        return 0;
     }
     /* checks if the macro end includes a label, reports an error if yes */
-    else if (is_label(first_field) && equal(second_field, MACRO_END)) {
+    if (label != NULL) {
         printf("Input error: Line %d in file %s includes a label before macro end declaration\n",
                line_count, input_file_name);
         *error_found = 1;
-        free_all(3, first_field, second_field, third_field);
-        return 1;
     }
-    free_all(3, first_field, second_field, third_field);
-    return 0;
+    /* makes sure there are no extra characters after the macro end keyword */
+    if (!is_line_blank(rest)) {
+        printf("Input error: Line %d in file %s includes extra characters after macro end declaration\n",
+               line_count, input_file_name);
+        *error_found = 1;
+    }
+    /* adds the macro whose definition just ended to the macro table */
+    map_add_macro(macro_table, macro_name, macro_content);
+    free(first_field);
+    return 1;
 }
+    
 
 /**
  * Reads a macro definition and inserts it to the macro table.
@@ -162,7 +152,7 @@ int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *lin
  *                        input file (used for error reporting)
  * @param error_found a pointer to an integer value that should hold whether an error has occurred
  */
-void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_macro_name, char *input_file_name,
+void handle_macro_definition(HashMap *macro_table, char *macro_name, char *input_file_name,
                              FILE *input_file, int *line_count, int *error_found) {
     /* the line being read */
     char line[MAX_LINE_LENGTH + 1];
@@ -172,30 +162,7 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_
         fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
-    /* makes sure no macro with the same name has already been defined */
-    if (map_contains(macro_table, macro_name)) {
-        printf("Input error: Macro defined in line %d in file %s has already been defined\n", *line_count,
-               input_file_name);
-        *error_found = 1;
-    }
-    /* makes sure the macro name is not empty */
-    if (is_line_blank(macro_name)) {
-        printf("Input error: Macro defined in line %d in file %s has no name\n", *line_count, input_file_name);
-        *error_found = 1;
-    }
-    /* makes sure the macro name is legal */
-    else if (!legal_macro_name(macro_name)) {
-        printf("Input error: Macro defined in line %d in file %s has an illegal name\n",
-               *line_count, input_file_name);
-        *error_found = 1;
-    }
-    /* makes sure there are no extra characters after the macro name */
-    else if (!is_line_blank(post_macro_name)) {
-        printf("Input error: Line %d in file %s includes extra characters after macro name\n",
-               *line_count, input_file_name);
-        *error_found = 1;
-    }
-    free(post_macro_name);
+    
 
     /* reads the lines from the input one by one until a macro end is found */
     (*line_count)++;
@@ -216,7 +183,7 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_
             }
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);
-            strcat(macro_content, "\n\0");
+            strcat(macro_content, "\n");
         }
         /* reads the next line */
         (*line_count)++;
@@ -239,34 +206,54 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *post_
  * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro definition was found, 0 otherwise
  */
-int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *input_file_name, FILE *input_file,
-                                      int *line_count, int *error_found) {
-    /* the first, second and third fields of the line */
+int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *label, char *input_file_name,
+                                      FILE *input_file, int *line_count, int *error_found) {
+    /* the first field of the line, which is checked to be a macro definition */
     char *first_field;
-    char *second_field;
-    char *third_field;
-    /* the part of the line after the third field */
+    /* the name of the macro potentially being defined */
+    char *macro_name;
+    /* the part of the line after the macro name */
     char *rest;
-    /* reads the fields into the variables */
-    get_fields(line, &first_field, &second_field, &third_field, &rest);
-    /* if a macro definition keyword exists has a label, reports an error */
-    if (is_label(first_field) && equal(second_field, MACRO_DEFINITION)) {
+    first_field = find_token(line, BLANKS, &rest);
+    if (!equal(first_field, MACRO_DEFINITION)) {
+        free(first_field);
+        return 0;
+    }
+    macro_name = find_token(rest, BLANKS, &rest);
+    /* if a macro definition keyword exists and has a label, reports an error */
+    if (label != NULL) {
         printf("Input Error: Label used before macro definition in line %d of file %s\n", *line_count,
                input_file_name);
-        free_all(3, first_field, second_field, third_field);
+        *error_found = 1;
+    }
+    /* makes sure no macro with the same name has already been defined */
+    if (map_contains(macro_table, macro_name)) {
+        printf("Input error: Macro defined in line %d in file %s has already been defined\n", *line_count,
+               input_file_name);
+        *error_found = 1;
+    }
+    /* makes sure the macro name is not empty */
+    if (is_line_blank(macro_name)) {
+        printf("Input error: Macro defined in line %d in file %s has no name\n", *line_count, input_file_name);
+        *error_found = 1;
+        free(first_field);
         return 1;
     }
-    /* if the first field is a macro definition keyword, sees the second field as the macro name and keeps reading
-     * and handling the macro definition */
-    if (equal(first_field, MACRO_DEFINITION)) {
-        handle_macro_definition(macro_table, second_field, third_field, input_file_name,
-                                input_file, line_count, error_found);
-        free_all(1, first_field);
-        return 1;
+    /* makes sure the macro name is legal */
+    if (!legal_macro_name(macro_name)) {
+        printf("Input error: Macro defined in line %d in file %s has an illegal name\n",
+               *line_count, input_file_name);
+        *error_found = 1;
     }
-    /* no macro definition was found */
-    free_all(3, first_field, second_field, third_field);
-    return 0;
+    /* makes sure there are no extra characters after the macro name */
+    if (!is_line_blank(rest)) {
+        printf("Input error: Line %d in file %s includes extra characters after macro name\n",
+               *line_count, input_file_name);
+        *error_found = 1;
+    }
+    handle_macro_definition(macro_table, macro_name, input_file_name, input_file, line_count, error_found);
+    free(first_field);
+    return 1;
 }
 
 /**
@@ -301,13 +288,9 @@ int pre_assemble(char file_name[]) {
     /* the number of the line being read */
     int line_count;
     /* the line being read */
-    char line[MAX_LINE_LENGTH + 1];
-    /* the first, second and third fields of the line */
-    char *first_field;
-    char *second_field;
-    char *third_field;
-    /* the portion of the line after the first field */
-    char *rest;
+    char line_read[MAX_LINE_LENGTH + 1];
+    char *line;
+    char *label;
     /* whether an error has occurred */
     int error_found = 0;
 
@@ -333,27 +316,24 @@ int pre_assemble(char file_name[]) {
     while (!feof(input_file)) {
         line_count++;
         /* if an error has occurred while reading the line, the error_found flag is set to 1 */
-        if (read_line(input_file, input_file_name, line_count, line)) error_found = 1;
-        /* puts the first, second and thirds fields of the line into the variables, as well as the portion after the
-         * third field */
-        get_fields(line, &first_field, &second_field, &third_field, &rest);
+        if (read_line(input_file, input_file_name, line_count, line_read)) error_found = 1;
+        line = line_read;
+        find_label(&line, &label);
         /* if a macro usage is detected, its content are written to the parsed file, and the loop moves to the
          * next line */
-        if (check_and_handle_macro_usage(macro_table, first_field, second_field, parsed_file,
+        if (check_and_handle_macro_usage(macro_table, line, label, parsed_file,
                                          line_count, input_file_name, &error_found)) {
-            free_all(3, first_field, second_field, third_field);
             continue;
         }
         /* if a macro definition is detected, it is inserted to the macro table, and the loop moves to the
          * line after the macro's end */
-        if (check_and_handle_macro_definition(macro_table, line, file_name,
+        if (check_and_handle_macro_definition(macro_table, line, label, file_name,
                                               input_file, &line_count, &error_found)) {
-            free_all(3, first_field, second_field, third_field);
             continue;
         }
         /* if no special case is detected and no error has occurred so far, copies the line to the parsed file */
-        if (!error_found) fprintf(parsed_file, "%s\n", line);
-        free_all(3, first_field, second_field, third_field);
+        if (!error_found) fprintf(parsed_file, "%s\n", line_read);
+        free(label);
     }
     /* closes the files */
     fclose(input_file);
