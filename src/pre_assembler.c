@@ -46,8 +46,8 @@ void handle_macro_usage(char *macro, HashMap *macro_table, FILE *parsed_file) {
  * if there is, reports an error.
  * 
  * @param macro_table     a pointer to the macro table
- * @param first_field     the first field of the line
- * @param second_field    the second field of the line
+ * @param line            the line being analyzed (not including a potential label)
+ * @param label           the line's label (or null if there isn't one)
  * @param parsed_file     a pointer to the parsed file
  * @param line_count      the number of the line being checked in the input file (used for error reporting)
  * @param input_file_name the name of the input file (used for error reporting)
@@ -96,7 +96,7 @@ int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *label,
  * 
  * @param macro_table     a pointer to the macro table
  * @param macro_name      the name of the macro whose definition is being read
- * @param line            the current line being analyzed
+ * @param line            the current line being analyzed (including a potential label)
  * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @param line_count      the number of the line being checked in the input file (used for error reporting)
  * @param input_file_name the name of the input file (used for error reporting)
@@ -146,7 +146,6 @@ int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *lin
  * 
  * @param macro_table     a pointer to the macro table
  * @param macro_name      the name of the macro whose definition is being read
- * @param post_macro_name the part of the definition's first line after the macro name
  * @param input_file_name the name of the input file (used for error reporting)
  * @param input_file      a pointer to the input file
  * @param line_count      a pointer to a variable representing the number of the line being checked in the 
@@ -163,7 +162,6 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *input
         fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
-    
 
     /* reads the lines from the input one by one until a macro end is found */
     (*line_count)++;
@@ -199,7 +197,8 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *input
  * is, sees the second field as the macro name, and handles the macro definition using handle_macro_definition.
  * 
  * @param macro_table     a pointer to the macro table
- * @param line            the current line being analyzed
+ * @param line            the current line being analyzed (excluding a potential label)
+ * @param label           the line's label (or null if there isn't one)
  * @param input_file_name the name of the input file (used for error reporting)
  * @param input_file      a pointer to the input file
  * @param line_count      a pointer to a variable representing the number of the line being checked in the 
@@ -271,8 +270,8 @@ int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *la
  * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
  * ending cannot have labels.
  * 
- * @param file_name   the name of the input file without the .as extension
- * @param macro_table a pointer to the macro table.
+ * @param file_name    the name of the input file without the .as extension
+ * @param requirements a pointer to the requirements of the file
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */
 int pre_assemble(char file_name[], Requirements *requirements) {
@@ -288,7 +287,10 @@ int pre_assemble(char file_name[], Requirements *requirements) {
     int line_count;
     /* the line being read */
     char line_read[MAX_LINE_LENGTH + 1];
+    /* a pointer version of line_read, that can have a char-pointer-pointer assigned to it, will later change to not
+     * include a potential label */
     char *line;
+    /* the line's label, or null if there isn't one */
     char *label;
     /* whether an error has occurred */
     int error_found = 0;
@@ -316,6 +318,8 @@ int pre_assemble(char file_name[], Requirements *requirements) {
         /* if an error has occurred while reading the line, the error_found flag is set to 1 */
         if (read_line(input_file, input_file_name, line_count, line_read)) error_found = 1;
         line = line_read;
+        /* changes line to not include a label (if there is one), and sets label to be either the line's label if one
+         * exists, or null otherwise */
         find_label(&line, &label);
         /* if a macro usage is detected, its content are written to the parsed file, and the loop moves to the
          * next line */
