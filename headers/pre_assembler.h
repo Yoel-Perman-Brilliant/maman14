@@ -12,6 +12,7 @@
 #define MAMAN14_PRE_ASSAMBLER_H
 
 #include "structures/hash_map.h"
+#include "requirements.h"
 
 /**
  * Reads an input file and parses all of its macros. Creates a new parsed file with the same name and a .am extension.
@@ -25,6 +26,6 @@
  * @param file_name   the name of the input file without the .as extension
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */
-int pre_assemble(char file_name[]);
+int pre_assemble(char file_name[], Requirements *requirements);
 
 #endif

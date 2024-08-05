@@ -80,6 +80,7 @@ int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *label,
     /* if no error was found, copies the macro content to the parsed file */
     if (!(*error_found)) {
         handle_macro_usage(first_field, macro_table, parsed_file);
+        free(first_field);
         return 1;
     }
     /* a macro was found but was not copied due to a previous error */
@@ -274,9 +275,7 @@ int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *la
  * @param macro_table a pointer to the macro table.
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */
-int pre_assemble(char file_name[]) {
-    /* a hash-map where macro names are mapped to their contents */
-    HashMap *macro_table;
+int pre_assemble(char file_name[], Requirements *requirements) {
     /* a pointer to the input .as file */
     FILE *input_file;
     /* a pointer to the parsed .am file */
@@ -303,7 +302,6 @@ int pre_assemble(char file_name[]) {
         free(input_file_name);
         return 1;
     }
-    macro_table = create_map(MACRO);
 
     /* gets the name of the parsed file and a pointer to the file, the parsed file is null then an error is reported and
      * the error_found flag is set to 1 */
@@ -321,13 +319,13 @@ int pre_assemble(char file_name[]) {
         find_label(&line, &label);
         /* if a macro usage is detected, its content are written to the parsed file, and the loop moves to the
          * next line */
-        if (check_and_handle_macro_usage(macro_table, line, label, parsed_file,
+        if (check_and_handle_macro_usage(requirements->macro_table, line, label, parsed_file,
                                          line_count, input_file_name, &error_found)) {
             continue;
         }
         /* if a macro definition is detected, it is inserted to the macro table, and the loop moves to the
          * line after the macro's end */
-        if (check_and_handle_macro_definition(macro_table, line, label, file_name,
+        if (check_and_handle_macro_definition(requirements->macro_table, line, label, file_name,
                                               input_file, &line_count, &error_found)) {
             continue;
         }
@@ -341,6 +339,5 @@ int pre_assemble(char file_name[]) {
     /* if an error has been found, removes the parsed file since the parsing cannot be correct */
     if (error_found) remove(parsed_file_name);
     free_all(2, input_file_name, parsed_file_name);
-    free_map(macro_table);
     return error_found;
 }

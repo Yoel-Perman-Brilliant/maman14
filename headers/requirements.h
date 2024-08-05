@@ -18,6 +18,11 @@
 typedef struct {
     
     /**
+     * The table that maps each macro to its content.
+     */
+    HashMap *macro_table;
+    
+    /**
      * The table that maps each symbol to its value and characteristics.
      */
     HashMap *symbol_table;

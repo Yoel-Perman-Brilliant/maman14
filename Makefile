@@ -9,7 +9,7 @@ assembler: $(ALL_OBJECT_FILES)
 
 object/pre_assembler.o: src/pre_assembler.c headers/pre_assembler.h headers/structures/hash_map.h \
 						headers/util/string_ops.h headers/util/general_util.h headers/files.h headers/exit_codes.h \
-						headers/structures/linked_list.h
+						headers/structures/linked_list.h headers/requirements.h
 	gcc -c $(FLAGS)  src/pre_assembler.c -o object/pre_assembler.o
 
 object/assembler.o: src/assembler.c headers/files.h headers/pre_assembler.h headers/requirements.h \

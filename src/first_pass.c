@@ -315,6 +315,21 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
                    symbol, line_count, parsed_file_name);
         }
         *error_found = 1;
+        free(symbol);
+        return;
+    }
+    /* makes sure the symbol has not already been defined as a macro */
+    if (map_contains(requirements->macro_table, symbol)) {
+        if (type == EXTERNAL) {
+            printf("Input Error: Symbol \"%s\" given as a parameter for .extern in line %d of file %s was "
+                   "already defined as a macro\n", symbol, line_count, parsed_file_name);
+        }
+        else {
+            printf("Input Error: Label %s in line %d of file %s was already defined as a macro\n",
+                   symbol, line_count, parsed_file_name);
+        }
+        *error_found = 1;
+        free(symbol);
         return;
     }
     /* sets the attributes of the symbol based on the given parameters */

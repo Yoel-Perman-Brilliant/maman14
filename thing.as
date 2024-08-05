@@ -1,5 +1,7 @@
-macr m_macr
+macr x
 mov #-1, r4
-endmacr
-m_macr
-.data 3453, -9384
+z: dec jh
+endmacr 
+y: .data 3453, -9384
+x: .extern x
+x: dec jh
