@@ -41,6 +41,23 @@ int list_empty(LinkedList *list) {
 }
 
 /**
+ * Gets the number of items in a linked-list.
+ * Does so by going over every item on the list and incrementing a counter, then returning the counter's value.
+ * 
+ * @param list a pointer to the list
+ * @return the number of items on the list
+ */
+int list_size(LinkedList *list) {
+    int count = 0;
+    Node *node = list->head;
+    while (node != NULL) {
+        count++;
+        node = node->next;
+    }
+    return count;
+}
+
+/**
  * Checks if a linked-list contains an item represented by a given name.
  * Does so by going over every node on the list and checking if its name is is equal to the given name.
  * 

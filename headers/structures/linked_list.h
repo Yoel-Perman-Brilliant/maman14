@@ -66,6 +66,14 @@ LinkedList *create_list(ContentType content_type);
 int list_empty(LinkedList *list);
 
 /**
+ * Gets the number of items in a linked-list.
+ * 
+ * @param list a pointer to the list
+ * @return the number of items on the list
+ */
+int list_size(LinkedList *list);
+
+/**
  * Checks if a linked-list contains an item represented by a given name.
  * 
  * @param list a pointer to the linked-list to be checked
