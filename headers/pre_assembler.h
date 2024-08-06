@@ -6,6 +6,8 @@
  * more errors. Assumes that the definition of every macro comes before its usage, that there are no nested macro
  * definitions, that a macro cannot be defined if a macro with the same name has already been defined, 
  * and that a macro definition and ending cannot have labels.
+ * Also, if a macro with a colon at the end is used, it is assumed to be a label (based on a forum answer, I can handle
+ * it as I see fit as long as I provide adequate documentation).
  */
 
 #ifndef MAMAN14_PRE_ASSAMBLER_H
@@ -22,6 +24,8 @@
  * Assumes that the definition of every macro comes before its usage, that there are no nested macro definitions, that
  * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
  * ending cannot have labels.
+ * Also, if a macro with a colon at the end is used, it is assumed to be a label (based on a forum answer, I can handle
+ * it as I see fit as long as I provide adequate documentation).
  * 
  * @param file_name    the name of the input file without the .as extension
  * @param requirements a pointer to the requirements of the file

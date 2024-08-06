@@ -14,6 +14,8 @@
  * Assumes that the definition of every macro comes before its usage, that there are no nested macro definitions, that
  * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
  * ending cannot have labels.
+ * Also, if a macro with a colon at the end is used, it is assumed to be a label (based on a forum answer, I can handle
+ * it as I see fit as long as I provide adequate documentation).
  */
 
 #include "stdio.h"
@@ -44,6 +46,8 @@ void handle_macro_usage(char *macro, HashMap *macro_table, FILE *parsed_file) {
  * Checks if a line in the input file includes a macro usage (must be the first field of the line), and if it does, 
  * writes the macro content into the parsed file. Also makes sure that there is no label before the macro usage, and
  * if there is, reports an error.
+ * If a macro with a colon at the end is used, it is assumed to be a label (based on a forum answer, I can handle
+ * it as I see fit as long as I provide adequate documentation).
  * 
  * @param macro_table     a pointer to the macro table
  * @param line            the line being analyzed (not including a potential label)
@@ -269,6 +273,8 @@ int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *la
  * Assumes that the definition of every macro comes before its usage, that there are no nested macro definitions, that
  * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
  * ending cannot have labels.
+ * Also, if a macro with a colon at the end is used, it is assumed to be a label (based on a forum answer, I can handle
+ * it as I see fit as long as I provide adequate documentation).
  * 
  * @param file_name    the name of the input file without the .as extension
  * @param requirements a pointer to the requirements of the file
