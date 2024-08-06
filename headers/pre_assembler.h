@@ -23,7 +23,8 @@
  * a macro cannot be defined if a macro with the same name has already been defined, and that a macro definition and
  * ending cannot have labels.
  * 
- * @param file_name   the name of the input file without the .as extension
+ * @param file_name    the name of the input file without the .as extension
+ * @param requirements a pointer to the requirements of the file
  * @return 1 if an error was found, 0 if the file was parsed successfully
  */
 int pre_assemble(char file_name[], Requirements *requirements);
