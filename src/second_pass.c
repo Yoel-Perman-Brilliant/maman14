@@ -443,7 +443,7 @@ int validate_operand(char *operand, AddressMethod address_method, int line_count
 /**
  * Gets the register part of an operand (given in either the direct or indirect register address method)
  * 
- * @param operand the operand
+ * @param operand        the operand
  * @param address_method the operand's address method (either direct or indirect register address)
  * @return the register part of the operand
  */
@@ -455,30 +455,79 @@ char *get_reg(char *operand, AddressMethod address_method) {
     return operand + 1;
 }
 
+/**
+ * Creates a memory word representing a single operand.
+ * Assumes the operand is valid.
+ * 
+ * Does so by building the correct type of word based on the operand's address method, as well as whether it is a source
+ * or destination operand if the address method is one of the register address methods, and whether it is an external
+ * symbol if the address method is direct address.
+ * 
+ * @param operand        the operand to be represented
+ * @param address_method the operand's address method
+ * @param requirements   the requirements of the file
+ * @param is_source      1 if the operand is a source operand, 0 if it is a destination operand
+ * @return the memory word
+ */
 short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
                                           int is_source) {
-    if (address_method == IMMEDIATE_ADDRESS) return create_immediate_address_word(atoi(operand + 1));
+    /* if the address method is immediate address, the immediate value is the part after the starting '#',
+     * builds the word based on this value */
+    if (address_method == IMMEDIATE_ADDRESS) {
+        return create_immediate_address_word(atoi(operand + 1));
+    }
+    /* if the address method is direct address, gets the symbol's value and type and builds the word */
     if (address_method == DIRECT_ADDRESS) {
         SymbolContent symbol = *map_get_symbol(requirements->symbol_table, operand);
         return create_direct_address_word(symbol.value, symbol.type);
     }
+    /* if the address method is indirect register address, then the register is the part after the starting '*'.
+     * The word is different for source and destination operands */
     if (address_method == INDIRECT_REGISTER_ADDRESS && is_source) {
         return create_source_register_word(operand + 1);
     }
+    /* the address method is indirect register address, but it is necessarily not a source operand */
     if (address_method == INDIRECT_REGISTER_ADDRESS) {
         return create_destination_register_word(operand + 1);
     }
+    /* the address method is necessarily direct register address, so the register is the whole operand.
+     * The word changes based on whether it is a source or destination operand */
     if (is_source) return create_source_register_word(operand);
     return create_destination_register_word(operand);
 }
 
+/**
+ * Creates a memory word representing two operands in the either direct or indirect register address method.
+ * Assumes both operands are valid and are given in one of the mentioned methods.
+ * 
+ * Does so by getting the register part of the operands based on their address methods, and creating the memory
+ * word based on the registers.
+ * 
+ * @param source_operand      the source operand
+ * @param destination_operand the destination operand
+ * @param source_method       the source operand's address method
+ * @param destination_method  the destination operand's address method
+ * @return the memory word
+ */
 short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
                                             AddressMethod source_method, AddressMethod destination_method) {
+    /* if the address method for either of the operands is indirect register address, then the register is the part
+     * immediately after the starting asterisk, so the operand variable changes to it.
+     * Otherwise, it's the whole operand */
     if (source_method == INDIRECT_REGISTER_ADDRESS) source_operand++;
     if (destination_method == INDIRECT_REGISTER_ADDRESS) destination_operand++;
     return create_combined_register_word(source_operand, destination_operand);
 }
 
+/**
+ * Checks if a symbol used aas an operand is an external symbol, and if it does, inserts the instruction counter (the
+ * index of the operand's memory word) to the symbol's appearances list, and updating the requirements to know that
+ * a .ext file needs to be created.
+ * Assumes that the symbol name given represents an existing symbol.
+ * 
+ * @param symbol_name the name of the symbol to be checked
+ * @param requirements a pointer to the requirements of the file
+ */
 void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements) {
     SymbolContent *symbol_content = map_get_symbol(requirements->symbol_table, symbol_name);
     if (symbol_content->type == EXTERNAL) {
