@@ -6,7 +6,6 @@
 #include "../headers/requirements.h"
 #include "../headers/files.h"
 #include "../headers/output_creator.h"
-#include "stdlib.h"
 
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
@@ -123,46 +122,27 @@ int write_extern_file(char file_name[], LinkedList *extern_list) {
 
 
 /**
- * Creates and writes the entry file based on the entry symbol list, in the order in which the symbols were defined.
+ * Creates and writes the entry file based on the entry symbol list.
 
- * Does so by going over every item on the list and entering it into an array, then sorting the array and printing its
- * items' necessary information.
+ * Does so by going over every item on the list and printing its name and value to the file.
  * 
- * @param file_name    the extensionless file name
+ * @param file_name the extensionless file name
  * @param requirements the file's requirements
  * @return 1 if an error has occurred, 0 otherwise
  */
 int write_entry_file(char file_name[], LinkedList *entry_list) {
     FILE *file = get_entry_file(file_name);
-    /* an array of nodes which will be sorted based on the symbol's values */
-    Node *sorted = (Node *) malloc(list_size(entry_list) * sizeof(Node));
     /* the item on the entry symbol list */
     Node *node;
-    /* a counter of the list's nodes */
-    int node_count = 0;
-    /* an index for going over the sorted array */
-    int i;
-    /* a function which compares nodes based on their symbol's values */
-    int compare_nodes(const void *node1, const void *node2);
-    
     if (file == NULL) return 1;
-    
     node = entry_list->head;
     /* for every item on the entry list */
     while (node != NULL) {
-        /* enters the node to the array, advances to the next node and slot */
-        sorted[node_count] = *node;
+        /* prints the symbol's name and value to the file */
+        fprintf(file, "%s %d\n", node->name, node->content.symbol.value);
         node = node->next;
-        node_count++;
-    }
-    /* sorts the array */
-    qsort(sorted, node_count, sizeof(Node), compare_nodes);
-    /* prints every node's name and value to file, ordered by the symbol's value */
-    for (i = 0; i < node_count; i++) {
-        fprintf(file, "%s %d\n", sorted[i].name, sorted[i].content.symbol.value);
     }
     fclose(file);
-    free(sorted);
     return 0;
 }
 
@@ -187,17 +167,3 @@ int is_extern(SymbolContent symbol) {
 int is_entry(SymbolContent symbol) {
     return symbol.type == ENTRY;
 }
-
-/**
- * Returns an integer which represents a comparison between two symbol-nodes' value.
- * 
- * @param node1 the first node to be compared
- * @param node2 the second node to be compared
- * @return a positive integer if the first node's value is bigger than the second node's value, a negative integer
- *         if it is smaller, or 0 if they are equal.
- */
-int compare_nodes(const void *node1, const void *node2) {
-    return ((Node *)node1)->content.symbol.value - ((Node *)node2)->content.symbol.value;
-}
-
-
