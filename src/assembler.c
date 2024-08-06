@@ -11,7 +11,7 @@ int assemble(char file_name[]) {
     int failure;
     remove_output_files(file_name);
     
-    failure = pre_assemble(file_name);
+    failure = pre_assemble(file_name, requirements);
     if (!failure) printf("%s: Pre-assembly completed successfully\n", file_name);
     else {
         free_requirements(requirements);
