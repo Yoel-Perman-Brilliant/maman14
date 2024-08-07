@@ -8,18 +8,18 @@
 #define MAMAN14_LEGAL_NAMES_H
 
 /**
- * the keyword stating the start of a macro definition
+ * The keyword stating the start of a macro definition.
  */
 #define MACRO_DEFINITION "macr"
 /**
- * the keyword stating the end of a macro definition 
+ * The keyword stating the end of a macro definition.
  */
 #define MACRO_END "endmacr"
 
 #define COMMENT_START ';'
 
 /**
- * the first field of a line (excluding the label) is considered a directive if it starts with a period 
+ * The first field of a line (excluding the label) is considered a directive if it starts with a period.
  */
 #define DIRECTIVE_START '.'
 
