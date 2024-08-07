@@ -80,10 +80,3 @@ int set_add(Set *set, int num) {
     list_add_int(set->lists[set_hash(num)], num);
     return 1;
 }
-
-void set_print(Set *set) {
-    int i;
-    for (i = 0; i < SET_HASH_TABLE_SIZE; i++) {
-        list_print_numbers(set->lists[i]);
-    }
-}

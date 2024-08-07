@@ -5,28 +5,12 @@
 
 #include "../headers/fields.h"
 #include "../headers/util/string_ops.h"
+#include "../headers/operators.h"
 #include "ctype.h"
 #include "string.h"
 
 #define MAX_MACRO_AND_LABEL_LENGTH 31
 #define LABEL_END ':'
-
-/**
- * Determines if a field name is the name of an instruction.
- * Does so by going over every instruction name and comparing it to the field name.
- * 
- * @param name the name to be checked
- * @return 1 if the field has the name of an instruction, 0 otherwise
- */
-int is_instruction(char *field) {
-    char *instructions[] = {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc",
-                            "dec", "jmp", "bne", "red", "prn","jsr", "rts", "stop"};
-    int i;
-    for (i = 0; i < sizeof(instructions) / sizeof (char *); i++) {
-        if (equal(instructions[i], field)) return 1;
-    }
-    return 0;
-}
 
 /**
  * Determines if a field name is the name of an directive.
@@ -35,7 +19,7 @@ int is_instruction(char *field) {
  * @param name the name to be checked
  * @return 1 if the field has the name of a directive, 0 otherwise
  */
-int is_known_directive(char *field) {
+static int is_known_directive(char *field) {
     char *directives[] = {".data", ".string", ".entry", ".extern"};
     int i;
     for (i = 0; i < sizeof(directives) / sizeof (char *); i++) {
@@ -67,7 +51,7 @@ int is_register(char *field) {
  * @param name the name to be checked
  * @return 1 if the field has the name of one of the checked keywords, 0 otherwise
  */
-int is_other_keyword(char *field) {
+static int is_other_keyword(char *field) {
     return equal(field, MACRO_DEFINITION) || equal(field, MACRO_END);
 }
 
@@ -81,7 +65,7 @@ int is_other_keyword(char *field) {
  */
 int legal_macro_name(char *name) {
     int i;
-    if (is_instruction(name) || is_known_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
+    if (is_operator(name) || is_known_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
     if (strlen(name) > MAX_MACRO_AND_LABEL_LENGTH) return 0;
     if (!isalpha(name[0])) return 0;
     for (i = 0; name[i] != '\0'; i++) {
@@ -100,7 +84,7 @@ int legal_macro_name(char *name) {
  */
 int legal_label_name(char *name) {
     int i;
-    if (is_instruction(name) || is_known_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
+    if (is_operator(name) || is_known_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
     if (strlen(name) > MAX_MACRO_AND_LABEL_LENGTH) return 0;
     if (!isalpha(name[0])) return 0;
     for (i = 0; name[i] != '\0'; i++) {

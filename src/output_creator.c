@@ -10,15 +10,15 @@
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
 
-int is_extern(SymbolContent symbol);
+static int is_extern(SymbolContent symbol);
 
-int is_entry(SymbolContent symbol);
+static int is_entry(SymbolContent symbol);
 
-int write_object_file(char file_name[], Requirements *requirements);
+static int write_object_file(char file_name[], Requirements *requirements);
 
-int write_extern_file(char file_name[], LinkedList *extern_list);
+static int write_extern_file(char file_name[], LinkedList *extern_list);
 
-int write_entry_file(char file_name[], LinkedList *entry_list);
+static int write_entry_file(char file_name[], LinkedList *entry_list);
 
 /**
  * Creates the output files for an assembly file based on its filled requirements.
@@ -68,7 +68,7 @@ int create_files(char file_name[], Requirements *requirements) {
  * @param requirements the file's requirements
  * @return 1 if an error has occurred, 0 otherwise
  */
-int write_object_file(char file_name[], Requirements *requirements) {
+static int write_object_file(char file_name[], Requirements *requirements) {
     FILE *file = get_object_file(file_name);
     int i;
     if (file == NULL) return 1;
@@ -98,7 +98,7 @@ int write_object_file(char file_name[], Requirements *requirements) {
  * @param requirements the file's requirements
  * @return 1 if an error has occurred, 0 otherwise
  */
-int write_extern_file(char file_name[], LinkedList *extern_list) {
+static int write_extern_file(char file_name[], LinkedList *extern_list) {
     FILE *file = get_extern_file(file_name);
     /* the item on the external symbol list */
     Node *node;
@@ -130,7 +130,7 @@ int write_extern_file(char file_name[], LinkedList *extern_list) {
  * @param requirements the file's requirements
  * @return 1 if an error has occurred, 0 otherwise
  */
-int write_entry_file(char file_name[], LinkedList *entry_list) {
+static int write_entry_file(char file_name[], LinkedList *entry_list) {
     FILE *file = get_entry_file(file_name);
     /* the item on the entry symbol list */
     Node *node;
@@ -153,7 +153,7 @@ int write_entry_file(char file_name[], LinkedList *entry_list) {
  * @param symbol the symbol to be checked
  * @return 1 if the symbol is external, 0 otherwise
  */
-int is_extern(SymbolContent symbol) {
+static int is_extern(SymbolContent symbol) {
     return symbol.type == EXTERNAL;
 }
 
@@ -164,6 +164,6 @@ int is_extern(SymbolContent symbol) {
  * @param symbol the symbol to be checked
  * @return 1 if the symbol is an entry, 0 otherwise
  */
-int is_entry(SymbolContent symbol) {
+static int is_entry(SymbolContent symbol) {
     return symbol.type == ENTRY;
 }

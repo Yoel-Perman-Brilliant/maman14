@@ -46,7 +46,7 @@ object/requirements.o: src/requirements.c headers/requirements.h headers/exit_co
 					   headers/structures/hash_map.h headers/structures/linked_list.h
 	gcc -c $(FlAGS) src/requirements.c -o object/requirements.o
 
-object/fields.o: src/fields.c headers/fields.h headers/util/string_ops.h
+object/fields.o: src/fields.c headers/fields.h headers/util/string_ops.h headers/operators.h
 	gcc -c $(FLAGS) src/fields.c -o object/fields.o
 
 object/set.o: src/structures/set.c headers/structures/set.h headers/exit_codes.h src/structures/linked_list.c

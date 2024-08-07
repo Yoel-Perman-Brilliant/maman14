@@ -25,7 +25,7 @@
  * @param extension the extension (including the period)
  * @return a string (allocated on the heap) which represents the file name with the extension
  */
-char *get_file_name_with_extension(char file_name[], char extension[]) {
+static char *get_file_name_with_extension(char file_name[], char extension[]) {
     char *name_with_extension = calloc(strlen(file_name) + strlen(extension) + 1, 1);
     if (name_with_extension == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when copying file name\n");

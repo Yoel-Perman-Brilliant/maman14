@@ -24,8 +24,7 @@
  * Assumes that the input .as file has already been parsed to a macro-less .am file.
  * 
  * @param file_name    the extension-less file name
- * @param requirements the requirements for the assembly of the file - the symbol table, memory image and memory
- *                     counters
+ * @param requirements a pointer to the requirements for the assembly of the file
  * @return 1 if any error in the file was found, 0 otherwise
  */
 int first_pass(char file_name[], Requirements *requirements);

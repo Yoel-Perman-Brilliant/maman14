@@ -17,28 +17,28 @@
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
 
-void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
+static void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements);
 
-void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+static void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
                                                 Requirements *requirements);
 
-void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+static void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
                                                 Requirements *requirements);
 
-void check_and_handle_entry(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static void check_and_handle_entry(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                             Requirements *requirements);
 
-int validate_operand(char *operand, AddressMethod address_method, int line_count, char *parsed_file_name,
+static int validate_operand(char *operand, AddressMethod address_method, int line_count, char *parsed_file_name,
                      int *error_found, Requirements *requirements);
 
-short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
+static short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
                                           int is_source);
 
-short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
+static short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
                                             AddressMethod source_method, AddressMethod destination_method);
 
-void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements);
+static void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements);
 
 
 /**
@@ -116,7 +116,7 @@ int second_pass(char file_name[], Requirements *requirements) {
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void check_and_handle_entry(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static void check_and_handle_entry(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                             Requirements *requirements) {
     /* the part of the line after .entry */
     char *rest;
@@ -190,7 +190,7 @@ void check_and_handle_entry(char *line, char *label_name, int line_count, char *
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
+static void second_pass_handle_instruction(char *line, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements) {
     /* the part of the line after the operator */
     char *rest;
@@ -232,7 +232,7 @@ void second_pass_handle_instruction(char *line, int line_count, char *parsed_fil
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+static void second_pass_handle_two_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
                                                 Requirements *requirements) {
     /* the field that represents the source operand */
     char *source_operand;
@@ -308,7 +308,7 @@ void second_pass_handle_two_operand_instruction(char *rest, int line_count, char
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
+static void second_pass_handle_one_operand_instruction(char *rest, int line_count, char *parsed_file_name, int *error_found,
                                                 Requirements *requirements) {
     /* the only field after the operator is the destination operand */
     char *destination_operand = find_token(rest, BLANKS, &rest);
@@ -346,7 +346,7 @@ void second_pass_handle_one_operand_instruction(char *rest, int line_count, char
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @return 1 if the operand is legal, 0 otherwise
  */
-int validate_immediate_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found) {
+static int validate_immediate_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found) {
     /* the value represented by the operand */
     int value;
     /* makes sure the part of the operand after the starting pound is an integer */
@@ -379,7 +379,7 @@ int validate_immediate_address_operand(char *operand, int line_count, char *pars
  * @param requirements     a pointer to the requirements of the file
  * @return 1 if the operand is legal, 0 otherwise
  */
-int validate_direct_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found,
+static int validate_direct_address_operand(char *operand, int line_count, char *parsed_file_name, int *error_found,
                                     Requirements *requirements) {
     /* makes sure the operand is a defined symbol */
     if (!map_contains(requirements->symbol_table, operand)) {
@@ -402,7 +402,7 @@ int validate_direct_address_operand(char *operand, int line_count, char *parsed_
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @return 1 if the operand is legal, 0 otherwise
  */
-int validate_indirect_register_address_operand(char *operand, int line_count, char *parsed_file_name,
+static int validate_indirect_register_address_operand(char *operand, int line_count, char *parsed_file_name,
                                                int *error_found) {
     if (!is_register(operand + 1)) {
         printf("Input Error: In operand \"%s\" given in the indirect register address method in line %d of file %s,"
@@ -424,7 +424,7 @@ int validate_indirect_register_address_operand(char *operand, int line_count, ch
  * @param requirements     a pointer to the requirements of the file
  * @return 1 if the operand is legal, 0 otherwise
  */
-int validate_operand(char *operand, AddressMethod address_method, int line_count, char *parsed_file_name,
+static int validate_operand(char *operand, AddressMethod address_method, int line_count, char *parsed_file_name,
                      int *error_found, Requirements *requirements) {
     if (address_method == IMMEDIATE_ADDRESS) {
         return validate_immediate_address_operand(operand, line_count, parsed_file_name, error_found);
@@ -441,21 +441,6 @@ int validate_operand(char *operand, AddressMethod address_method, int line_count
 }
 
 /**
- * Gets the register part of an operand (given in either the direct or indirect register address method)
- * 
- * @param operand        the operand
- * @param address_method the operand's address method (either direct or indirect register address)
- * @return the register part of the operand
- */
-char *get_reg(char *operand, AddressMethod address_method) {
-    /* if the address method is direct register address, then the register part is the entire operand */
-    if (address_method == DIRECT_REGISTER_ADDRESS) return operand;
-    /* otherwise, the address method is indirect register address, which means the register part is the part after the
-     * starting asterisk */
-    return operand + 1;
-}
-
-/**
  * Creates a memory word representing a single operand.
  * Assumes the operand is valid.
  * 
@@ -469,7 +454,7 @@ char *get_reg(char *operand, AddressMethod address_method) {
  * @param is_source      1 if the operand is a source operand, 0 if it is a destination operand
  * @return the memory word
  */
-short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
+static short unsigned create_single_operand_word(char *operand, AddressMethod address_method, Requirements *requirements,
                                           int is_source) {
     /* if the address method is immediate address, the immediate value is the part after the starting '#',
      * builds the word based on this value */
@@ -509,7 +494,7 @@ short unsigned create_single_operand_word(char *operand, AddressMethod address_m
  * @param destination_method  the destination operand's address method
  * @return the memory word
  */
-short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
+static short unsigned create_combined_operand_word(char *source_operand, char *destination_operand,
                                             AddressMethod source_method, AddressMethod destination_method) {
     /* if the address method for either of the operands is indirect register address, then the register is the part
      * immediately after the starting asterisk, so the operand variable changes to it.
@@ -528,7 +513,7 @@ short unsigned create_combined_operand_word(char *source_operand, char *destinat
  * @param symbol_name the name of the symbol to be checked
  * @param requirements a pointer to the requirements of the file
  */
-void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements) {
+static void check_and_handle_external_symbol(char *symbol_name, Requirements *requirements) {
     SymbolContent *symbol_content = map_get_symbol(requirements->symbol_table, symbol_name);
     if (symbol_content->type == EXTERNAL) {
         list_add_int(symbol_content->appearances, requirements->ic);

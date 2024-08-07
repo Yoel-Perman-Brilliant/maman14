@@ -97,18 +97,6 @@ SymbolContent *map_get_symbol(HashMap *map, char *name) {
 }
 
 /**
- * Adds an item with a given name to a hash-map.
- * Does so by adding it to the list at the index of the name's hash-value.
- * 
- * @param map           a pointer to the map that the item should be added to
- * @param name          the name of the item
- * @param macro_content the content of the item to be added
- */
-void map_add(HashMap *map, char *name, Content content) {
-    list_add(map->lists[map_hash(name)], name, content);
-}
-
-/**
  * Adds a macro with a given name to a hash-map.
  * Does so by adding it to the list at the index of the name's hash-value.
  * 
@@ -164,13 +152,18 @@ void map_add_to_all_that_apply(HashMap *map, int to_add, int (*condition)(Symbol
     }
 }
 
-void map_print_symbols(HashMap *map) {
-    int i;
-    for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
-        list_print_symbols(map->lists[i]);
-    }
-}
-
+/**
+ * Adds every symbol in a hash-map that meets a given condition to a given linked-list.
+ * Importantly, copies the symbols are added, rather then references to the same symbols.
+ * Assumes every item in the map is a symbol and that the pointer to the list is not null.
+ * 
+ * Does so by going over every list in the table and adding its members that meet to the condition to the given list.
+ * 
+ * @param map       the map whose symbols should be added to the list
+ * @param list      the list that the symbols should be added to
+ * @param condition a pointer to a function that accepts a symbol and returns 1 if it meets the wanted condition and 0
+ *                  otherwise
+ */
 void map_add_matching_to_list(HashMap *map, LinkedList *list, int (*condition)(SymbolContent symbol)) {
     int i;
     for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {

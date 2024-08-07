@@ -65,7 +65,7 @@ int has_destination(Operator op) {
  *                                  method n is a legal destination address method for the operator and '0' otherwise.
  * @return the newly created operator
  */
-Operator create_operator(char *name, char *legal_source_methods, char *legal_destination_methods) {
+static Operator create_operator(char *name, char *legal_source_methods, char *legal_destination_methods) {
     Operator op;
     op.name = name;
     op.legal_source_methods = binary_string_to_number(legal_source_methods);

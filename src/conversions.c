@@ -23,15 +23,16 @@
 #define DIRECT_ADDRESS_WORD_EXTERNAL_ARE_STRING "001"
 #define DIRECT_ADDRESS_WORD_VALUE_SHIFT 3
 
-void print_binary(unsigned short num) {
-    /* For every i in the range [0, INT_SIZE - 1], prints the last bit of the number without its last i bits, as in the
-    ith bit of the number from the right. i starts as INT_SIZE - 1 and decreases, so the bits are printed properly
-    from left to right. */
-    int i;
-    for (i = WORD_SIZE_BITS; i >= 0; i--) {
-        printf("%d", RIGHTMOST_BIT(num >> i));
-    }
-    printf("\n");
+/**
+ * Gets the number of a register based on the register's string representation.
+ * Does so by finding the numeric value of the the part immediately after the starting 'r'.
+ * Assumes the register is valid.
+ * 
+ * @param reg a string containing precisely the register
+ * @return the numeric value of the register
+ */
+static int get_register_number(char *reg) {
+    return atoi(reg + 1);
 }
 
 /**
@@ -96,7 +97,6 @@ int should_combine_additional_words(AddressMethod source_method, AddressMethod d
  * @return the word representing the register as a source operand
  */
 short unsigned create_source_register_word(char *reg) {
-    int get_register_number(char *reg);
     int reg_number = get_register_number(reg);
     short unsigned source_register_bits = reg_number << SOURCE_REGISTER_NUMBER_SHIFT;
     /* the A,R,E is always the same for a register word */
@@ -115,7 +115,6 @@ short unsigned create_source_register_word(char *reg) {
  * @return the word representing the register as a destination operand
  */
 short unsigned create_destination_register_word(char *reg) {
-    int get_register_number(char *reg);
     int reg_number = get_register_number(reg);
     short unsigned destination_register_bits = reg_number << DESTINATION_REGISTER_NUMBER_SHIFT;
     /* the A,R,E is always the same for a register word */
@@ -135,7 +134,6 @@ short unsigned create_destination_register_word(char *reg) {
  * @return the combined word representing both register as their appropriate operands
  */
 short unsigned create_combined_register_word(char *source_reg, char *destination_reg) {
-    int get_register_number(char *reg);
     int source_reg_number = get_register_number(source_reg);
     int destination_reg_number = get_register_number(destination_reg);
     short unsigned source_register_bits = source_reg_number << SOURCE_REGISTER_NUMBER_SHIFT;
@@ -183,14 +181,3 @@ short unsigned create_direct_address_word(int symbol_value, SymbolType symbol_ty
     return value_bits | are;
 }
 
-/**
- * Gets the number of a register based on the register's string representation.
- * Does so by finding the numeric value of the the part immediately after the starting 'r'.
- * Assumes the register is valid.
- * 
- * @param reg a string containing precisely the register
- * @return the numeric value of the register
- */
-int get_register_number(char *reg) {
-    return atoi(reg + 1);
-}

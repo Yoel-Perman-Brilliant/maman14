@@ -187,8 +187,4 @@ void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(S
  */
 void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condition)(SymbolContent symbol));
 
-void list_print_symbols(LinkedList *list);
-
-void list_print_numbers(LinkedList *list);
-
 #endif

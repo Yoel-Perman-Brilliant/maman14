@@ -53,6 +53,4 @@ int set_contains(Set *set, int num);
  */
 int set_add(Set *set, int num);
 
-void set_print(Set *set);
-
 #endif

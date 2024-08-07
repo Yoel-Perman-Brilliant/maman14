@@ -37,7 +37,7 @@
  * @param macro_table a pointer to the macro table
  * @param parsed_file a pointer to the parsed file that the macro content should be written to.
  */
-void handle_macro_usage(char *macro, HashMap *macro_table, FILE *parsed_file) {
+static void handle_macro_usage(char *macro, HashMap *macro_table, FILE *parsed_file) {
     MacroContent macro_content = *map_get_macro(macro_table, macro);
     fprintf(parsed_file, "%s", macro_content);
 }
@@ -58,7 +58,7 @@ void handle_macro_usage(char *macro, HashMap *macro_table, FILE *parsed_file) {
  * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro usage was found, 0 otherwise
  */
-int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *label,
+static int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *label,
                                  FILE *parsed_file, int line_count, char *input_file_name, int *error_found) {
     /* the part of the line after the first field (excluding a potential label) */
     char *rest;
@@ -107,7 +107,7 @@ int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *label,
  * @param macro_content   the content of the macro being defined
  * @return 1 if the macro end has been found or an error has occurred, 0 otherwise
  */
-int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *line, int *error_found,
+static int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *line, int *error_found,
                                int line_count, char *input_file_name, MacroContent macro_content) {
     /* a potential label of the line */
     char *label;
@@ -156,7 +156,7 @@ int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, char *lin
  *                        input file (used for error reporting)
  * @param error_found a pointer to an integer value that should hold whether an error has occurred
  */
-void handle_macro_definition(HashMap *macro_table, char *macro_name, char *input_file_name,
+static void handle_macro_definition(HashMap *macro_table, char *macro_name, char *input_file_name,
                              FILE *input_file, int *line_count, int *error_found) {
     /* the line being read */
     char line[MAX_LINE_LENGTH + 1];
@@ -210,7 +210,7 @@ void handle_macro_definition(HashMap *macro_table, char *macro_name, char *input
  * @param error_found     a pointer to an integer value that should hold whether an error has occurred
  * @return 1 if a macro definition was found, 0 otherwise
  */
-int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *label, char *input_file_name,
+static int check_and_handle_macro_definition(HashMap *macro_table, char *line, char *label, char *input_file_name,
                                       FILE *input_file, int *line_count, int *error_found) {
     /* the first field of the line, which is checked to be a macro definition */
     char *first_field;

@@ -21,39 +21,37 @@
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
 
-void insert_data_numbers(char *rest, char *parsed_file_name, int line_count, Requirements *requirements,
+static void insert_data_numbers(char *rest, char *parsed_file_name, int line_count, Requirements *requirements,
                          int *error_found);
 
-void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
+static void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
                    int *error_found, int line_count, char *parsed_file_name);
 
-int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                                Requirements *requirements);
 
-void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                    Requirements *requirements);
 
-void insert_string(char *rest, int line_count, char *parsed_file_name, int *error_found, Requirements *requirements);
+static void insert_string(char *rest, int line_count, char *parsed_file_name, int *error_found, Requirements *requirements);
 
-void first_pass_handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static void first_pass_handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements);
 
-void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+static void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements);
 
-void first_pass_handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+static void first_pass_handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements);
 
-void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+static void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                      int *error_found, Requirements *requirements);
 
-int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found);
+static int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found);
 
-int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found);
+static int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found);
 
-int is_data_symbol(SymbolContent symbol);
-
-int is_label_legal(char *label);
+static int is_data_symbol(SymbolContent symbol);
 
 
 /**
@@ -73,8 +71,7 @@ int is_label_legal(char *label);
  * After reading the entire file, increases the value of every data symbol by IC.
  * 
  * @param file_name    the extension-less file name
- * @param requirements the requirements for the assembly of the file - the symbol table, memory image and memory
- *                     counters
+ * @param requirements a pointer to the requirements for the assembly of the file
  * @return 1 if any error in the file was found, 0 otherwise
  */
 int first_pass(char file_name[], Requirements *requirements) {
@@ -139,7 +136,7 @@ int first_pass(char file_name[], Requirements *requirements) {
  * @param requirements     a pointer to the requirements for the file
  * @param error_found      a pointer to a value that represents whether an error has been found
  */
-void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
+static void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
                          Requirements *requirements, int *error_found) {
     /* the current argument for the directive */
     char *arg = NULL;
@@ -237,7 +234,7 @@ void insert_data_numbers(char *rest, char *parsed_file_name, int line_count,
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void insert_string(char *rest, int line_count, char *parsed_file_name, int *error_found, Requirements *requirements) {
+static void insert_string(char *rest, int line_count, char *parsed_file_name, int *error_found, Requirements *requirements) {
     /* the part of the line after .string without heading and trailing whitespaces */
     char *trimmed_rest;
     /* the length of the part after .string without heading and trailing whitespaces */
@@ -294,7 +291,7 @@ void insert_string(char *rest, int line_count, char *parsed_file_name, int *erro
  * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  */
-void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
+static void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requirements *requirements,
                    int *error_found, int line_count, char *parsed_file_name) {
     /* the content of the symbol to be added */
     SymbolContent content;
@@ -363,7 +360,7 @@ void insert_symbol(char *symbol, SymbolType type, SymbolLocation location, Requi
  * @param requirements     a pointer to the requirements for the file
  * @return 1 if the line is a directive, 0 otherwise
  */
-int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static int check_and_handle_directive(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                                Requirements *requirements) {
     /* the part of the line after the directive */
     char *rest;
@@ -431,7 +428,7 @@ int check_and_handle_directive(char *line, char *label_name, int line_count, cha
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static void handle_extern(char *rest, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                    Requirements *requirements) {
     /* the symbol given as argument for .extern */
     char *symbol;
@@ -481,7 +478,7 @@ void handle_extern(char *rest, char *label_name, int line_count, char *parsed_fi
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void first_pass_handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
+static void first_pass_handle_instruction(char *line, char *label_name, int line_count, char *parsed_file_name, int *error_found,
                         Requirements *requirements) {
     /* the part of the line after the operator */
     char *rest;
@@ -531,7 +528,7 @@ void first_pass_handle_instruction(char *line, char *label_name, int line_count,
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+static void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements) {
     char *source_operand;
     char *destination_operand;
@@ -668,7 +665,7 @@ void first_pass_handle_two_operand_instruction(Operator op, char *rest, int line
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void first_pass_handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+static void first_pass_handle_one_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                     int *error_found, Requirements *requirements) {
     /* the destination operand is the next field after the operator */
     char *destination_operand = find_token(rest, BLANKS, &rest);
@@ -743,7 +740,7 @@ void first_pass_handle_one_operand_instruction(Operator op, char *rest, int line
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
  */
-void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
+static void handle_zero_operand_instruction(Operator op, char *rest, int line_count, char *parsed_file_name,
                                      int *error_found, Requirements *requirements) {
     /* the instruction's first word in the memory */
     unsigned short first_word;
@@ -772,7 +769,7 @@ void handle_zero_operand_instruction(Operator op, char *rest, int line_count, ch
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @return 1 if the line includes a semicolon, 0 otherwise
  */
-int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found) {
+static int has_comment_start(char *line, int line_count, char *parsed_file_name, int *error_found) {
     /* makes sure the line (that is known to not be a comment line) doesn't have a semicolon, which would be illegal */
     if (exists(line, COMMENT_START)) {
         printf("Input Error: Semicolon signifying a comment appears after the first character in line %d of file "
@@ -793,7 +790,7 @@ int has_comment_start(char *line, int line_count, char *parsed_file_name, int *e
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @return 1 if the line is blank, 0 otherwise 
  */
-int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found) {
+static int blank_after_label(char *line, int line_count, char *parsed_file_name, int *error_found) {
     /* checks that the line after the label is not blank, which would be illegal */
     if (is_line_blank(line)) {
         printf("Input Error: Line %d of file %s is empty but has a label\n", line_count, parsed_file_name);
@@ -809,6 +806,6 @@ int blank_after_label(char *line, int line_count, char *parsed_file_name, int *e
  * 
  * @return 1 if symbol is a data symbol, 0 otherwise
  */
-int is_data_symbol(SymbolContent symbol) {
+static int is_data_symbol(SymbolContent symbol) {
     return symbol.location == DATA;
 }

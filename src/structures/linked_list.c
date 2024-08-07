@@ -282,20 +282,3 @@ void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condi
         node = node->next;
     }
 }
-
-void list_print_symbols(LinkedList *list) {
-    Node *node = list->head;
-    while (node != NULL) {
-        printf("%s: %d\n", node->name, node->content.symbol.value);
-        node = node->next;
-    }
-}
-
-void list_print_numbers(LinkedList *list) {
-    Node *node = list->head;
-    while (node != NULL) {
-        printf("%d\n", node->content.num);
-        node = node->next;
-    }
-}
-

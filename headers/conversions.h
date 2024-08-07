@@ -43,8 +43,6 @@
  */
 #define IMMEDIATE_VALUE_MIN (-pow(2, (IMMEDIATE_VALUE_SIZE_BITS - 1)))
 
-void print_binary(unsigned short num);
-
 /**
  * Creates the first memory word representing an instruction.
  * 

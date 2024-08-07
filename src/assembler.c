@@ -6,7 +6,7 @@
 #include "../headers/output_creator.h"
 #include "../headers/exit_codes.h"
 
-int assemble(char file_name[]) {
+static int assemble(char file_name[]) {
     Requirements *requirements = create_requirements();
     int failure;
     remove_output_files(file_name);
