@@ -262,7 +262,6 @@ static void insert_string(char *rest, int line_count, char *parsed_file_name, in
         *error_found = 1;
         return;
     }
-    
     /* trims the argument and finds its length */
     trimmed_rest = trim(rest);
     trimmed_rest_length = strlen(trimmed_rest);
