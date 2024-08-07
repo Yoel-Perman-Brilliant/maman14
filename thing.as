@@ -6,3 +6,4 @@ x
 y: .data 3453, -9384
 x: .extern jh
 d: dec jh
+x: .str "
