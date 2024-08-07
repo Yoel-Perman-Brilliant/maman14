@@ -267,7 +267,7 @@ static void insert_string(char *rest, int line_count, char *parsed_file_name, in
     trimmed_rest_length = strlen(trimmed_rest);
     /* verifies that the argument is not a single set of quotation marks, which would pass the previous checks */
     if (trimmed_rest_length == 1) {
-        printf("Input Error: Argument for .string directive in line %d of file %s is not wrapped by two"
+        printf("Input Error: Argument for .string directive in line %d of file %s is not wrapped by two "
                "sets of quotation marks\n", line_count, parsed_file_name);
         *error_found = 1;
         return;
