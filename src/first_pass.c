@@ -262,16 +262,17 @@ static void insert_string(char *rest, int line_count, char *parsed_file_name, in
         *error_found = 1;
         return;
     }
+    
+    /* trims the argument and finds its length */
+    trimmed_rest = trim(rest);
+    trimmed_rest_length = strlen(trimmed_rest);
     /* verifies that the argument is not a single set of quotation mark, which would pass the previous checks */
-    if (strlen(rest) == 1) {
+    if (trimmed_rest_length == 1) {
         printf("Input Error: Argument for .string directive in line %d of file %s is not wrapped by two"
                "sets of quotation marks\n", line_count, parsed_file_name);
         *error_found = 1;
         return;
     }
-    /* trims the argument and finds its length */
-    trimmed_rest = trim(rest);
-    trimmed_rest_length = strlen(trimmed_rest);
     /* foe every character in the argument besides the first and last (the quotation marks), inserts their
      * unsigned short ascii value to the memory, and changes the value of error_found to 1 if an error is found
      * in the process */
