@@ -170,6 +170,7 @@ static void handle_macro_definition(HashMap *macro_table, char *macro_name, char
     /* reads the lines from the input one by one until a macro end is found */
     (*line_count)++;
     if (read_line(input_file, input_file_name, *line_count, line)) *error_found = 1;
+    /*printf("line %d: %s\n", *line_count, line);*/
     while (1) {
         /* if a macro end is found, inserts it to the macro table and quits reading the definition */
         if (check_and_handle_macro_end(macro_table, macro_name, line, error_found, *line_count,
@@ -335,7 +336,7 @@ int pre_assemble(char file_name[], Requirements *requirements) {
         }
         /* if a macro definition is detected, it is inserted to the macro table, and the loop moves to the
          * line after the macro's end */
-        if (check_and_handle_macro_definition(requirements->macro_table, line, label, file_name,
+        if (check_and_handle_macro_definition(requirements->macro_table, line, label, input_file_name,
                                               input_file, &line_count, &error_found)) {
             continue;
         }
