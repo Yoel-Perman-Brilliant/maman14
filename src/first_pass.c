@@ -507,7 +507,7 @@ static void first_pass_handle_instruction(char *line, char *label_name, int line
         return;
     }
     op = get_operator(operator_name);
-    /* handles the instruction based on the expected operand */
+    /* handles the instruction based on the expected number of operands */
     if (has_source(op)) {
         first_pass_handle_two_operand_instruction(op, rest, line_count, parsed_file_name, error_found, requirements);
     } else if (has_destination(op)) {
