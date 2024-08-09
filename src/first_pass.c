@@ -416,6 +416,7 @@ static int check_and_handle_directive(char *line, char *label_name, int line_cou
         printf("Input Error: Illegal directive \"%s\" in line %d of file %s\n",
                directive, line_count, parsed_file_name);
         *error_found = 1;
+        free(label_name);
         free(directive);
         return 1;
     }
@@ -444,12 +445,14 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
         printf("Warning: Label found before .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
     }
+    free(label_name);
     /* the argument is the field directly after .extern */
     symbol = find_token(rest, BLANKS, &rest);
     /* makes sure the argument field is not empty */
     if (is_line_blank(symbol)) {
         printf("Input Error: No argument given to .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
+        free(symbol);
         *error_found = 1;
         return;
     }
@@ -458,11 +461,11 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
         printf("Input Error: Extra characters after the argument for .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
+        free(symbol);
         return;
     }
     /* inserts the symbol to the symbol table */
     insert_symbol(symbol, EXTERNAL, UNDEFINED, requirements, error_found, line_count, parsed_file_name);
-    free(label_name);
 }
 
 
