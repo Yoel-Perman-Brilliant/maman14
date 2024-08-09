@@ -280,6 +280,10 @@ static void insert_string(char *rest, int line_count, char *parsed_file_name, in
     }
     /* trims the argument and finds its length */
     trimmed_rest = trim(rest);
+    if (trimmed_rest == NULL) {
+        *error_found = 1;
+        return;
+    }
     trimmed_rest_length = strlen(trimmed_rest);
     /* verifies that the argument is not a single set of quotation marks, which would pass the previous checks */
     if (trimmed_rest_length == 1) {
@@ -519,16 +523,17 @@ static void first_pass_handle_instruction(char *line, char *label_name, int line
     char *rest;
     /* the name of the operator must be the first field of the line */
     char *operator_name = find_token(line, BLANKS, &rest);
+    /* the instruction's operator */
+    Operator op;
+    /* if there is a label, inserts it to the symbol table */ 
+    if (label_name != NULL) {
+        insert_symbol(label_name, REGULAR, CODE, requirements,
+                      error_found, line_count, parsed_file_name);
+    }
     if (operator_name == NULL) {
         *error_found = 1;
         return;
     }
-    /* the instruction's operator */
-    Operator op;
-    /* if there is a label, inserts it to the symbol table */ 
-    if (label_name != NULL)
-        insert_symbol(label_name, REGULAR, CODE, requirements,
-                      error_found, line_count, parsed_file_name);
     /* makes sure that the operator is legal */
     if (!is_operator(operator_name)) {
         printf("Input Error: Illegal instruction name \"%s\" in line %d of file %s\n",
@@ -609,10 +614,18 @@ static void first_pass_handle_two_operand_instruction(Operator op, char *rest, i
     /* the source operand is the first field of the part after the source operand when separating by commas,
      * may include whitespaces */
     destination_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    if (source_operand == NULL || destination_operand == NULL) {
+        *error_found = 1;
+        return;
+    }
     /* removes heading and trailing whitespaces from the operands */
     trimmed_source_operand = trim(source_operand);
     trimmed_destination_operand = trim(destination_operand);
     free_all(2, source_operand, destination_operand);
+    if (trimmed_source_operand == NULL || trimmed_destination_operand == NULL) {
+        *error_found = 1;
+        return;
+    }
     /* makes sure there is a source operand */
     if (is_line_blank(trimmed_source_operand)) {
         printf("Input Error: Missing source operand in line %d of file %s\n",
@@ -712,6 +725,10 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
     AddressMethod destination_address_method;
     /* the instruction's first word in the memory */
     short unsigned first_word;
+    if (destination_operand == NULL) {
+        *error_found = 1;
+        return;
+    }
     /* makes sure that the destination operand is not empty */
     if (is_line_blank(destination_operand)) {
         printf("Input Error: Missing destination operand in line %d of file %s\n",

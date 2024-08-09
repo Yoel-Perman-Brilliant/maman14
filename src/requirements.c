@@ -19,7 +19,8 @@ Requirements *create_requirements() {
     Requirements *requirements = malloc(sizeof(Requirements));
     if (requirements == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating requirements\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     requirements->macro_table = create_map(MACRO);
     requirements->symbol_table = create_map(SYMBOL);
@@ -33,10 +34,6 @@ Requirements *create_requirements() {
     if (requirements->instruction_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating instruction array\n");
         set_alloc_failure();
-    }
-    if (is_alloc_failure()) {
-        free_requirements(requirements);
-        exit(MEMORY_ALLOCATION_FAILURE);
     }
     requirements->ic = IC_START;
     requirements->dc = 0;

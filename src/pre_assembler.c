@@ -125,7 +125,7 @@ static int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, ch
     first_field = find_token(line, BLANKS, &rest);
     if (first_field == NULL) {
         free(label);
-        
+        *error_found = 1;
         return 1;
     }
     /* checks if the macro end keyword has been found */
@@ -182,7 +182,6 @@ static void handle_macro_definition(HashMap *macro_table, char *macro_name, char
     /* reads the lines from the input one by one until a macro end is found */
     (*line_count)++;
     if (read_line(input_file, input_file_name, *line_count, line)) *error_found = 1;
-    /*printf("line %d: %s\n", *line_count, line);*/
     while (1) {
         /* if a macro end is found, inserts it to the macro table and quits reading the definition */
         if (check_and_handle_macro_end(macro_table, macro_name, line, error_found, *line_count,
@@ -192,12 +191,15 @@ static void handle_macro_definition(HashMap *macro_table, char *macro_name, char
         /* if a macro end is not found, updates the macro's content */
         else {
             /* reallocates the macro content to a new string that has enough spaces for the next line */
-            macro_content = (MacroContent)realloc(macro_content, strlen(macro_content) + strlen(line) + 2);
-            if (macro_content == NULL) {
+            MacroContent new_macro_content = 
+                    (MacroContent)realloc(macro_content, strlen(macro_content) + strlen(line) + 2);
+            if (new_macro_content == NULL) {
                 fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
+                free(macro_content);
                 set_alloc_failure();
                 return;
             }
+            macro_content = new_macro_content;
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);
             strcat(macro_content, "\n");
@@ -233,11 +235,20 @@ static int check_and_handle_macro_definition(HashMap *macro_table, char *line, c
     /* the part of the line after the macro name */
     char *rest;
     first_field = find_token(line, BLANKS, &rest);
+    if (first_field == NULL) {
+        *error_found = 1;
+        return 0;
+    }
     if (!equal(first_field, MACRO_DEFINITION)) {
         free(first_field);
         return 0;
     }
     macro_name = find_token(rest, BLANKS, &rest);
+    if (macro_name == NULL) {
+        *error_found = 1;
+        free(first_field);
+        return 1;
+    }
     /* if a macro definition keyword exists and has a label, reports an error */
     if (label != NULL) {
         printf("Input Error: Label used before macro definition in line %d of file %s\n", *line_count,

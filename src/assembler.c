@@ -10,6 +10,7 @@
  
 static int assemble(char file_name[]) {
     Requirements *requirements = create_requirements();
+    if (is_alloc_failure()) exit(MEMORY_ALLOCATION_FAILURE);
     int failure;
     remove_output_files(file_name);
     

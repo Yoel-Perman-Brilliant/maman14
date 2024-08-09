@@ -121,6 +121,11 @@ static void check_and_handle_entry(char *line, char *label_name, int line_count,
     /* the part of the line after .entry */
     char *rest;
     char *directive = find_token(line, BLANKS, &rest);
+    if (directive == NULL) {
+        *error_found = 1;
+        free(label_name);
+        return;
+    }
     /* makes sure the directive is .entry */
     if (equal(directive, ENTRY_DIRECTIVE)) {
         /* the name of the symbol given as argument for .extern */
@@ -134,6 +139,11 @@ static void check_and_handle_entry(char *line, char *label_name, int line_count,
         }
         /* the argument is the field directly after .entry */
         argument = find_token(rest, BLANKS, &rest);
+        if (argument == NULL) {
+            *error_found = 1;
+            free_all(directive, label_name);
+            return;
+        }
         /* makes sure the argument field is not empty */
         if (is_line_blank(argument)) {
             printf("Input Error: No argument given to .entry directive in line %d of file %s\n",
@@ -199,6 +209,10 @@ static void second_pass_handle_instruction(char *line, int line_count, char *par
     /* if the line was found to be faulty in the first pass, the operators can't be encoded */
     if (set_contains(requirements->faulty_instructions, line_count)) return;
     operator_name = find_token(line, BLANKS, &rest);
+    if (operator_name == NULL) {
+        *error_found = 1;
+        return;
+    }
     op = get_operator(operator_name);
     free(operator_name);
     /* increments the instruction count, so ic now refers to the slot in the memory where the first operand should go */ 
@@ -250,9 +264,17 @@ static void second_pass_handle_two_operand_instruction(char *rest, int line_coun
     
     source_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
     destination_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    if (source_operand == NULL || destination_operand == NULL) {
+        *error_found = 1;
+        return;
+    }
     trimmed_source_operand = trim(source_operand);
     trimmed_destination_operand = trim(destination_operand);
     free_all(2, source_operand, destination_operand);
+    if (trimmed_source_operand == NULL || trimmed_destination_operand == NULL) {
+        *error_found = 1;
+        return;
+    }
     
     source_method = get_address_method(trimmed_source_operand);
     destination_method = get_address_method(trimmed_destination_operand);
@@ -312,6 +334,10 @@ static void second_pass_handle_one_operand_instruction(char *rest, int line_coun
                                                 Requirements *requirements) {
     /* the only field after the operator is the destination operand */
     char *destination_operand = find_token(rest, BLANKS, &rest);
+    if (destination_operand ==  NULL) {
+        
+        return;
+    }
     /* the word in the memory representing the destination operand */
     short unsigned destination_word;
     /* the destination operand's address method */
