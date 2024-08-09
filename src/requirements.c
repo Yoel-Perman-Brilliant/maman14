@@ -6,6 +6,7 @@
 #include "../headers/exit_codes.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "../headers/util/general_util.h"
 
 /**
  * Creates a new instance of Requirements to be used for the assembly of one file.
@@ -25,12 +26,16 @@ Requirements *create_requirements() {
     requirements->data_array = calloc(MEMORY_SIZE, sizeof(short));
     if (requirements->data_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating data array\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
     }
     requirements->faulty_instructions = create_set();
     requirements->instruction_array = calloc(MEMORY_SIZE, sizeof(short));
     if (requirements->instruction_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating instruction array\n");
+        set_alloc_failure();
+    }
+    if (is_alloc_failure()) {
+        free_requirements(requirements);
         exit(MEMORY_ALLOCATION_FAILURE);
     }
     requirements->ic = IC_START;

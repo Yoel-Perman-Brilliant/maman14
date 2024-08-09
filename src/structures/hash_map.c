@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "../../headers/exit_codes.h"
+#include "../../headers/util/general_util.h"
 
 #define HASH_MULTIPLIER 31
 
@@ -37,7 +38,8 @@ HashMap *create_map(ContentType content_type) {
     int i;
     if (map == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating map\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
         map->lists[i] = create_list(content_type);

@@ -135,6 +135,10 @@ void find_label(char **line, char **label_name) {
     char *rest;
     /* the first field of the line */
     char *first_field = find_token(*line, BLANKS, &rest);
+    if (first_field == NULL) {
+        *label_name = NULL;
+        return;
+    }
     /* if the first field is a label */
     if (is_label(first_field)) {
         /* removes the colon from the label to find the symbol */

@@ -6,6 +6,7 @@
 #include "../headers/requirements.h"
 #include "../headers/files.h"
 #include "../headers/output_creator.h"
+#include "../headers/util/general_util.h"
 
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
@@ -41,11 +42,15 @@ int create_files(char file_name[], Requirements *requirements) {
     LinkedList *extern_list = create_list(SYMBOL);
     /* list of entry symbols */
     LinkedList *entry_list = create_list(SYMBOL);
-    /* writes the object file and updates error_found */
-    error_found |= write_object_file(file_name, requirements);
     /* fills the symbol lists based on the symbol table */
     map_add_matching_to_list(requirements->symbol_table, extern_list, is_extern);
     map_add_matching_to_list(requirements->symbol_table, entry_list, is_entry);
+    if (is_alloc_failure()) {
+        fprintf(stderr, "Memory Error: Memory allocation failure when creating output files\n");
+        return 1;
+    }
+    /* writes the object file and updates error_found */
+    error_found |= write_object_file(file_name, requirements);
     /* creates a .ext file if an external symbol is used */
     if (requirements->extern_found) error_found |= write_extern_file(file_name, extern_list);
     /* creates a .ent file if an entry symbol is defined */

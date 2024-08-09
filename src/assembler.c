@@ -5,13 +5,16 @@
 #include "../headers/second_pass.h"
 #include "../headers/output_creator.h"
 #include "../headers/exit_codes.h"
-
+#include "../headers/util/general_util.h"
+#include "stdlib.h"
+ 
 static int assemble(char file_name[]) {
     Requirements *requirements = create_requirements();
     int failure;
     remove_output_files(file_name);
     
     failure = pre_assemble(file_name, requirements);
+    if (is_alloc_failure()) exit(MEMORY_ALLOCATION_FAILURE);
     if (!failure) printf("%s: Pre-assembly completed successfully\n", file_name);
     else {
         free_requirements(requirements);
@@ -19,8 +22,10 @@ static int assemble(char file_name[]) {
     }
     
     failure = first_pass(file_name, requirements);
+    if (is_alloc_failure()) exit(MEMORY_ALLOCATION_FAILURE);
     if (!failure) printf("%s: First pass completed successfully\n", file_name);
     failure |= second_pass(file_name, requirements);
+    if (is_alloc_failure()) exit(MEMORY_ALLOCATION_FAILURE);
     if (!failure) printf("%s: Second pass completed successfully\n", file_name);
     else {
         free_requirements(requirements);
@@ -28,6 +33,7 @@ static int assemble(char file_name[]) {
     }
     
     failure = create_files(file_name, requirements);
+    if (is_alloc_failure()) exit(MEMORY_ALLOCATION_FAILURE);
     if (!failure) printf("%s: Output files creation completed successfully\n", file_name);
     else {
         free_requirements(requirements);

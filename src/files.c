@@ -29,7 +29,8 @@ static char *get_file_name_with_extension(char file_name[], char extension[]) {
     char *name_with_extension = calloc(strlen(file_name) + strlen(extension) + 1, 1);
     if (name_with_extension == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when copying file name\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     /* copies the extensionless file name and the extension to the new string by concatenating them */
     strcat(name_with_extension, file_name);

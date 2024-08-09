@@ -5,6 +5,8 @@
 #include "../../headers/exit_codes.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "../../headers/util/general_util.h"
+
 
 /**
  * Creates a new, empty set.
@@ -17,7 +19,8 @@ Set *create_set() {
     int i;
     if (set == NULL) {
         printf("Memory Error: Memory allocation failure when creating set\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     for (i = 0; i < SET_HASH_TABLE_SIZE; i++) {
         /* sets may only include integers, so it is the type of every list */

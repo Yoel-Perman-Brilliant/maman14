@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "ctype.h"
+#include "../../headers/util/general_util.h"
 
 #define BLANKS " \t"
 
@@ -70,7 +71,8 @@ char *find_token(char *string, char *separators, char **rest) {
         output = malloc(1);
         if (output == NULL) {
             printf("Memory Error: Memory allocation failure when creating string token\n");
-            exit(MEMORY_ALLOCATION_FAILURE);
+            set_alloc_failure();
+            return NULL;
         }
         output[0] = '\0';
         return output;
@@ -83,7 +85,8 @@ char *find_token(char *string, char *separators, char **rest) {
             output = malloc(1);
             if (output == NULL) {
                 printf("Memory Error: Memory allocation failure when creating string token\n");
-                exit(MEMORY_ALLOCATION_FAILURE);
+                set_alloc_failure();
+                return NULL;
             }
             output[0] = '\0';
             return output;
@@ -99,7 +102,8 @@ char *find_token(char *string, char *separators, char **rest) {
     output = (char *) malloc(output_length + 1);
     if (output == NULL) {
         printf("Memory Error: Memory allocation failure when creating string token\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     /* string now points to the character after the token, so string - output_length points to the token's first
      * character, which means the first output_length characters of this pointer represent the token, and thus
@@ -144,7 +148,8 @@ char *trim(char string[]) {
     output = (char *) malloc(strlen(string) - head_length + 1);
     if (output == NULL) {
         printf("Memory Error: Memory allocation failure when creating trimmed string\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     strcpy(output, string + head_length);
     /* finds the first character (from the end) which isn't a blank space, and sets it to be the last character */

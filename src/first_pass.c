@@ -172,8 +172,16 @@ static void insert_data_numbers(char *rest, char *parsed_file_name, int line_cou
     }
     /* finds and times the argument */
     arg = find_token(rest, DATA_SEPARATOR, &rest);
+    if (arg == NULL) {
+        *error_found = 1;
+        return;
+    }
     trimmed_arg = trim(arg);
     free(arg);
+    if (trimmed_arg == NULL) {
+        *error_found = 1;
+        return;
+    }
     /* for each argument (until the argument is not empty) */
     while (!is_line_blank(trimmed_arg)) {
         /* the int value of the argument */
@@ -211,8 +219,16 @@ static void insert_data_numbers(char *rest, char *parsed_file_name, int line_cou
         free(trimmed_arg);
         /* the next argument */
         arg = find_token(rest, DATA_SEPARATOR, &rest);
+        if (arg == NULL) {
+            *error_found = 1;
+            return;
+        }
         trimmed_arg = trim(arg);
         free(arg);
+        if (trimmed_arg == NULL) {
+            *error_found = 1;
+            return;
+        }
     }
     free(trimmed_arg);
 }
@@ -373,6 +389,11 @@ static int check_and_handle_directive(char *line, char *label_name, int line_cou
     char *rest;
     /* the first field of the line (which is passed without the label) */
     char *directive = find_token(line, BLANKS, &rest);
+    if (directive == NULL) {
+        free(directive);
+        free(label_name);
+        return 1;
+    }
     /* checks that it is a directive */
     if (!is_directive(directive)) {
         free(directive);
@@ -446,11 +467,17 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
     }
     /* the argument is the field directly after .extern */
     symbol = find_token(rest, BLANKS, &rest);
+    if (symbol == NULL) {
+        *error_found = 1;
+        free(label_name);
+        return;
+    }
     /* makes sure the argument field is not empty */
     if (is_line_blank(symbol)) {
         printf("Input Error: No argument given to .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
+        free(label_name);
         return;
     }
     /* makes sure the part of the line after the argument is empty */
@@ -458,6 +485,7 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
         printf("Input Error: Extra characters after the argument for .extern directive in line %d of file %s\n",
                line_count, parsed_file_name);
         *error_found = 1;
+        free(label_name);
         return;
     }
     /* inserts the symbol to the symbol table */
@@ -491,6 +519,10 @@ static void first_pass_handle_instruction(char *line, char *label_name, int line
     char *rest;
     /* the name of the operator must be the first field of the line */
     char *operator_name = find_token(line, BLANKS, &rest);
+    if (operator_name == NULL) {
+        *error_found = 1;
+        return;
+    }
     /* the instruction's operator */
     Operator op;
     /* if there is a label, inserts it to the symbol table */ 

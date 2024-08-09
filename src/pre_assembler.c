@@ -26,6 +26,8 @@
 #include "../headers/util/general_util.h"
 #include "../headers/files.h"
 #include "../headers/exit_codes.h"
+#include "../headers/util/general_util.h"
+
 
 #define BLANKS " \t"
 
@@ -64,6 +66,10 @@ static int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *
     char *rest;
     /* the first field of the line (excluding a potential label), which is checked to be a macro usage */
     char *first_field = find_token(line, BLANKS, &rest);
+    if (first_field == NULL) {
+        *error_found = 1;
+        return 0;
+    }
     /* checks if the first field is a known macro, if it isn't, returns 0, otherwise the first field is 
      * known to be a macro usage */
     if (!map_contains(macro_table, first_field)) {
@@ -117,6 +123,11 @@ static int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, ch
     char *rest;
     find_label(&line, &label);
     first_field = find_token(line, BLANKS, &rest);
+    if (first_field == NULL) {
+        free(label);
+        
+        return 1;
+    }
     /* checks if the macro end keyword has been found */
     if (!equal(first_field, MACRO_END)) {
         free(first_field);
@@ -164,7 +175,8 @@ static void handle_macro_definition(HashMap *macro_table, char *macro_name, char
     MacroContent macro_content = (MacroContent) calloc(1, 1);
     if (macro_content == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return;
     }
 
     /* reads the lines from the input one by one until a macro end is found */
@@ -183,7 +195,8 @@ static void handle_macro_definition(HashMap *macro_table, char *macro_name, char
             macro_content = (MacroContent)realloc(macro_content, strlen(macro_content) + strlen(line) + 2);
             if (macro_content == NULL) {
                 fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
-                exit(MEMORY_ALLOCATION_FAILURE);
+                set_alloc_failure();
+                return;
             }
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);

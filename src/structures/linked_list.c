@@ -7,6 +7,7 @@
 #include "../../headers/util/string_ops.h"
 #include "../../headers/exit_codes.h"
 #include "stdio.h"
+#include "../../headers/util/general_util.h"
 
 #define VALUE_NOT_FOUND_EXIT_CODE 1
 
@@ -16,13 +17,14 @@
  * Also sets the content_type field to the given type.
  * 
  * @param content_type the type that the list's items' content should be
- * @return a pointer to the new list.
+ * @return a pointer to the new list
  */
 LinkedList *create_list(ContentType content_type) {
     LinkedList *list = malloc(sizeof(LinkedList));
     if (list == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating list");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     list->head = NULL;
     list->content_type = content_type;
@@ -141,7 +143,8 @@ void list_add(LinkedList *list, char *name, Content content) {
     Node *node = malloc(sizeof(Node));
     if (node == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating node\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return;
     }
     node->name = name;
     node->content = content;
