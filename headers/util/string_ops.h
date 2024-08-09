@@ -86,14 +86,6 @@ char first_non_blank(char string[]);
 char last_non_blank(char string[]);
 
 /**
- * Returns a new string (allocated on the heap) that is identical to the given string but has no whitespaces.
- * 
- * @param string the string whose whitespaces should be removed (in the new string)
- * @return a new string (allocated on the heap) that is identical to the given string but has no whitespaces
- */
-char *remove_all_blanks(char string[]);
-
-/**
  * Returns the number of whitespace characters in a given string.
  * 
  * @param string string to be checked

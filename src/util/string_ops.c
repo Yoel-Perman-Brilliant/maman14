@@ -232,43 +232,6 @@ int number_of_blanks(char string[]) {
 }
 
 /**
- * Returns a string that is the same as a given string, without any blank spaces.
- * Does so by creating a new character  array and copying to it each character from the 
- * given string that is not a whitespace.
- * 
- * @param string a string whose spaces should be removed
- * @return the given string without blank spaces
- */
-char *remove_all_blanks(char string[]) {
-    /* size of the input string */
-    int input_length;
-    /* size of the input string without any blank spaces */
-    int output_length;
-    char *output;
-    /* index of the current character in the input string */
-    int output_index;
-    /* index of the current character in the output string */
-    int input_index;
-    input_length = strlen(string);
-    output_length = input_length - number_of_blanks(string);
-    output = (char *) malloc(output_length + 1);
-    if (output == NULL) {
-        printf("Memory Error: Memory allocation failure when creating string without whitespaces\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
-    }
-    /* goes over every character in the input string, and if it is not a blank space, enters it into the anext available
-     * slot in the output string */
-    output_index = 0;
-    for (input_index = 0; input_index <= input_length; input_index++) {
-        if (!isspace(string[input_index])) {
-            *(output + output_index) = string[input_index];
-            output_index++;
-        }
-    }
-    return output;
-}
-
-/**
  * Checks whether a vien string includes multiple occurrences of a given character while ignoring whitespaces.
  * For example, a call to the function with the string " hello x   x world" will return true, because the only
  * characters between the two occurrences of x are whitespaces.
