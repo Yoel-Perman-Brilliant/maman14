@@ -18,5 +18,5 @@ macr _macr
     
 endmacr
 
-                                                        _macr
+                                                                            _macr
 HELLO: _macr
