@@ -12,10 +12,11 @@
  * Does so by allocating memory for it and for the arrays it includes, creating the symbol table and initializing the
  * instruction and data counters.
  * 
- * @return a pointer to new Requirements
+ * @return a pointer to new Requirements, or NULL if memory for the Requirements structure could not be allocated
  */
 Requirements *create_requirements() {
     Requirements *requirements = malloc(sizeof(Requirements));
+    /* if an allocation failure occurred, updates the handler and returns null */
     if (requirements == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating requirements\n");
         set_alloc_failure();
@@ -24,12 +25,14 @@ Requirements *create_requirements() {
     requirements->macro_table = create_map(MACRO);
     requirements->symbol_table = create_map(SYMBOL);
     requirements->data_array = calloc(MEMORY_SIZE, sizeof(short));
+    /* if an allocation failure occurred, updates the handler */
     if (requirements->data_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating data array\n");
         set_alloc_failure();
     }
     requirements->faulty_instructions = create_set();
     requirements->instruction_array = calloc(MEMORY_SIZE, sizeof(short));
+    /* if an allocation failure occurred, updates the handler */
     if (requirements->instruction_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating instruction array\n");
         set_alloc_failure();

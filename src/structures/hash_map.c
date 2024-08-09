@@ -30,11 +30,12 @@ unsigned map_hash(char *string) {
  * Creates a new, empty hash-map.
  * Does so by allocating the necessary memory in the heap, and creating a new list for every slot.
  * 
- * @return a pointer to the new map.
+ * @return a pointer to the new map, or null if an allocation failure occurred
  */
 HashMap *create_map(ContentType content_type) {
     HashMap *map = malloc(sizeof(HashMap));
     int i;
+    /* if an allocation failure has occurred, updates the handler and returns NULL */
     if (map == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating map\n");
         set_alloc_failure();

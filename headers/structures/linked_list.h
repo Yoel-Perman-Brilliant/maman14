@@ -53,7 +53,7 @@ typedef struct LinkedList {
  * Creates a new, empty linked-list.
  * 
  * @param content_type the type that the list's items' content should be
- * @return a pointer to the new list.
+ * @return a pointer to the new list, or NULL if an allocation failure has occurred
  */
 LinkedList *create_list(ContentType content_type);
 

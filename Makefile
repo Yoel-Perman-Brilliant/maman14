@@ -2,18 +2,22 @@ FLAGS = -Wall -ansi -pedantic -g
 ALL_OBJECT_FILES = object/hash_map.o object/linked_list.o object/string_ops.o object/assembler.o object/fields.o \
 		 		   object/pre_assembler.o object/general_util.o object/requirements.o object/files.o \
 		 		   object/conversions.o object/first_pass.o object/operators.o object/set.o object/second_pass.o \
-		 		   object/output_creator.o
+		 		   object/output_creator.o object/alloc_failure_handler.o
 
 assembler: $(ALL_OBJECT_FILES)
 	gcc $(FLAGS) $(ALL_OBJECT_FILES) -o assembler
 
+object/alloc_failure_handler.o: src/alloc_failure_handler.c headers/alloc_failure_handler.h
+	gcc -c $(FLAGS) src/alloc_failure_handler.c -o object/alloc_failure_handler.o
+
 object/pre_assembler.o: src/pre_assembler.c headers/pre_assembler.h headers/structures/hash_map.h \
 						headers/util/string_ops.h headers/util/general_util.h headers/files.h headers/exit_codes.h \
-						headers/structures/linked_list.h headers/requirements.h
+						headers/structures/linked_list.h headers/requirements.h headers/alloc_failure_handler.h
 	gcc -c $(FLAGS)  src/pre_assembler.c -o object/pre_assembler.o
 
 object/assembler.o: src/assembler.c headers/files.h headers/pre_assembler.h headers/requirements.h \
-					headers/first_pass.h headers/second_pass.h headers/output_creator.h headers/exit_codes.h
+					headers/first_pass.h headers/second_pass.h headers/output_creator.h headers/exit_codes.h \
+					headers/alloc_failure_handler.h
 	gcc -c $(FLAGS) src/assembler.c -o object/assembler.o
 
 object/operators.o: src/operators.c headers/operators.h headers/util/string_ops.h headers/fields.h
@@ -43,24 +47,26 @@ object/files.o: src/files.c headers/files.h headers/exit_codes.h headers/require
 	gcc -c $(FlAGS) src/files.c -o object/files.o
 
 object/requirements.o: src/requirements.c headers/requirements.h headers/exit_codes.h headers/structures/set.h \
-					   headers/structures/hash_map.h headers/structures/linked_list.h
+					   headers/structures/hash_map.h headers/structures/linked_list.h headers/alloc_failure_handler.h
 	gcc -c $(FlAGS) src/requirements.c -o object/requirements.o
 
 object/fields.o: src/fields.c headers/fields.h headers/util/string_ops.h headers/operators.h
 	gcc -c $(FLAGS) src/fields.c -o object/fields.o
 
-object/set.o: src/structures/set.c headers/structures/set.h headers/exit_codes.h src/structures/linked_list.c
+object/set.o: src/structures/set.c headers/structures/set.h headers/exit_codes.h headers/structures/linked_list.h \
+			  headers/alloc_failure_handler.h
 	gcc -c $(FLAGS) src/structures/set.c -o object/set.o
 
 object/hash_map.o: src/structures/hash_map.c headers/structures/hash_map.h headers/exit_codes.h \
- 					 src/structures/linked_list.c headers/symbols.h
+ 					 headers/structures/linked_list.h headers/symbols.h headers/alloc_failure_handler.h
 	gcc -c $(FLAGS) src/structures/hash_map.c -o object/hash_map.o
 	
 object/linked_list.o: src/structures/linked_list.c headers/structures/linked_list.h headers/util/string_ops.h \
-					  headers/exit_codes.h headers/symbols.h
+					  headers/exit_codes.h headers/symbols.h headers/alloc_failure_handler.h
 	gcc -c $(FLAGS) src/structures/linked_list.c -o object/linked_list.o
 
-object/string_ops.o: src/util/string_ops.c headers/util/string_ops.h headers/exit_codes.h
+object/string_ops.o: src/util/string_ops.c headers/util/string_ops.h headers/exit_codes.h \
+					 headers/alloc_failure_handler.h
 	gcc -c $(FLAGS) src/util/string_ops.c -o object/string_ops.o
 
 object/general_util.o: src/util/general_util.c headers/util/general_util.h

@@ -24,7 +24,7 @@ typedef struct  {
 /**
  * Creates a new, empty set.
  * 
- * @return a pointer to the new set
+ * @return a pointer to the new set, or null if an allocation failure has occurred
  */
 Set *create_set();
 

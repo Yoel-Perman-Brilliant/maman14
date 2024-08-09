@@ -135,6 +135,7 @@ void find_label(char **line, char **label_name) {
     char *rest;
     /* the first field of the line */
     char *first_field = find_token(*line, BLANKS, &rest);
+    /* if an allocation failure has occurred, sets the label name to a default NULL and stops */
     if (first_field == NULL) {
         *label_name = NULL;
         return;

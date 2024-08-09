@@ -30,7 +30,7 @@ typedef struct {
   * Creates a new, empty hash-map.
   * 
   * @param content_type the type of the map's values
-  * @return a pointer to the new map
+  * @return a pointer to the new map, or NULL if an allocation failure has occurred
   */
 HashMap *create_map(ContentType content_type);
 

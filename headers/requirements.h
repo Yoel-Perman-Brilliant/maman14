@@ -66,7 +66,7 @@ typedef struct {
 /**
  * Creates a new instance of Requirements to be used for the assembly of one file.
  * 
- * @return a pointer to new Requirements
+ * @return a pointer to new Requirements, or NULL if memory for the Requirements structure could not be allocated
  */
 Requirements *create_requirements();
 

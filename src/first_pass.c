@@ -17,7 +17,6 @@
 #include "../headers/conversions.h"
 #include "../headers/util/string_ops.h"
 #include "../headers/util/general_util.h"
-#include "../headers/alloc_failure_handler.h"
 
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/
@@ -85,7 +84,11 @@ int first_pass(char file_name[], Requirements *requirements) {
     char line_read[MAX_LINE_LENGTH + 1];
     /* the line's label */
     char *label;
-    /* makes sure the parsed file is not null, if it does then an error is found */
+    /* makes sure the parsed file name is not null (no allocation failure occurred) */
+    if (parsed_file_name == NULL) {
+        return 1;
+    }
+    /* makes sure the parsed file is not null, if it does then the file can't be encoded */
     if (!parsed_file) {
         free(parsed_file_name);
         return 1;
@@ -108,7 +111,10 @@ int first_pass(char file_name[], Requirements *requirements) {
         /* finds the label and changes line to be the part after the label */
         find_label(&line, &label);
         /* makes sure that the line is not a blank line with a label */
-        if (label != NULL && blank_after_label(line, line_count, parsed_file_name, &error_found)) continue;
+        if (label != NULL && blank_after_label(line, line_count, parsed_file_name, &error_found)) {
+            free(label);
+            continue;
+        }
         /* checks if the line is a directive and handles it if it is */
         if (check_and_handle_directive(line, label, line_count, parsed_file_name, &error_found,
                                        requirements)) {
@@ -173,12 +179,14 @@ static void insert_data_numbers(char *rest, char *parsed_file_name, int line_cou
     }
     /* finds and times the argument */
     arg = find_token(rest, DATA_SEPARATOR, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (arg == NULL) {
         *error_found = 1;
         return;
     }
     trimmed_arg = trim(arg);
     free(arg);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (trimmed_arg == NULL) {
         *error_found = 1;
         return;
@@ -220,12 +228,14 @@ static void insert_data_numbers(char *rest, char *parsed_file_name, int line_cou
         free(trimmed_arg);
         /* the next argument */
         arg = find_token(rest, DATA_SEPARATOR, &rest);
+        /* if a memory allocation failure has occurred, updates the error flag and stops */
         if (arg == NULL) {
             *error_found = 1;
             return;
         }
         trimmed_arg = trim(arg);
         free(arg);
+        /* if a memory allocation failure has occurred, updates the error flag and stops */
         if (trimmed_arg == NULL) {
             *error_found = 1;
             return;
@@ -281,6 +291,7 @@ static void insert_string(char *rest, int line_count, char *parsed_file_name, in
     }
     /* trims the argument and finds its length */
     trimmed_rest = trim(rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (trimmed_rest == NULL) {
         *error_found = 1;
         return;
@@ -291,6 +302,7 @@ static void insert_string(char *rest, int line_count, char *parsed_file_name, in
         printf("Input Error: Argument for .string directive in line %d of file %s is not wrapped by two "
                "sets of quotation marks\n", line_count, parsed_file_name);
         *error_found = 1;
+        free(trimmed_rest);
         return;
     }
     /* foe every character in the argument besides the first and last (the quotation marks), inserts their
@@ -394,6 +406,8 @@ static int check_and_handle_directive(char *line, char *label_name, int line_cou
     char *rest;
     /* the first field of the line (which is passed without the label) */
     char *directive = find_token(line, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, frees variables and stops. returns 1 in order to not proceed to
+     * the instruction check */
     if (directive == NULL) {
         free(directive);
         free(label_name);
@@ -443,6 +457,7 @@ static int check_and_handle_directive(char *line, char *label_name, int line_cou
                directive, line_count, parsed_file_name);
         *error_found = 1;
         free(directive);
+        free(label_name);
         return 1;
     }
 }
@@ -472,6 +487,7 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
     }
     /* the argument is the field directly after .extern */
     symbol = find_token(rest, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag, frees label_name and stops */
     if (symbol == NULL) {
         *error_found = 1;
         free(label_name);
@@ -483,6 +499,7 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
                line_count, parsed_file_name);
         *error_found = 1;
         free(label_name);
+        free(symbol);
         return;
     }
     /* makes sure the part of the line after the argument is empty */
@@ -491,6 +508,7 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
                line_count, parsed_file_name);
         *error_found = 1;
         free(label_name);
+        free(symbol);
         return;
     }
     /* inserts the symbol to the symbol table */
@@ -531,6 +549,7 @@ static void first_pass_handle_instruction(char *line, char *label_name, int line
         insert_symbol(label_name, REGULAR, CODE, requirements,
                       error_found, line_count, parsed_file_name);
     }
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (operator_name == NULL) {
         *error_found = 1;
         return;
@@ -615,6 +634,7 @@ static void first_pass_handle_two_operand_instruction(Operator op, char *rest, i
     /* the source operand is the first field of the part after the source operand when separating by commas,
      * may include whitespaces */
     destination_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (source_operand == NULL || destination_operand == NULL) {
         *error_found = 1;
         return;
@@ -623,6 +643,7 @@ static void first_pass_handle_two_operand_instruction(Operator op, char *rest, i
     trimmed_source_operand = trim(source_operand);
     trimmed_destination_operand = trim(destination_operand);
     free_all(2, source_operand, destination_operand);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (trimmed_source_operand == NULL || trimmed_destination_operand == NULL) {
         *error_found = 1;
         return;
@@ -726,6 +747,7 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
     AddressMethod destination_address_method;
     /* the instruction's first word in the memory */
     short unsigned first_word;
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (destination_operand == NULL) {
         *error_found = 1;
         return;
@@ -736,6 +758,7 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free(destination_operand);
         return;
     }
     /* if the operand starts or ends with a comma, it is illegal */
@@ -745,6 +768,7 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free(destination_operand);
         return;
     }
     /* if the operand includes a comma, then it is made of two operands */
@@ -753,6 +777,7 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
                op.name, line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free(destination_operand);
         return;
     }
     /* makes sure the part of the line after the operand is empty */
@@ -761,6 +786,7 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free(destination_operand);
         return;
     }
     destination_address_method = get_address_method(destination_operand);
@@ -770,6 +796,7 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
                line_count, parsed_file_name);
         set_add(requirements->faulty_instructions, line_count);
         *error_found = 1;
+        free(destination_operand);
         return;
     }
     free(destination_operand);

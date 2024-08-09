@@ -64,7 +64,11 @@ int second_pass(char file_name[], Requirements *requirements) {
     char line_read[MAX_LINE_LENGTH + 1];
     /* the line's label */
     char *label;
-    /* makes sure the parsed file is not null, if it does then an error is found */
+    /* makes sure the parsed file name is not null (no allocation failure occurred) */
+    if (parsed_file_name == NULL) {
+        return 1;
+    }
+    /* makes sure the parsed file is not null, if it does then the file can't be encoded */
     if (!parsed_file) {
         free(parsed_file_name);
         return 1;
@@ -121,6 +125,7 @@ static void check_and_handle_entry(char *line, char *label_name, int line_count,
     /* the part of the line after .entry */
     char *rest;
     char *directive = find_token(line, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag, frees the label name and stops */
     if (directive == NULL) {
         *error_found = 1;
         free(label_name);
@@ -139,9 +144,10 @@ static void check_and_handle_entry(char *line, char *label_name, int line_count,
         }
         /* the argument is the field directly after .entry */
         argument = find_token(rest, BLANKS, &rest);
+        /* if a memory allocation failure has occurred, updates the error flag, frees variables and stops */
         if (argument == NULL) {
             *error_found = 1;
-            free_all(directive, label_name);
+            free_all(2, directive, label_name);
             return;
         }
         /* makes sure the argument field is not empty */
@@ -209,6 +215,7 @@ static void second_pass_handle_instruction(char *line, int line_count, char *par
     /* if the line was found to be faulty in the first pass, the operators can't be encoded */
     if (set_contains(requirements->faulty_instructions, line_count)) return;
     operator_name = find_token(line, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (operator_name == NULL) {
         *error_found = 1;
         return;
@@ -264,6 +271,7 @@ static void second_pass_handle_two_operand_instruction(char *rest, int line_coun
     
     source_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
     destination_operand = find_token(rest, OPERAND_SEPARATOR, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (source_operand == NULL || destination_operand == NULL) {
         *error_found = 1;
         return;
@@ -271,6 +279,7 @@ static void second_pass_handle_two_operand_instruction(char *rest, int line_coun
     trimmed_source_operand = trim(source_operand);
     trimmed_destination_operand = trim(destination_operand);
     free_all(2, source_operand, destination_operand);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
     if (trimmed_source_operand == NULL || trimmed_destination_operand == NULL) {
         *error_found = 1;
         return;
@@ -334,14 +343,18 @@ static void second_pass_handle_one_operand_instruction(char *rest, int line_coun
                                                 Requirements *requirements) {
     /* the only field after the operator is the destination operand */
     char *destination_operand = find_token(rest, BLANKS, &rest);
-    if (destination_operand ==  NULL) {
-        
-        return;
-    }
     /* the word in the memory representing the destination operand */
     short unsigned destination_word;
+    
     /* the destination operand's address method */
-    AddressMethod destination_method = get_address_method(destination_operand);
+    AddressMethod destination_method;
+    
+    if (destination_operand ==  NULL) {
+        *error_found = 1;
+        return;
+    }
+
+    destination_method = get_address_method(destination_operand);
     
     /* makes sure that the operand is legal, with respect to its address method */
     if (!validate_operand(destination_operand, destination_method, line_count, parsed_file_name, error_found,
