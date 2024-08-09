@@ -198,8 +198,8 @@ static void insert_data_numbers(char *rest, char *parsed_file_name, int line_cou
         value = atoi(trimmed_arg);
         /* verifies that the argument's integer value is within the limits of the machine */
         if (value > MAX_WORD_SIZE || value < MIN_WORD_SIZE) {
-            printf("Input Error: argument \"%d\" of .data directive in line %d of file %s is not "
-                   "within the machine's memory cell bounds\n", value, line_count, parsed_file_name);
+            printf("Input Error: argument \"%s\" of .data directive in line %d of file %s is not "
+                   "within the machine's memory cell bounds\n", trimmed_arg, line_count, parsed_file_name);
             *error_found = 1;
             free(trimmed_arg);
             return;
