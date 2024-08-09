@@ -36,7 +36,7 @@ HashMap *create_map(ContentType content_type) {
     HashMap *map = malloc(sizeof(HashMap));
     int i;
     if (map == NULL) {
-        fprintf(stderr, "Memory Error: Memory allocation failure when creating map");
+        fprintf(stderr, "Memory Error: Memory allocation failure when creating map\n");
         exit(MEMORY_ALLOCATION_FAILURE);
     }
     for (i = 0; i < MAP_HASH_TABLE_SIZE; i++) {
