@@ -5,9 +5,8 @@
 #include "../../headers/structures/linked_list.h"
 #include "stdlib.h"
 #include "../../headers/util/string_ops.h"
-#include "../../headers/exit_codes.h"
 #include "stdio.h"
-#include "../../headers/util/general_util.h"
+#include "../../headers/alloc_failure_handler.h"
 
 #define VALUE_NOT_FOUND_EXIT_CODE 1
 

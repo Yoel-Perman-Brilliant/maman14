@@ -5,8 +5,7 @@
 #include "../../headers/structures/hash_map.h"
 #include "stdlib.h"
 #include "stdio.h"
-#include "../../headers/exit_codes.h"
-#include "../../headers/util/general_util.h"
+#include "../../headers/alloc_failure_handler.h"
 
 #define HASH_MULTIPLIER 31
 

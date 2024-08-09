@@ -6,8 +6,6 @@
 #include "stdlib.h"
 #include "stdio.h"
 
-static unsigned allocation_failure : 1;
-
 /**
  * Reads a line from a file into a given character array as long as it is at most 80 characters long.
  * Does so by reading characters one by one from the file and inserting them into a given array. Stops when encountering
@@ -55,12 +53,4 @@ void free_all(int num, ...) {
         free(p);
     }
     va_end(pointers);
-}
-
-void set_alloc_failure() {
-    allocation_failure = 1;
-}
-
-unsigned is_alloc_failure() {
-    return allocation_failure;
 }

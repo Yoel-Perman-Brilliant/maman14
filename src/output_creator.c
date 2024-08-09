@@ -6,7 +6,7 @@
 #include "../headers/requirements.h"
 #include "../headers/files.h"
 #include "../headers/output_creator.h"
-#include "../headers/util/general_util.h"
+#include "../headers/alloc_failure_handler.h"
 
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/

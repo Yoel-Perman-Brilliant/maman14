@@ -5,7 +5,7 @@
 #include "../headers/second_pass.h"
 #include "../headers/output_creator.h"
 #include "../headers/exit_codes.h"
-#include "../headers/util/general_util.h"
+#include "../headers/alloc_failure_handler.h"
 #include "stdlib.h"
  
 static int assemble(char file_name[]) {

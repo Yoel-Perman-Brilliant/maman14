@@ -2,10 +2,9 @@
  * Includes functions that allow for interacting with sets.
  */
 #include "../../headers/structures/set.h"
-#include "../../headers/exit_codes.h"
 #include "stdlib.h"
 #include "stdio.h"
-#include "../../headers/util/general_util.h"
+#include "../../headers/alloc_failure_handler.h"
 
 
 /**

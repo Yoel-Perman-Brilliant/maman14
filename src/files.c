@@ -3,7 +3,7 @@
  */
  
 #include "../headers/files.h"
-#include "../headers/exit_codes.h"
+#include "../headers/alloc_failure_handler.h"
 #include "../headers/util/general_util.h"
 #include "stdio.h"
 #include "string.h"

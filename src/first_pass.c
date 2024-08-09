@@ -17,6 +17,7 @@
 #include "../headers/conversions.h"
 #include "../headers/util/string_ops.h"
 #include "../headers/util/general_util.h"
+#include "../headers/alloc_failure_handler.h"
 
 /** PROTOTYPES FOR FUNCTIONS DEFINED LATER IN THE FILE **/
 /** FOR DOCUMENTATION, SEE DEFINITIONS **/

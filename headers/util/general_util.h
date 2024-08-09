@@ -31,8 +31,4 @@ int read_line(FILE *file, char *file_name, int line_number, char s[]);
  */
 void free_all(int num, ...);
 
-void set_alloc_failure();
-
-unsigned is_alloc_failure();
-
 #endif

@@ -3,10 +3,9 @@
  */
 
 #include "../headers/requirements.h"
-#include "../headers/exit_codes.h"
 #include "stdlib.h"
 #include "stdio.h"
-#include "../headers/util/general_util.h"
+#include "../headers/alloc_failure_handler.h"
 
 /**
  * Creates a new instance of Requirements to be used for the assembly of one file.

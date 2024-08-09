@@ -1,10 +1,9 @@
 #include "../../headers/util/string_ops.h"
-#include "../../headers/exit_codes.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "ctype.h"
-#include "../../headers/util/general_util.h"
+#include "../../headers/alloc_failure_handler.h"
 
 #define BLANKS " \t"
 
