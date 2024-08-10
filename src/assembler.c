@@ -53,7 +53,10 @@ static int assemble(char file_name[]) {
     
     /* creates the file's requirements, exits if a memory allocation error has occurred */
     Requirements *requirements = create_requirements();
-    if (is_alloc_failure()) exit(MEMORY_ALLOCATION_FAILURE);
+    if (is_alloc_failure()) {
+        free_requirements(requirements);
+        exit(MEMORY_ALLOCATION_FAILURE);
+    }
     
     /* removes any existing output files for the given file */
     remove_output_files(file_name);

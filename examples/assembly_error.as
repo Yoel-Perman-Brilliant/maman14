@@ -22,9 +22,6 @@ NUMBERS: .data 4, 5, x
 .string "hhh
 .string "
 
-; This is considered to be a string whose content is: hello" "sd
-.string "hello" "sd"
-
 .extern NUMBERS
 .entry SYMBOL
 WHATSUP: .extern

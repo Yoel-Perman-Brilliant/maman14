@@ -26,7 +26,7 @@
  * The unsigned value of a word in the memory representing an integer in the 2's complement method.
  * Returns it as an unsigned short whose leftmost bit is 0.
  */
-#define DATA_NUM_TO_WORD(x) (((unsigned short)((x) > 0 ? (x) : (pow(2, WORD_SIZE_BITS)) - (-(x)))))
+#define DATA_NUM_TO_WORD(x) (((unsigned short)((x) >= 0 ? (x) : (pow(2, WORD_SIZE_BITS)) - (-(x)))))
 
 /**
  * The size in bits of a number given in the immediate address method.
