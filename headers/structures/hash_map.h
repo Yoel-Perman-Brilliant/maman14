@@ -111,6 +111,4 @@ void map_add_to_all_that_apply(HashMap *map, int to_add, int (*condition)(Symbol
  */
 void map_add_matching_to_list(HashMap *map, LinkedList *list, int (*condition)(SymbolContent symbol));
 
-void map_print_symbols(HashMap *map);
-
 #endif
