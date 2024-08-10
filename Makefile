@@ -74,4 +74,4 @@ object/general_util.o: src/util/general_util.c headers/util/general_util.h
 
 
 clean:
-	rm object/*
+	rm object/*.o
