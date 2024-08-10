@@ -1,6 +1,6 @@
 /**
  * This is the main file for an assembler program, which converts a text-base assembly program given in a .as file to
- * machine code which resides in a newly-created .ob file, as well as addition files that are explained later.
+ * machine code which resides in a newly-created .ob file, as well as additional files that are explained later.
  * 
  * The first stage is pre-assembly, which creates a parsed .am file out of the given .as file. The pre-assembly process
  * is responsible for parsing every macro in the .as file, such that the .am file is macro-less.
