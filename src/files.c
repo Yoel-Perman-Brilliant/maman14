@@ -3,7 +3,7 @@
  */
  
 #include "../headers/files.h"
-#include "../headers/exit_codes.h"
+#include "../headers/alloc_failure_handler.h"
 #include "../headers/util/general_util.h"
 #include "stdio.h"
 #include "string.h"
@@ -23,13 +23,16 @@
  * 
  * @param file_name the extensionless file name
  * @param extension the extension (including the period)
- * @return a string (allocated on the heap) which represents the file name with the extension
+ * @return a string (allocated on the heap) which represents the file name with the extension, or NULL
+ *         if an allocation failure has occurred
  */
 static char *get_file_name_with_extension(char file_name[], char extension[]) {
     char *name_with_extension = calloc(strlen(file_name) + strlen(extension) + 1, 1);
+    /* if an allocation failure has occurred, updates the handler and returns NULL */
     if (name_with_extension == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when copying file name\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     /* copies the extensionless file name and the extension to the new string by concatenating them */
     strcat(name_with_extension, file_name);
@@ -67,6 +70,7 @@ char *get_parsed_file_name(char file_name[]) {
 FILE *get_input_file(char file_name[]) {
     FILE *input_file;
     char *input_file_name = get_input_file_name(file_name);
+    if (input_file_name == NULL) return NULL;
     input_file = fopen(input_file_name, "r");
     if (input_file == NULL) {
         printf("Error: Can't open file %s\n", input_file_name);
@@ -89,6 +93,7 @@ FILE *get_input_file(char file_name[]) {
 FILE *get_parsed_file_append(char file_name[]) {
     FILE *parsed_file;
     char *parsed_file_name = get_parsed_file_name(file_name);
+    if (parsed_file_name == NULL) return NULL;
     /* since no file with the name exists, creates a new file */
     parsed_file = fopen(parsed_file_name, "a");
     if (parsed_file == NULL) {
@@ -110,6 +115,7 @@ FILE *get_parsed_file_append(char file_name[]) {
 FILE *get_parsed_file_read(char file_name[]) {
     FILE *parsed_file;
     char *parsed_file_name = get_parsed_file_name(file_name);
+    if (parsed_file_name == NULL) return NULL;
     parsed_file = fopen(parsed_file_name, "r");
     if (parsed_file == NULL) {
         printf("Error: Can't open file %s\n", parsed_file_name);
@@ -131,6 +137,7 @@ FILE *get_parsed_file_read(char file_name[]) {
 FILE *get_object_file(char file_name[]) {
     FILE *object_file;
     char *object_file_name = get_file_name_with_extension(file_name, OBJECT_EXTENSION);
+    if (object_file_name == NULL) return NULL;
     /* since no file with the name exists, creates a new file */
     object_file = fopen(object_file_name, "a");
     if (object_file == NULL) {
@@ -153,6 +160,7 @@ FILE *get_object_file(char file_name[]) {
 FILE *get_extern_file(char file_name[]) {
     FILE *extern_file;
     char *extern_file_name = get_file_name_with_extension(file_name, EXTERN_EXTENSION);
+    if (extern_file_name == NULL) return NULL;
     /* since no file with the name exists, creates a new file */
     extern_file = fopen(extern_file_name, "a");
     if (extern_file == NULL) {
@@ -175,6 +183,7 @@ FILE *get_extern_file(char file_name[]) {
 FILE *get_entry_file(char file_name[]) {
     FILE *entry_file;
     char *entry_file_name = get_file_name_with_extension(file_name, ENTRY_EXTENSION);
+    if (entry_file_name == NULL) return NULL;
     /* since no file with the name exists, creates a new file */
     entry_file = fopen(entry_file_name, "a");
     if (entry_file == NULL) {

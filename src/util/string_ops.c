@@ -1,9 +1,9 @@
 #include "../../headers/util/string_ops.h"
-#include "../../headers/exit_codes.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "ctype.h"
+#include "../../headers/alloc_failure_handler.h"
 
 #define BLANKS " \t"
 
@@ -56,7 +56,7 @@ int exists(char *string, char c) {
  *                   the token (as a pointer to the character in the original string, not as a new string)
  * @return a new string with the first maximum substring of a given string that doesn't include any of the
  *         given separators - essentially the first token when splitting by the separators, an empty string if no
- *         such substring exists, or null if string is null
+ *         such substring exists, or null if string is null or an allocation failure has occurred
  */
 char *find_token(char *string, char *separators, char **rest) {
     /* the token that should be returned */
@@ -68,9 +68,11 @@ char *find_token(char *string, char *separators, char **rest) {
     /* if the string is empty, returns an empty token */
     if (*string == '\0') {
         output = malloc(1);
+        /* if an allocation failure has occurred, updates the handler and returns NULL */
         if (output == NULL) {
             printf("Memory Error: Memory allocation failure when creating string token\n");
-            exit(MEMORY_ALLOCATION_FAILURE);
+            set_alloc_failure();
+            return NULL;
         }
         output[0] = '\0';
         return output;
@@ -81,9 +83,11 @@ char *find_token(char *string, char *separators, char **rest) {
         /* if the pointer's value is 0, then the string only includes separators and an empty token is returned */
         if (*string == '\0') {
             output = malloc(1);
+            /* if an allocation failure has occurred, updates the handler and returns NULL */
             if (output == NULL) {
                 printf("Memory Error: Memory allocation failure when creating string token\n");
-                exit(MEMORY_ALLOCATION_FAILURE);
+                set_alloc_failure();
+                return NULL;
             }
             output[0] = '\0';
             return output;
@@ -97,9 +101,11 @@ char *find_token(char *string, char *separators, char **rest) {
     }
     /* allocates memory for the token based on the characters counted */
     output = (char *) malloc(output_length + 1);
+    /* if an allocation failure has occurred, updates the handler and returns NULL */
     if (output == NULL) {
         printf("Memory Error: Memory allocation failure when creating string token\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     /* string now points to the character after the token, so string - output_length points to the token's first
      * character, which means the first output_length characters of this pointer represent the token, and thus
@@ -132,7 +138,7 @@ char is_line_blank(char *string) {
 * those blank spaces, and then placing the closing '\0' after the first non-blank character from the end.
 *
 * @param string a string which should be trimmed
-* @return a new trimmed version of the original string
+* @return a new trimmed version of the original string, or NULL if an allocation failure has occurred
 */
 char *trim(char string[]) {
     char *output;
@@ -142,9 +148,11 @@ char *trim(char string[]) {
     int i;
     /* the output string, length is at most the length of the input without the blank spaces at the start */
     output = (char *) malloc(strlen(string) - head_length + 1);
+    /* if an allocation failure has occurred, updates the handler and returns NULL */
     if (output == NULL) {
         printf("Memory Error: Memory allocation failure when creating trimmed string\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     strcpy(output, string + head_length);
     /* finds the first character (from the end) which isn't a blank space, and sets it to be the last character */

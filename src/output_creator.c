@@ -41,15 +41,22 @@ int create_files(char file_name[], Requirements *requirements) {
     LinkedList *extern_list = create_list(SYMBOL);
     /* list of entry symbols */
     LinkedList *entry_list = create_list(SYMBOL);
-    /* writes the object file and updates error_found */
-    error_found |= write_object_file(file_name, requirements);
+    
+    /* if a memory allocation failure has occurred, stops and returns 1 to signify error */
+    if (extern_list == NULL || entry_list == NULL) return 1;
+    
     /* fills the symbol lists based on the symbol table */
     map_add_matching_to_list(requirements->symbol_table, extern_list, is_extern);
     map_add_matching_to_list(requirements->symbol_table, entry_list, is_entry);
+    
+    /* writes the object file and updates error_found */
+    error_found |= write_object_file(file_name, requirements);
+    
     /* creates a .ext file if an external symbol is used */
     if (requirements->extern_found) error_found |= write_extern_file(file_name, extern_list);
     /* creates a .ent file if an entry symbol is defined */
     if (!list_empty(entry_list)) error_found |= write_entry_file(file_name, entry_list);
+    
     /* shallow-frees the lists since their contents are freed later */
     shallow_free_list(extern_list);
     shallow_free_list(entry_list);

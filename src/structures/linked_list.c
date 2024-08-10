@@ -5,8 +5,8 @@
 #include "../../headers/structures/linked_list.h"
 #include "stdlib.h"
 #include "../../headers/util/string_ops.h"
-#include "../../headers/exit_codes.h"
 #include "stdio.h"
+#include "../../headers/alloc_failure_handler.h"
 
 #define VALUE_NOT_FOUND_EXIT_CODE 1
 
@@ -16,13 +16,15 @@
  * Also sets the content_type field to the given type.
  * 
  * @param content_type the type that the list's items' content should be
- * @return a pointer to the new list.
+ * @return a pointer to the new list, or NULL if an allocation failure occurred
  */
 LinkedList *create_list(ContentType content_type) {
     LinkedList *list = malloc(sizeof(LinkedList));
+    /* if an allocation failure has occurred, updates the handler and returns NULL */
     if (list == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating list");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     list->head = NULL;
     list->content_type = content_type;
@@ -139,9 +141,11 @@ SymbolContent *list_get_symbol(LinkedList *list, char *name) {
  */
 void list_add(LinkedList *list, char *name, Content content) {
     Node *node = malloc(sizeof(Node));
+    /* if an allocation failure has occurred, updates the handler and does nothing */
     if (node == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating node\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return;
     }
     node->name = name;
     node->content = content;

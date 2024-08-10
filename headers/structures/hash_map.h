@@ -30,7 +30,7 @@ typedef struct {
   * Creates a new, empty hash-map.
   * 
   * @param content_type the type of the map's values
-  * @return a pointer to the new map
+  * @return a pointer to the new map, or NULL if an allocation failure has occurred
   */
 HashMap *create_map(ContentType content_type);
 
@@ -110,7 +110,5 @@ void map_add_to_all_that_apply(HashMap *map, int to_add, int (*condition)(Symbol
  *                  otherwise
  */
 void map_add_matching_to_list(HashMap *map, LinkedList *list, int (*condition)(SymbolContent symbol));
-
-void map_print_symbols(HashMap *map);
 
 #endif

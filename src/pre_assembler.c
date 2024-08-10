@@ -25,7 +25,7 @@
 #include "../headers/util/string_ops.h"
 #include "../headers/util/general_util.h"
 #include "../headers/files.h"
-#include "../headers/exit_codes.h"
+#include "../headers/alloc_failure_handler.h"
 
 #define BLANKS " \t"
 
@@ -64,6 +64,11 @@ static int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *
     char *rest;
     /* the first field of the line (excluding a potential label), which is checked to be a macro usage */
     char *first_field = find_token(line, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
+    if (first_field == NULL) {
+        *error_found = 1;
+        return 0;
+    }
     /* checks if the first field is a known macro, if it isn't, returns 0, otherwise the first field is 
      * known to be a macro usage */
     if (!map_contains(macro_table, first_field)) {
@@ -75,6 +80,7 @@ static int check_and_handle_macro_usage(HashMap *macro_table, char *line, char *
         printf("Input Error: Label used before macro usage in line %d of file %s\n", line_count, input_file_name);
         *error_found = 1;
     }
+    free(label);
     /* makes sure the macro usage is the only field in the line */
     if (!is_line_blank(rest)) {
         printf("Input Error: Extra characters after macro usage in line %d of file %s\n",
@@ -117,6 +123,13 @@ static int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, ch
     char *rest;
     find_label(&line, &label);
     first_field = find_token(line, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops. returns 1 in order to stop looking
+     * for the end of the macro since it might never be found */
+    if (first_field == NULL) {
+        free(label);
+        *error_found = 1;
+        return 1;
+    }
     /* checks if the macro end keyword has been found */
     if (!equal(first_field, MACRO_END)) {
         free(first_field);
@@ -138,6 +151,7 @@ static int check_and_handle_macro_end(HashMap *macro_table, char *macro_name, ch
     /* adds the macro whose definition just ended to the macro table */
     map_add_macro(macro_table, macro_name, macro_content);
     free(first_field);
+    free(label);
     return 1;
 }
     
@@ -162,15 +176,16 @@ static void handle_macro_definition(HashMap *macro_table, char *macro_name, char
     char line[MAX_LINE_LENGTH + 1];
     /* the macro's content */
     MacroContent macro_content = (MacroContent) calloc(1, 1);
+    /* if an allocation failure has occurred, updates the handler and stops trying to read the macro */
     if (macro_content == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return;
     }
 
     /* reads the lines from the input one by one until a macro end is found */
     (*line_count)++;
     if (read_line(input_file, input_file_name, *line_count, line)) *error_found = 1;
-    /*printf("line %d: %s\n", *line_count, line);*/
     while (1) {
         /* if a macro end is found, inserts it to the macro table and quits reading the definition */
         if (check_and_handle_macro_end(macro_table, macro_name, line, error_found, *line_count,
@@ -180,11 +195,16 @@ static void handle_macro_definition(HashMap *macro_table, char *macro_name, char
         /* if a macro end is not found, updates the macro's content */
         else {
             /* reallocates the macro content to a new string that has enough spaces for the next line */
-            macro_content = (MacroContent)realloc(macro_content, strlen(macro_content) + strlen(line) + 2);
-            if (macro_content == NULL) {
+            MacroContent new_macro_content = 
+                    (MacroContent)realloc(macro_content, strlen(macro_content) + strlen(line) + 2);
+            /* if an allocation failure has occurred, updates the handler and stops trying to read the macro */
+            if (new_macro_content == NULL) {
                 fprintf(stderr, "Memory Error: Memory allocation failure when copying macro content\n");
-                exit(MEMORY_ALLOCATION_FAILURE);
+                free(macro_content);
+                set_alloc_failure();
+                return;
             }
+            macro_content = new_macro_content;
             /* adds the next line (with a line break) to the macro's content */
             strcat(macro_content, line);
             strcat(macro_content, "\n");
@@ -220,17 +240,30 @@ static int check_and_handle_macro_definition(HashMap *macro_table, char *line, c
     /* the part of the line after the macro name */
     char *rest;
     first_field = find_token(line, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
+    if (first_field == NULL) {
+        *error_found = 1;
+        return 0;
+    }
     if (!equal(first_field, MACRO_DEFINITION)) {
         free(first_field);
         return 0;
     }
     macro_name = find_token(rest, BLANKS, &rest);
+    /* if a memory allocation failure has occurred, updates the error flag and stops */
+    if (macro_name == NULL) {
+        *error_found = 1;
+        free(first_field);
+        free(label);
+        return 1;
+    }
     /* if a macro definition keyword exists and has a label, reports an error */
     if (label != NULL) {
         printf("Input Error: Label used before macro definition in line %d of file %s\n", *line_count,
                input_file_name);
         *error_found = 1;
     }
+    free(label);
     /* makes sure no macro with the same name has already been defined */
     if (map_contains(macro_table, macro_name)) {
         printf("Input error: Macro defined in line %d in file %s has already been defined\n", *line_count,
@@ -305,6 +338,8 @@ int pre_assemble(char file_name[], Requirements *requirements) {
     /* gets the name of the input file and a pointer to the file, if the file can't be read
      * the pre-assembly process is stopped for the file */
     input_file_name = get_input_file_name(file_name);
+    /* if the input file name is null */
+    if (!input_file_name) return 1;
     input_file = get_input_file(file_name);
     /* if the input file is null */
     if (!input_file) {
@@ -312,9 +347,10 @@ int pre_assemble(char file_name[], Requirements *requirements) {
         return 1;
     }
 
-    /* gets the name of the parsed file and a pointer to the file, the parsed file is null then an error is reported and
+    /* gets the name of the parsed file and a pointer to the file, if either is null then an error is reported and
      * the error_found flag is set to 1 */
     parsed_file_name = get_parsed_file_name(file_name);
+    if (parsed_file_name == NULL) error_found = 1;
     parsed_file = get_parsed_file_append(file_name);
     if (!parsed_file) error_found = 1;
 

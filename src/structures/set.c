@@ -2,22 +2,25 @@
  * Includes functions that allow for interacting with sets.
  */
 #include "../../headers/structures/set.h"
-#include "../../headers/exit_codes.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "../../headers/alloc_failure_handler.h"
+
 
 /**
  * Creates a new, empty set.
  * Does so by allocating the necessary memory in the heap, and creating a new list for every slot.
  * 
- * @return a pointer to the new set
+ * @return a pointer to the new set, or null if an allocation failure has occurred
  */
 Set *create_set() {
     Set *set = (Set *)malloc(sizeof(Set));
     int i;
+    /* if an allocation failure has occurred, updates the handler and returns NULL */
     if (set == NULL) {
         printf("Memory Error: Memory allocation failure when creating set\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
     for (i = 0; i < SET_HASH_TABLE_SIZE; i++) {
         /* sets may only include integers, so it is the type of every list */

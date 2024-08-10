@@ -5,9 +5,7 @@
  */
 
 #include "../headers/conversions.h"
-#include "stdio.h"
 #include "../headers/util/string_ops.h"
-#include "string.h"
 
 #define RIGHTMOST_BIT(x) (x & 1)
 #define OPCODE_SHIFT 11
@@ -153,7 +151,7 @@ short unsigned create_combined_register_word(char *source_reg, char *destination
  */
 short unsigned create_immediate_address_word(short num) {
     /* 12 bits 2's complement */
-    short unsigned num_bits = (unsigned short)(num > 0 ? num : (pow(2, IMMEDIATE_VALUE_SIZE_BITS)) + num)
+    short unsigned num_bits = (unsigned short)(num >= 0 ? num : (pow(2, IMMEDIATE_VALUE_SIZE_BITS)) + num)
             << IMMEDIATE_VALUE_NUM_SHIFT;
     /* the A,R,E is always the same for an immediate value word */
     short unsigned are = binary_string_to_number(IMMEDIATE_VALUE_WORD_ARE_STRING);

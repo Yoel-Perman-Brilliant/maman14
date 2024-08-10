@@ -40,7 +40,7 @@ int exists(char *string, char c);
  *                   the token (as a pointer to the character in the original string, not as a new string)
  * @return a new string with the first maximum substring of a given string that doesn't include any of the
  *         given separators - essentially the first token when splitting by the separators, an empty string if no
- *         such substring exists, or null if string is null
+ *         such substring exists, or null if string is null or an allocation failure has occurred
  */
 char *find_token(char *string, char *separators, char **rest);
 
@@ -56,7 +56,7 @@ char is_line_blank(char *string);
 * Removes any heading and trailing spaces or tabs from a string.
  * 
 * @param string a string which should be trimmed
-* @return a new, trimmed version of the original string
+* @return a new, trimmed version of the original string, or null if an allocation failure has occurred
 */
 char *trim(char string[]);
 
