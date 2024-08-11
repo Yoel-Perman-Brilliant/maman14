@@ -79,7 +79,7 @@ static int assemble(char file_name[]) {
         return 1;
     }
     
-    /* executes the first pass over the macro-less .am file, before this failure is necessarily 0 */
+    /* executes the first pass over the macro-less .am file. before this, failure is necessarily 0 */
     failure = first_pass(file_name, requirements);
 
     /* if a memory allocation error has occurred, exits the program */
@@ -139,7 +139,7 @@ static int assemble(char file_name[]) {
  * @param argv a list of command line arguments (the ./assembler command and the extensionless file names)
  * @return 0 if all files were assembled successfully, 1 if at least one assembly error occurred, 2 if a memory
  *         allocation failure occurred (exits with code 2 if necessary in the assemble function), or 3 if no files
- *         were given.
+ *         were given
  */
 int main(int argc, char **argv) {
     /* whether an assembly error has occurred */
