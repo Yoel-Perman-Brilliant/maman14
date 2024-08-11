@@ -79,7 +79,7 @@ static int assemble(char file_name[]) {
         return 1;
     }
     
-    /* executes the first pass over the macro-less .am file, before this failure is necessarily 0 */
+    /* executes the first pass over the macro-less .am file. before this, failure is necessarily 0 */
     failure = first_pass(file_name, requirements);
 
     /* if a memory allocation error has occurred, exits the program */
