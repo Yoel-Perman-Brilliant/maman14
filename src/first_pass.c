@@ -467,8 +467,7 @@ static int check_and_handle_directive(char *line, char *label_name, int line_cou
  * Analyzes and handles a .extern directive while finding errors.
  * Assumes .extern may only get one parameter.
  * 
- * Does so by inserting the field after .extern to the symbol table if it's legal, and then updating the extern_found
- * value in the requirements to 1 in order to know that a .ext file needs to be created.
+ * Does so by inserting the field after .extern to the symbol table if it's legal.
  * 
  * @param rest             the part of the line after .extern
  * @param label_name       the name of line's label if there is one, or NULL if there isn't
