@@ -10,7 +10,6 @@
 #define MAMAN14_LINKED_LIST_H
 
 #include "../fields.h"
-#include "stdarg.h"
 #include "../symbols.h"
 
 /**
