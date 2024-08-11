@@ -88,7 +88,7 @@ static int write_object_file(char file_name[], Requirements *requirements) {
     }
     /* prints the data and its indexes one by one */
     for (i = 0; i < requirements->dc; i++) {
-        /* the index always takes 4 digits, the instruction is printed in octal and always takes 5 digits */
+        /* the index always takes 4 digits, the data is printed in octal and always takes 5 digits */
         fprintf(file, "%04d %05o\n", i + requirements->ic, requirements->data_array[i]);
     }
     fclose(file);
