@@ -449,6 +449,7 @@ static int check_and_handle_directive(char *line, char *label_name, int line_cou
     /* if it's .entry */
     else if (equal(directive, ENTRY_DIRECTIVE)) {
         free(directive);
+        free(label_name);
         return 1;
     }
     /* any other directive is illegal */
