@@ -201,7 +201,7 @@ static void check_and_handle_entry(char *line, char *label_name, int line_count,
  * a zero-operand instruction, there are no operators to encode.
  * 
  * @param line             the line being read (excluding the label, if there is one)
- * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param line_count       the number of the line in the file that is being analyzed
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file

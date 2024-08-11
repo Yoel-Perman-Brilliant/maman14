@@ -4,7 +4,8 @@
  * the .data, .string and .extern directives and the first word of every instruction.
  * In addition, the first pass checks for the legality of everything it encodes, 
  * as well as the legality of the syntax of an instruction (does not check that the content of the operands is legal,
- * but checks everything else in the instruction).
+ * but checks everything else in the instruction). It also builds the symbol table, and updates the faulty instructions
+ * set - a set of line numbers that represent faulty instructions that shouldn't be encoded in the second pass.
  * The main function in this file is first_pass, which executes the assembler's first pass over a given file.
  * Assumes that the input .as file has already been parsed to a macro-less .am file.
  */
@@ -524,6 +525,7 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
  * into the memory image. These are kept for the second pass.
  * Considers "instruction" to be anything that is not a blank line, a comment line or a directive. If it's non of these
  * but also not a valid instruction (as far as the function checks), the problem would be found and reported.
+ * If the instruction is legal, enters the line number to the faulty instructions set.
  * 
  * Does so by first inserting the label (if there is one) to the symbol table, finding the operator, verifying it, and
  * find the amount of operands that the operator requires. Then analyzes the rest of the line based on the number
@@ -531,7 +533,7 @@ static void handle_extern(char *rest, char *label_name, int line_count, char *pa
  * 
  * @param line             the part of the line after the label
  * @param label_name       the name of the line's label if there is one, or NULL if there isn't
- * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param line_count       the number of the line in the file that is being analyzed
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
@@ -580,6 +582,7 @@ static void first_pass_handle_instruction(char *line, char *label_name, int line
  * This function validates the syntax of the line and inserts the instruction's first word into 
  * the memory image. It does not, however, check the content of the operands and does not insert the additional words
  * into the memory image. These are kept for the second pass.
+ * If the instruction is legal, enters the line number to the faulty instructions set.
  * 
  * Does so by verifying the syntax (makes sure there are two operands split by a single comma and any amount of
  * whitespaces), then finding the address method of each operand, building the memory word, verifying it, inserting
@@ -587,7 +590,7 @@ static void first_pass_handle_instruction(char *line, char *label_name, int line
  * 
  * @param op               the instruction's operator
  * @param rest             the part of the line after the operator
- * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param line_count       the number of the line in the file that is being analyzed
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
@@ -727,6 +730,7 @@ static void first_pass_handle_two_operand_instruction(Operator op, char *rest, i
  * This function validates the syntax of the line and inserts the instruction's first word into 
  * the memory image. It does not, however, check the content of the operand and does not insert the additional word
  * into the memory image. These are kept for the second pass.
+ * If the instruction is legal, enters the line number to the faulty instructions set.
  * 
  * Does so by verifying the syntax of the line (only one operand and no commas), then finding the operand's address
  * method, verifying it, building the instruction's first memory word, inserting it to the memory and advancing the
@@ -734,7 +738,7 @@ static void first_pass_handle_two_operand_instruction(Operator op, char *rest, i
  * 
  * @param op               the instruction's operator
  * @param rest             the part of the line after the operator
- * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param line_count       the number of the line in the file that is being analyzed
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file
@@ -813,13 +817,14 @@ static void first_pass_handle_one_operand_instruction(Operator op, char *rest, i
  * Handles an instruction line that should have no operands while finding errors.
  * This function validates the syntax of the line and inserts the instruction's first word into 
  * the memory image.
+ * If the instruction is legal, enters the line number to the faulty instructions set.
  * 
  * Does so by verifying the syntax of the line (only includes the operator), then builds the instruction's first memory
  * word and inserts it to the memory.
  * 
  * @param op               the instruction's operator
  * @param rest             the part of the line after the operator
- * @param line_count       the number of the line in the file that is being analyzed (used for error reporting)
+ * @param line_count       the number of the line in the file that is being analyzed
  * @param parsed_file_name the name of the parsed file that is being read (used for error reporting)
  * @param error_found      a pointer to a value that represents whether an error has been found
  * @param requirements     a pointer to the requirements for the file

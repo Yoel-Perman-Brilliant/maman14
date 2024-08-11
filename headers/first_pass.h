@@ -5,7 +5,7 @@
  * the .data, .string and .extern directives and the first word of every instruction.
  * In addition, the first pass checks for the legality of everything it encodes, 
  * as well as the legality of the syntax of an instruction (does not check that the content of the operands is legal,
- * but checks everything else in the instruction).
+ * but checks everything else in the instruction). It also builds the symbol table for the second pass.
  * Assumes that the input .as file has already been parsed to a macro-less .am file.
  */
 #ifndef MAMAN14_FIRST_PASS_H
