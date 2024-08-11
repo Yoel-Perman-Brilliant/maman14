@@ -27,8 +27,6 @@
 #include "../headers/files.h"
 #include "../headers/alloc_failure_handler.h"
 
-#define BLANKS " \t"
-
 /**
  * Writes a macro's content into a file (should be the parsed file).
  * Assumes that the macro exists in the macro table.

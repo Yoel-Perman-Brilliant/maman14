@@ -12,7 +12,8 @@ object/alloc_failure_handler.o: src/alloc_failure_handler.c headers/alloc_failur
 
 object/pre_assembler.o: src/pre_assembler.c headers/pre_assembler.h headers/structures/hash_map.h \
 						headers/util/string_ops.h headers/util/general_util.h headers/files.h headers/exit_codes.h \
-						headers/structures/linked_list.h headers/requirements.h headers/alloc_failure_handler.h
+						headers/structures/linked_list.h headers/requirements.h headers/alloc_failure_handler.h \
+						headers/fields.h
 	gcc -c $(FLAGS)  src/pre_assembler.c -o object/pre_assembler.o
 
 object/assembler.o: src/assembler.c headers/files.h headers/pre_assembler.h headers/requirements.h \
