@@ -88,7 +88,7 @@ int first_pass(char file_name[], Requirements *requirements) {
     if (parsed_file_name == NULL) {
         return 1;
     }
-    /* makes sure the parsed file is not null, if it does then the file can't be encoded */
+    /* makes sure the parsed file is not null, if it is then the file can't be encoded */
     if (!parsed_file) {
         free(parsed_file_name);
         return 1;
