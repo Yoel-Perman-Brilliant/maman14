@@ -1,8 +1,8 @@
 /**
  * Includes definitions which represent symbols and their characteristics.
  */
-#ifndef MAMAN14_SYMBOLS_H
-#define MAMAN14_SYMBOLS_H
+#ifndef SYMBOLS_H
+#define SYMBOLS_H
 
 /**
  * Represents the location of a symbol's value (code or data).

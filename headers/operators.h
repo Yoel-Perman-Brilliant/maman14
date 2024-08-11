@@ -3,8 +3,8 @@
  * Also includes an enum which represents the different possible address methods for the operands, and prototypes for 
  * functions that handle retrieving and analyzing operators and address methods.
  */
-#ifndef MAMAN14_OPERATORS_H
-#define MAMAN14_OPERATORS_H
+#ifndef OPERATORS_H
+#define OPERATORS_H
 
 #define NUMBER_OF_OPERATORS 16
 #define ILLEGAL_OPERATOR_NAME "illegal"

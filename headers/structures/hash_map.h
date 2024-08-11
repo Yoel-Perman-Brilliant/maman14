@@ -6,8 +6,8 @@
  * In addition, includes prototypes for functions that allow for interacting with hash-maps.
  * All functions assumes that the given pointer to a map is not null.
  */
-#ifndef MAMAN14_HASH_MAP_H
-#define MAMAN14_HASH_MAP_H
+#ifndef HASH_MAP_H
+#define HASH_MAP_H
 
 #include "linked_list.h"
 #include "stdarg.h"

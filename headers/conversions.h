@@ -3,8 +3,8 @@
  * words in the memory. All macros and functions that return a word return a short unsigned, whose leftmost bit is 
  * 0 and the rest are the bits representing the word.
  */
-#ifndef MAMAN14_CONVERSIONS_H
-#define MAMAN14_CONVERSIONS_H
+#ifndef CONVERSIONS_H
+#define CONVERSIONS_H
 
 #include "math.h"
 #include "operators.h"

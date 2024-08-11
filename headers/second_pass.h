@@ -4,8 +4,8 @@
  * symbols as operands. By the end of the second pass, the requirements of the file should be completely filled with
  * the information necessary to create the output files.
  */
-#ifndef MAMAN14_SECOND_PASS_H
-#define MAMAN14_SECOND_PASS_H
+#ifndef SECOND_PASS_H
+#define SECOND_PASS_H
 
 #include "requirements.h"
 

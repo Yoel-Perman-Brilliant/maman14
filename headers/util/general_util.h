@@ -1,8 +1,8 @@
 /**
  * Includes prototypes for miscellaneous utility functions. 
  */
-#ifndef MAMAN14_GENERAL_UTIL_H
-#define MAMAN14_GENERAL_UTIL_H
+#ifndef GENERAL_UTIL_H
+#define GENERAL_UTIL_H
 
 #include "stdarg.h"
 #include "stdio.h"

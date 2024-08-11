@@ -2,8 +2,8 @@
  * Includes prototypes for functions that perform operations on strings.
  * All strings are assumed to be not null and end with a terminating 0, unless stated otherwise.
  */
-#ifndef MAMAN14_STRING_OPS_H
-#define MAMAN14_STRING_OPS_H
+#ifndef STRING_OPS_H
+#define STRING_OPS_H
 
 #include "stdlib.h"
 

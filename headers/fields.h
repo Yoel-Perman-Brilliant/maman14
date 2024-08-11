@@ -4,8 +4,8 @@
  * All functions that get a string as a parameter assume that it is not null and ends with a terminating 0.
  */
 
-#ifndef MAMAN14_LEGAL_NAMES_H
-#define MAMAN14_LEGAL_NAMES_H
+#ifndef LEGAL_NAMES_H
+#define LEGAL_NAMES_H
 
 /**
  * The keyword stating the start of a macro definition.

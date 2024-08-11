@@ -1,8 +1,8 @@
 /**
  * Includes prototypes for functions that handle getting the names and opening files in different formats.
  */
-#ifndef MAMAN14_FILES_H
-#define MAMAN14_FILES_H
+#ifndef FILES_H
+#define FILES_H
 
 #include "stdio.h"
 #include "requirements.h"

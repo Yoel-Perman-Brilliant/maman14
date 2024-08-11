@@ -1,8 +1,8 @@
 /**
  * Includes different exit codes for the program.
  */
-#ifndef MAMAN14_EXIT_CODES_H
-#define MAMAN14_EXIT_CODES_H
+#ifndef EXIT_CODES_H
+#define EXIT_CODES_H
 
 /* all files were assembled successfully */
 #define SUCCESS 0

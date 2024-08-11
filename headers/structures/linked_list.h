@@ -6,8 +6,8 @@
  * In addition, includes prototype for functions that allow for interacting with linked-lists.
  * All functions assumes that the given pointer to a list is not null.
  */
-#ifndef MAMAN14_LINKED_LIST_H
-#define MAMAN14_LINKED_LIST_H
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
 
 #include "../fields.h"
 #include "../symbols.h"

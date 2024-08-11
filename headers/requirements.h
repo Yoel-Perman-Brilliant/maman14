@@ -3,8 +3,8 @@
  * encoding of each file.
  * Also includes prototypes for functions that allow for interacting with the requirements.
  */
-#ifndef MAMAN14_REQUIREMENTS_H
-#define MAMAN14_REQUIREMENTS_H
+#ifndef REQUIREMENTS_H
+#define REQUIREMENTS_H
 
 #include "structures/hash_map.h"
 #include "structures/set.h"

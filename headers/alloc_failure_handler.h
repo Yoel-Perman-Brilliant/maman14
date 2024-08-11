@@ -3,8 +3,8 @@
  * which is necessary in order to a void memory-related errors.
  */
 
-#ifndef MAMAN14_ALLOC_FAILURE_HANDLER_H
-#define MAMAN14_ALLOC_FAILURE_HANDLER_H
+#ifndef ALLOC_FAILURE_HANDLER_H
+#define ALLOC_FAILURE_HANDLER_H
 
 /**
  * Notifies the handler that a memory allocation failure has occurred.

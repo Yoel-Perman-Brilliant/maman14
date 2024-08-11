@@ -4,8 +4,8 @@
  * In addition, includes prototypes for functions that allow for interacting with sets.
  * All functions assumes that the given pointer to a set is not null.
  */
-#ifndef MAMAN14_SET_H
-#define MAMAN14_SET_H
+#ifndef SET_H
+#define SET_H
 #include "linked_list.h"
 
 /**

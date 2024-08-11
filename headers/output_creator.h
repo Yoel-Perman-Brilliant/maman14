@@ -3,8 +3,8 @@
  * for an assembly file based on its filled requirements.
  */
 
-#ifndef MAMAN14_OUTPUT_CREATOR_H
-#define MAMAN14_OUTPUT_CREATOR_H
+#ifndef OUTPUT_CREATOR_H
+#define OUTPUT_CREATOR_H
 
 /**
  * Creates the output files for an assembly file based on its filled requirements.

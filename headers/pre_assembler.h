@@ -10,8 +10,8 @@
  * it as I see fit as long as I provide adequate documentation).
  */
 
-#ifndef MAMAN14_PRE_ASSAMBLER_H
-#define MAMAN14_PRE_ASSAMBLER_H
+#ifndef PRE_ASSAMBLER_H
+#define PRE_ASSAMBLER_H
 
 #include "requirements.h"
 

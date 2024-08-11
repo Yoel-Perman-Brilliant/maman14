@@ -8,8 +8,8 @@
  * but checks everything else in the instruction). It also builds the symbol table for the second pass.
  * Assumes that the input .as file has already been parsed to a macro-less .am file.
  */
-#ifndef MAMAN14_FIRST_PASS_H
-#define MAMAN14_FIRST_PASS_H
+#ifndef FIRST_PASS_H
+#define FIRST_PASS_H
 
 #include "structures/hash_map.h"
 #include "requirements.h"
