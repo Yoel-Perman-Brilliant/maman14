@@ -3,36 +3,43 @@
  */
 
 #include "../headers/requirements.h"
-#include "../headers/exit_codes.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "../headers/alloc_failure_handler.h"
 
 /**
  * Creates a new instance of Requirements to be used for the assembly of one file.
  * Does so by allocating memory for it and for the arrays it includes, creating the symbol table and initializing the
  * instruction and data counters.
  * 
- * @return a pointer to new Requirements
+ * @return a pointer to new Requirements, or NULL if memory for the Requirements structure could not be allocated
  */
 Requirements *create_requirements() {
-    Requirements *requirements = malloc(sizeof(requirements));
+    Requirements *requirements = malloc(sizeof(Requirements));
+    /* if an allocation failure occurred, updates the handler and returns null */
     if (requirements == NULL) {
         fprintf(stderr, "Memory Error: Memory allocation failure when creating requirements\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
+        return NULL;
     }
-    requirements->symbol_table = create_table();
+    requirements->macro_table = create_map(MACRO);
+    requirements->symbol_table = create_map(SYMBOL);
     requirements->data_array = calloc(MEMORY_SIZE, sizeof(short));
+    /* if an allocation failure occurred, updates the handler */
     if (requirements->data_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating data array\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
     }
+    requirements->faulty_instructions = create_set();
     requirements->instruction_array = calloc(MEMORY_SIZE, sizeof(short));
+    /* if an allocation failure occurred, updates the handler */
     if (requirements->instruction_array == NULL) {
         printf("Memory Error: Memory allocation failure when creating instruction array\n");
-        exit(MEMORY_ALLOCATION_FAILURE);
+        set_alloc_failure();
     }
     requirements->ic = IC_START;
     requirements->dc = 0;
+    requirements->extern_found = 0;
     return requirements;
 }
 
@@ -42,7 +49,9 @@ Requirements *create_requirements() {
  * @param requirements a pointer to the requirements to be freed
  */
 void free_requirements(Requirements *requirements) {
-    free_table(requirements->symbol_table);
+    free_map(requirements->macro_table);
+    free_map(requirements->symbol_table);
+    free_set(requirements->faulty_instructions);
     free(requirements->data_array);
     free(requirements->instruction_array);
     free(requirements);

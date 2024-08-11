@@ -5,28 +5,12 @@
 
 #include "../headers/fields.h"
 #include "../headers/util/string_ops.h"
+#include "../headers/operators.h"
 #include "ctype.h"
 #include "string.h"
 
 #define MAX_MACRO_AND_LABEL_LENGTH 31
 #define LABEL_END ':'
-
-/**
- * Determines if a field name is the name of an instruction.
- * Does so by going over every instruction name and comparing it to the field name.
- * 
- * @param name the name to be checked
- * @return 1 if the field has the name of an instruction, 0 otherwise
- */
-int is_instruction(char *field) {
-    char *instructions[] = {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc",
-                            "dec", "jmp", "bne", "red", "prn","jsr", "rts", "stop"};
-    int i;
-    for (i = 0; i < sizeof(instructions) / sizeof (char *); i++) {
-        if (equal(instructions[i], field)) return 1;
-    }
-    return 0;
-}
 
 /**
  * Determines if a field name is the name of an directive.
@@ -35,7 +19,7 @@ int is_instruction(char *field) {
  * @param name the name to be checked
  * @return 1 if the field has the name of a directive, 0 otherwise
  */
-int is_directive(char *field) {
+static int is_known_directive(char *field) {
     char *directives[] = {".data", ".string", ".entry", ".extern"};
     int i;
     for (i = 0; i < sizeof(directives) / sizeof (char *); i++) {
@@ -52,7 +36,7 @@ int is_directive(char *field) {
  * @return 1 if the field has the name of a register, 0 otherwise
  */
 int is_register(char *field) {
-    char *registers[] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "PSW"};
+    char *registers[] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7"};
     int i;
     for (i = 0; i < sizeof(registers) / sizeof (char *); i++) {
         if (equal(registers[i], field)) return 1;
@@ -67,7 +51,7 @@ int is_register(char *field) {
  * @param name the name to be checked
  * @return 1 if the field has the name of one of the checked keywords, 0 otherwise
  */
-int is_other_keyword(char *field) {
+static int is_other_keyword(char *field) {
     return equal(field, MACRO_DEFINITION) || equal(field, MACRO_END);
 }
 
@@ -81,7 +65,7 @@ int is_other_keyword(char *field) {
  */
 int legal_macro_name(char *name) {
     int i;
-    if (is_instruction(name) || is_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
+    if (is_operator(name) || is_known_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
     if (strlen(name) > MAX_MACRO_AND_LABEL_LENGTH) return 0;
     if (!isalpha(name[0])) return 0;
     for (i = 0; name[i] != '\0'; i++) {
@@ -100,7 +84,7 @@ int legal_macro_name(char *name) {
  */
 int legal_label_name(char *name) {
     int i;
-    if (is_instruction(name) || is_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
+    if (is_operator(name) || is_known_directive(name) || is_register(name) || is_other_keyword(name)) return 0;
     if (strlen(name) > MAX_MACRO_AND_LABEL_LENGTH) return 0;
     if (!isalpha(name[0])) return 0;
     for (i = 0; name[i] != '\0'; i++) {
@@ -132,12 +116,60 @@ void label_to_symbol(char *label) {
     label[strlen(label) - 1] = '\0';
 }
 
-/**
- * Checks if a given symbol represents a word in the data portion.
- * @param symbol the content of the symbol to be checked
- * 
- * @return 1 if symbol is a data symbol, 0 otherwise
- */
-int is_data_symbol(SymbolContent symbol) {
-    return symbol.location == DATA;
+int is_directive(char *field) {
+    return first_non_blank(field) == DIRECTIVE_START;
 }
+
+
+/**
+ * Finds the label of a line with a given pointer to it and changes the pointer's value to not include the label.
+ * 
+ * Does so by finding the first field of the line and setting the value of the the pointer to the label to it,
+ * then setting the value of the pointer to the line to the part after the first field.
+ * 
+ * @param line             a pointer to the line being read
+ * @param label_name       a pointer to a string whose value should be the label if there is one, or NULL if there isn't
+ */
+void find_label(char **line, char **label_name) {
+    /* the part of the line after the label */
+    char *rest;
+    /* the first field of the line */
+    char *first_field = find_token(*line, BLANKS, &rest);
+    /* if an allocation failure has occurred, sets the label name to a default NULL and stops */
+    if (first_field == NULL) {
+        *label_name = NULL;
+        return;
+    }
+    /* if the first field is a label */
+    if (is_label(first_field)) {
+        /* removes the colon from the label to find the symbol */
+        label_to_symbol(first_field);
+        /* sets the value of the label_name pointer to the symbol */
+        *label_name = first_field;
+        /* sets the value of the line pointer to the part after the label */
+        *line = rest;
+    }
+    /* if the first field is not a label, sets the value of the label_name pointer to NULL */
+    else {
+        free(first_field);
+        *label_name = NULL;
+    }
+}
+
+/**
+ * Gets the address method of a given operand.
+ * 
+ * Does so by checking if it starts with a pound - if it does, it must be immediate address. If it starts with an
+ * asterisk, it must be indirect register address. If it's a register, then it is direct register. Otherwise, assumes
+ * it's a symbol and therefore it is direct address.
+ * 
+ * @param operand the operand to check
+ * @return the address method of operand
+ */
+AddressMethod get_address_method(char *operand) {
+    if (operand[0] == IMMEDIATE_ADDRESS_START) return IMMEDIATE_ADDRESS;
+    if (operand[0] == INDIRECT_REGISTER_ADDRESS_START) return INDIRECT_REGISTER_ADDRESS;
+    if (is_register(operand)) return DIRECT_REGISTER_ADDRESS;
+    return DIRECT_ADDRESS;
+}
+

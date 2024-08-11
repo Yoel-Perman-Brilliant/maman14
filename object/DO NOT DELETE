@@ -1,0 +1,2 @@
+Do not delete the /object directory!
+It is the output directory for the .o files, and make will not work correctly if the directory doesn't exist.
