@@ -68,8 +68,8 @@ int create_files(char file_name[], Requirements *requirements) {
  * 
  * Does so by first creating the file and printing the instruction count (minus its start value) and the data count to
  * its first line.
- * Then, prints the instructions and their indexes one by one, and then the data and its indexes one by one, based on 
- * the memory image in the requirements.
+ * Then, prints the instructions and their addresses one by one, and then the data and its addresses one by one,
+ * based on the memory image in the requirements.
  * 
  * @param file_name the extensionless file name
  * @param requirements the file's requirements
@@ -80,15 +80,15 @@ static int write_object_file(char file_name[], Requirements *requirements) {
     int i;
     if (file == NULL) return 1;
     /* prints the instruction count (minus its start value) and the data count to its first line */
-    fprintf(file, "   %d %d\n", requirements->ic - IC_START, requirements->dc);
-    /* prints the instructions and their indexes one by one */
+    fprintf(file, "  %d %d\n", requirements->ic - IC_START, requirements->dc);
+    /* prints the instructions and their addresses one by one */
     for (i = IC_START; i < requirements->ic; i++) {
-        /* the index always takes 4 digits, the instruction is printed in octal and always takes 5 digits */
+        /* the address always takes 4 digits, the instruction is printed in octal and always takes 5 digits */
         fprintf(file, "%04d %05o\n", i, requirements->instruction_array[i]);
     }
-    /* prints the data and its indexes one by one */
+    /* prints the data and its addresses one by one */
     for (i = 0; i < requirements->dc; i++) {
-        /* the index always takes 4 digits, the data is printed in octal and always takes 5 digits */
+        /* the address always takes 4 digits, the data is printed in octal and always takes 5 digits */
         fprintf(file, "%04d %05o\n", i + requirements->ic, requirements->data_array[i]);
     }
     fclose(file);
@@ -117,8 +117,8 @@ static int write_extern_file(char file_name[], LinkedList *extern_list) {
         Node *appearance = node->content.symbol.appearances->head;
         /* for every appearance */
         while (appearance != NULL) {
-            /* prints the symbol's name and the appearance to the file */
-            fprintf(file, "%s %d\n", node->name, appearance->content.num);
+            /* prints the symbol's name and the appearance to the file, the appearance's address is 4 digit long */
+            fprintf(file, "%s %04d\n", node->name, appearance->content.num);
             appearance = appearance->next;
         }
         node = node->next;

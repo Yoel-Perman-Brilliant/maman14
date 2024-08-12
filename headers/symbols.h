@@ -34,7 +34,7 @@ typedef struct SymbolContent {
     int value;
     SymbolLocation location;
     SymbolType type;
-    /* a list of indexes of memory words in which the symbol appears - only used for external symbols */
+    /* a list of addresses of memory words in which the symbol appears - only used for external symbols */
     AppearancesList *appearances;
 } SymbolContent;
 
