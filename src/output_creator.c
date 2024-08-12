@@ -145,8 +145,8 @@ static int write_entry_file(char file_name[], LinkedList *entry_list) {
     node = entry_list->head;
     /* for every item on the entry list */
     while (node != NULL) {
-        /* prints the symbol's name and value to the file */
-        fprintf(file, "%s %d\n", node->name, node->content.symbol.value);
+        /* prints the symbol's name and value to the file, the value is always 4 digits long */
+        fprintf(file, "%s %04d\n", node->name, node->content.symbol.value);
         node = node->next;
     }
     fclose(file);
