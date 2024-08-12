@@ -176,15 +176,15 @@ static void check_and_handle_entry(char *line, char *label_name, int line_count,
         }
         /* finds the reference to the symbol in the symbol table */
         symbol = map_get_symbol(requirements->symbol_table, argument);
-        free(argument);
         /* makes sure the symbol is not external */
         if (symbol->type == EXTERNAL) {
-            printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is"
+            printf("Input Error: Symbol \"%s\" given as argument for .entry directive in line %d of file %s is "
                    "already defined in that file as external\n", argument, line_count, parsed_file_name);
             *error_found = 1;
-            free_all(2, directive, label_name);
+            free_all(3, directive, label_name, argument);
             return;
         }
+        free(argument);
         /* changes the symbol's type to ENTRY */
         symbol->type = ENTRY;
     }

@@ -10,8 +10,6 @@ macro1
 
 macro1: jsr *r4
 isThisAnOperand x, 5
-clr
-sub #g, r6
 
 .data
 NUMBERS: .data 4, 5, x
@@ -25,5 +23,4 @@ NUMBERS: .data 4, 5, x
 .extern NUMBERS
 .entry SYMBOL
 WHATSUP: .extern
-G:
 add r5, *r5 ;this adds stuff
