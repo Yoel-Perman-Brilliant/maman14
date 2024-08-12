@@ -186,4 +186,14 @@ void list_add_to_all_that_apply(LinkedList *list, int to_add, int (*condition)(S
  */
 void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condition)(SymbolContent symbol));
 
+/**
+ * Gets the length of the longest name of any item in a linked-list.
+ * Assumes the list is not empty.
+ * 
+ * @param list a pointer to the list to be checked
+ * @return the longest name of an item in the list
+ */
+int get_max_name_length(LinkedList *list);
+
+
 #endif

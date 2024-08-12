@@ -7,8 +7,7 @@
 #include "../../headers/util/string_ops.h"
 #include "stdio.h"
 #include "../../headers/alloc_failure_handler.h"
-
-#define VALUE_NOT_FOUND_EXIT_CODE 1
+#include "string.h"
 
 /**
  * Creates a new, empty linked-list.
@@ -285,4 +284,23 @@ void list_add_matching_to_list(LinkedList *list1, LinkedList *list2, int (*condi
             list_add(list2, node->name, node->content);
         node = node->next;
     }
+}
+
+/**
+ * Gets the length of the longest name of any item in a linked-list.
+ * Does so by traversing the entire list and updating the maximum length found whenever necessary.\
+ * Assumes the list is not empty.
+ * 
+ * @param list a pointer to the list to be checked
+ * @return the longest name of an item in the list
+ */
+int get_max_name_length(LinkedList *list) {
+    Node *node = list->head;
+    int max = 0;
+    while (node != NULL) {
+        int len = strlen(node->name);
+        if (len > max) max = len;
+        node = node->next;
+    }
+    return max;
 }
