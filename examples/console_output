@@ -1,0 +1,53 @@
+Input error: Line 1 in file examples/preassembly_error.as includes extra characters after macro name
+Input error: Line 3 in file examples/preassembly_error.as is too long!
+Input Error: Label used before macro definition in line 7 of file examples/preassembly_error.as
+Input error: Line 11 in file examples/preassembly_error.as includes a label before macro end declaration
+Input Error: Extra characters after macro usage in line 14 of file examples/preassembly_error.as
+Input error: Macro defined in line 16 in file examples/preassembly_error.as has an illegal name
+Input error: Line 21 in file examples/preassembly_error.as is too long!
+Input Error: Label used before macro usage in line 22 of file examples/preassembly_error.as
+
+examples/assembly_error_1: Pre-assembly completed successfully
+Input Error: Illegal destination address method in line 2 of file examples/assembly_error_1.am
+Input Error: Missing destination operand in line 4 of file examples/assembly_error_1.am
+Input Error: Extra characters after destination operand in line 6 of file examples/assembly_error_1.am
+Input Error: Label macro1 in line 8 of file examples/assembly_error_1.am was already defined as a macro
+Input Error: Illegal instruction name "isThisAnOperand" in line 9 of file examples/assembly_error_1.am
+Input Error: .data directive in line 11 of file examples/assembly_error_1.am has no arguments
+Input Error: argument "x" of .data directive in line 12 of file examples/assembly_error_1.am is not an integer
+Input Error: argument "-3242343434" of .data directive in line 13 of file examples/assembly_error_1.am is not within the machine's memory cell bounds
+Input Error: .data directive in line 14 of file examples/assembly_error_1.am starts with an illegal comma
+Input Error: Missing comma in .data directive in line 15 of file examples/assembly_error_1.am
+Input Error: Argument for .string directive in line 17 of file examples/assembly_error_1.am does not end with double quotation marks
+Input Error: Argument for .string directive in line 18 of file examples/assembly_error_1.am is not wrapped by two sets of quotation marks
+Input Error: Symbol "NUMBERS" given as a parameter for .extern in line 20 of file examples/assembly_error_1.am is already defined in the file
+Warning: Label found before .extern directive in line 22 of file examples/assembly_error_1.am
+Input Error: No argument given to .extern directive in line 22 of file examples/assembly_error_1.am
+Input Error: Semicolon signifying a comment appears after the first character in line 23 of file examples/assembly_error_1.am
+Input Error: Operand "HELLO" given in the direct address method in line 3 of file examples/assembly_error_1.am is not a defined symbol
+Input Error: Symbol "SYMBOL" given as argument for .entry directive in line 21 of file examples/assembly_error_1.am is undefined in that file
+
+examples/valid_example_1: Pre-assembly completed successfully
+examples/valid_example_1: First pass completed successfully
+examples/valid_example_1: Second pass completed successfully
+examples/valid_example_1: Output files creation completed successfully
+
+examples/valid_example_2: Pre-assembly completed successfully
+examples/valid_example_2: First pass completed successfully
+examples/valid_example_2: Second pass completed successfully
+examples/valid_example_2: Output files creation completed successfully
+
+Error: Can't open file examples/not_a_file.as
+
+examples/assembly_error_2: Pre-assembly completed successfully
+Input Error: Missing destination operand in line 2 of file examples/assembly_error_2.am
+Input Error: Line 4 of file examples/assembly_error_2.am is empty but has a label
+Warning: Label found before .extern directive in line 5 of file examples/assembly_error_2.am
+Input Error: In operand "#g" given in the immediate address method in line 3 of file examples/assembly_error_2.am, g is not an integer
+Input Error: Symbol "2" given as argument for .entry directive in line 6 of file examples/assembly_error_2.am is undefined in that file
+Input Error: Symbol "x" given as argument for .entry directive in line 9 of file examples/assembly_error_2.am is already defined in that file as external
+Input Error: Symbol "y" given as argument for .entry directive in line 10 of file examples/assembly_error_2.am is undefined in that file
+Input Error: In operand "#r6" given in the immediate address method in line 13 of file examples/assembly_error_2.am, r6 is not an integer
+Input Error: In operand "##56" given in the immediate address method in line 15 of file examples/assembly_error_2.am, #56 is not an integer
+Input Error: In operand "*t" given in the indirect register address method in line 17 of file examples/assembly_error_2.am, t is not valid register
+

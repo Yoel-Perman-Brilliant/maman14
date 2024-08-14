@@ -26,3 +26,4 @@ clr AA
 add AA, AA
 
 .extern AA
+
