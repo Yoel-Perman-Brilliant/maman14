@@ -4,6 +4,8 @@
  * symbols as operands. By the end of the second pass, the requirements of the file should be completely filled with
  * the information necessary to create the output files.
  * Also includes helper functions for second_pass.
+ * Assumes that a symbol can be defined as .entry more than once, since it doesn't not interfere with any
+ * part of the assembly process.
  */
 #include "../headers/second_pass.h"
 #include "../headers/util/string_ops.h"
@@ -112,6 +114,8 @@ int second_pass(char file_name[], Requirements *requirements) {
  * Does so by finding the directive itself (the first field of the line) and checking if it is .entry.
  * If it is, finds the argument (and makes sure there is exactly one), makes sure it is a defined, non-external symbol,
  * and if it is, finds it in the symbol table and changes its type to ENTRY.
+ * Assumes that a symbol can be defined as .entry more than once, since it doesn't not interfere with any
+ * part of the assembly process.
  * 
  * @param line             the line being read (excluding the label, if there is one)
  * @param label_name       the name of the line's label, or null if there isn't one

@@ -3,6 +3,8 @@
  * updating symbols in the symbol table that are declared as .entry, and updating the list of appearances of external
  * symbols as operands. By the end of the second pass, the requirements of the file should be completely filled with
  * the information necessary to create the output files.
+ * Assumes that a symbol can be defined as .entry more than once, since it doesn't not interfere with any
+ * part of the assembly process.
  */
 #ifndef SECOND_PASS_H
 #define SECOND_PASS_H

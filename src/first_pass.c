@@ -8,6 +8,8 @@
  * set - a set of line numbers that represent faulty instructions that shouldn't be encoded in the second pass.
  * The main function in this file is first_pass, which executes the assembler's first pass over a given file.
  * Assumes that the input .as file has already been parsed to a macro-less .am file.
+ * Also assumes that a symbol can be defined as .extern more than once, since it doesn't not interfere with any
+ * part of the assembly process.
  */
 
 #include "../headers/first_pass.h"
@@ -319,6 +321,8 @@ static void insert_string(char *rest, int line_count, char *parsed_file_name, in
 
 /**
  * Inserts a symbol to the symbol table while finding errors.
+ * Assumes that a symbol can be defined as .extern more than once, since it doesn't not interfere with any
+ * part of the assembly process.
  * 
  * Does so by making sure that the symbol is not already defined, setting its value to either the instruction counter
  * or data counter if the location is known, or 0 if it's external, then adding it to the symbol table with the given
@@ -343,18 +347,22 @@ static void insert_symbol(char *symbol, SymbolType type, SymbolLocation location
         *error_found = 1;
         return;
     }
-    /* makes sure that the symbol is not already defined in the file */
+    /* makes sure that the symbol is not already defined in the file, unless it's a double-definition of an external
+     * symbol, which is assumed to be legal */
     if (map_contains(requirements->symbol_table, symbol)) {
         if (type == EXTERNAL && map_get_symbol(requirements->symbol_table, symbol)->type != EXTERNAL) {
             printf("Input Error: Symbol \"%s\" given as a parameter for .extern in line %d of file %s is "
                    "already defined in the file\n", symbol, line_count, parsed_file_name);
+            *error_found = 1;
+            free(symbol);
+            return;
         } else if (type != EXTERNAL) {
             printf("Input Error: Label %s in line %d of file %s is already defined\n",
                    symbol, line_count, parsed_file_name);
+            *error_found = 1;
+            free(symbol);
+            return;
         }
-        *error_found = 1;
-        free(symbol);
-        return;
     }
     /* makes sure the symbol has not already been defined as a macro */
     if (map_contains(requirements->macro_table, symbol)) {

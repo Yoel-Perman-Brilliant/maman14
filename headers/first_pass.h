@@ -7,6 +7,8 @@
  * as well as the legality of the syntax of an instruction (does not check that the content of the operands is legal,
  * but checks everything else in the instruction). It also builds the symbol table for the second pass.
  * Assumes that the input .as file has already been parsed to a macro-less .am file.
+ * Also assumes that a symbol can be defined as .extern more than once, since it doesn't not interfere with any
+ * part of the assembly process.
  */
 #ifndef FIRST_PASS_H
 #define FIRST_PASS_H
